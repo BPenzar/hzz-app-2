@@ -1,0 +1,174 @@
+{
+    "name": "hzz_generate_optimized",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "hzz_generate",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [0, 200],
+        "id": "webhook-node",
+        "name": "Webhook",
+        "webhookId": "hzz-generate-webhook"
+      },
+      {
+        "parameters": {
+          "modelId": {
+            "__rl": true,
+            "value": "gpt-4o-mini",
+            "mode": "list",
+            "cachedResultName": "GPT-4o-mini"
+          },
+          "messages": {
+            "values": [
+              {
+                "role": "system",
+                "content": "You are an expert at generating Croatian HZZ (Hrvatski zavod za zapošljavanje) business applications. You will receive a JSON template with example fields and a business idea. Rewrite ALL string values to match the business idea while keeping the exact same JSON structure (keys, nesting, types). Write in Croatian. Be specific and professional. Return ONLY valid JSON, no markdown, no explanations."
+              },
+              {
+                "role": "user",
+                "content": "=Business Idea: {{$json.body.idea}}\n\nBase Template:\n{{JSON.stringify($json.body.template, null, 2)}}\n\nInstructions:\n1. Keep ALL keys identical (do not add, remove, or rename)\n2. Rewrite ONLY string values to fit the business idea\n3. Preserve formatting (newlines, tables, bullet points)\n4. Use realistic Croatian business context\n5. Return complete JSON with same structure"
+              }
+            ]
+          },
+          "options": {
+            "maxTokens": 4000,
+            "temperature": 0.3,
+            "topP": 1,
+            "frequencyPenalty": 0,
+            "presencePenalty": 0
+          },
+          "jsonOutput": true
+        },
+        "type": "@n8n/n8n-nodes-langchain.openAi",
+        "typeVersion": 1.8,
+        "position": [240, 200],
+        "id": "openai-node",
+        "name": "Generate Content",
+        "credentials": {
+          "openAiApi": {
+            "id": "your-openai-credentials-id",
+            "name": "OpenAI Account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "// Extract the generated content from OpenAI response\nconst response = $input.first().json;\n\n// Handle different response formats\nlet content;\n\nif (response.choices && response.choices[0]) {\n  // Standard OpenAI response format\n  content = response.choices[0].message.content;\n} else if (response.content) {\n  // Alternative format\n  content = response.content;\n} else {\n  throw new Error('Unable to extract content from OpenAI response');\n}\n\n// Parse if string\nlet parsed;\nif (typeof content === 'string') {\n  try {\n    parsed = JSON.parse(content);\n  } catch (e) {\n    throw new Error('OpenAI returned invalid JSON: ' + e.message);\n  }\n} else {\n  parsed = content;\n}\n\n// Validate structure\nif (!parsed || typeof parsed !== 'object') {\n  throw new Error('Generated content is not a valid object');\n}\n\n// Return in expected format\nreturn [{\n  json: {\n    success: true,\n    data: parsed,\n    source: 'n8n',\n    timestamp: new Date().toISOString()\n  }\n}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [480, 200],
+        "id": "format-node",
+        "name": "Format Response"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{$json}}",
+          "options": {
+            "responseCode": 200,
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                }
+              ]
+            }
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.4,
+        "position": [720, 200],
+        "id": "respond-node",
+        "name": "Return Result"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ { \"success\": false, \"error\": $json.error?.message || \"Unknown error\", \"source\": \"n8n\" } }}",
+          "options": {
+            "responseCode": 500
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.4,
+        "position": [480, 400],
+        "id": "error-respond-node",
+        "name": "Return Error"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Generate Content",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Generate Content": {
+        "main": [
+          [
+            {
+              "node": "Format Response",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Format Response": {
+        "main": [
+          [
+            {
+              "node": "Return Result",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Generate Content": {
+        "error": [
+          [
+            {
+              "node": "Return Error",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "active": true,
+    "settings": {
+      "executionOrder": "v1",
+      "saveManualExecutions": true,
+      "callerPolicy": "workflowsFromSameOwner",
+      "errorWorkflow": ""
+    },
+    "versionId": "optimized-v1",
+    "meta": {
+      "templateCredsSetupCompleted": true,
+      "instanceId": "your-n8n-instance-id"
+    },
+    "tags": [
+      {
+        "name": "HZZ",
+        "id": "1"
+      },
+      {
+        "name": "AI Generation",
+        "id": "2"
+      }
+    ]
+  }
