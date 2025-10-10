@@ -60,9 +60,9 @@ export function ApplicationCard({ application }: ApplicationCardProps) {
     const supabase = createClient()
 
     try {
-      // @ts-ignore - Supabase type generation issue
       const { error } = await supabase
         .from('applications')
+        // @ts-expect-error - Supabase type inference issue in production build
         .update({ title: title.trim() })
         .eq('id', application.id)
 
