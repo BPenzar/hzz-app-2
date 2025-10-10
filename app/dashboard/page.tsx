@@ -39,20 +39,20 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       <Header user={user} />
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 flex-1">
-        <div className="flex items-center justify-between mb-8">
+      <div className="container mx-auto px-6 py-12 flex-1">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Moje prijave</h1>
-            <p className="text-gray-600 mt-1">
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">Moje prijave</h1>
+            <p className="text-muted-foreground mt-2">
               Upravljajte svojim HZZ zahtjevima
             </p>
           </div>
           <Link href="/applications/new">
-            <Button size="lg">
+            <Button size="lg" className="rounded-full">
               <PlusCircle className="h-5 w-5 mr-2" />
               Nova prijava
             </Button>

@@ -7,7 +7,7 @@ import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Sparkles, ArrowLeft, Save } from 'lucide-react'
+import { Sparkles, ArrowLeft, Save, Loader2 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { createClient } from '@/lib/supabase/client'
 
@@ -193,10 +193,10 @@ export function IntakeForm({ applicationId, onGenerate }: IntakeFormProps) {
 
   const handleSubmit = async () => {
     // Validation
-    if (!formData.ime || !formData.prezime || !formData.oib) {
+    if (!formData.ime || !formData.prezime) {
       toast({
         title: 'Nedostaju osnovni podaci',
-        description: 'Molimo unesite ime, prezime i OIB',
+        description: 'Molimo unesite ime i prezime',
         variant: 'destructive',
       })
       return
@@ -245,9 +245,9 @@ export function IntakeForm({ applicationId, onGenerate }: IntakeFormProps) {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 flex flex-col">
-      <div className="container mx-auto px-4 max-w-3xl flex-1">
+      <div className="container mx-auto px-4 max-w-3xl flex-1 flex flex-col">
         {/* Header with buttons - outside card */}
-        <div className="mb-6">
+        <div className="mb-6 flex-shrink-0">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h1 className="text-2xl font-bold">Brzi upitnik za HZZ zahtjev</h1>
@@ -280,12 +280,12 @@ export function IntakeForm({ applicationId, onGenerate }: IntakeFormProps) {
           </div>
         </div>
 
-        <Card className="p-8">
+        <Card className="p-8 overflow-y-auto flex-1 mb-6" style={{ maxHeight: 'calc(100vh - 380px)' }}>
 
           <div className="space-y-6">
             {/* Basic Personal Info */}
             <div className="border-b pb-6">
-              <h2 className="text-lg font-semibold mb-4">1. Osnovni podaci</h2>
+              <h2 className="text-lg font-semibold mb-4">1. Osnovni podaci *</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="ime">Ime *</Label>
@@ -306,7 +306,7 @@ export function IntakeForm({ applicationId, onGenerate }: IntakeFormProps) {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="oib">OIB *</Label>
+                  <Label htmlFor="oib">OIB</Label>
                   <Input
                     id="oib"
                     value={formData.oib}
@@ -336,26 +336,9 @@ export function IntakeForm({ applicationId, onGenerate }: IntakeFormProps) {
               </div>
             </div>
 
-            {/* CV / Experience */}
-            <div className="border-b pb-6">
-              <h2 className="text-lg font-semibold mb-4">2. Radno iskustvo i kompetencije</h2>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="radno_iskustvo">Opišite vaše radno iskustvo i obrazovanje</Label>
-                  <Textarea
-                    id="radno_iskustvo"
-                    value={formData.radno_iskustvo || ''}
-                    onChange={(e) => handleChange('radno_iskustvo', e.target.value)}
-                    placeholder="Npr: 5 godina iskustva u IT industriji, diplomirani inženjer računarstva..."
-                    rows={4}
-                  />
-                </div>
-              </div>
-            </div>
-
             {/* Business Idea */}
             <div className="border-b pb-6">
-              <h2 className="text-lg font-semibold mb-4">3. Vaša poslovna ideja *</h2>
+              <h2 className="text-lg font-semibold mb-4">2. Vaša poslovna ideja *</h2>
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="poslovna_ideja">Opišite vašu poslovnu ideju</Label>
@@ -374,6 +357,23 @@ export function IntakeForm({ applicationId, onGenerate }: IntakeFormProps) {
                     value={formData.vrsta_djelatnosti}
                     onChange={(e) => handleChange('vrsta_djelatnosti', e.target.value)}
                     placeholder="Npr: IT usluge, vodoinstalater, frizerski salon..."
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* CV / Experience */}
+            <div className="border-b pb-6">
+              <h2 className="text-lg font-semibold mb-4">3. Radno iskustvo i kompetencije</h2>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="radno_iskustvo">Opišite vaše radno iskustvo i obrazovanje</Label>
+                  <Textarea
+                    id="radno_iskustvo"
+                    value={formData.radno_iskustvo || ''}
+                    onChange={(e) => handleChange('radno_iskustvo', e.target.value)}
+                    placeholder="Npr: 5 godina iskustva u IT industriji, diplomirani inženjer računarstva..."
+                    rows={4}
                   />
                 </div>
               </div>
@@ -444,15 +444,30 @@ export function IntakeForm({ applicationId, onGenerate }: IntakeFormProps) {
 
         </Card>
 
-        {/* Generate Button - outside card */}
-        <div className="mt-6 flex flex-col items-center gap-4">
+        {/* Generate Button - outside card, fixed at bottom */}
+        <div className="flex-shrink-0 flex flex-col items-center gap-4">
           <Button onClick={handleSubmit} disabled={isGenerating} size="lg" className="w-full md:w-auto">
-            <Sparkles className="h-5 w-5 mr-2" />
-            {isGenerating ? 'Generiram zahtjev...' : 'Generiraj potpuni zahtjev s AI'}
+            {isGenerating ? (
+              <>
+                <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                Generiram zahtjev...
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-5 w-5 mr-2" />
+                Generiraj potpuni zahtjev s AI
+              </>
+            )}
           </Button>
-          <p className="text-sm text-gray-500 text-center">
-            Nakon generiranja moći ćete pregledati i urediti sve sekcije prije izvoza u PDF
-          </p>
+          {isGenerating ? (
+            <p className="text-sm text-gray-500 text-center animate-pulse">
+              AI generira vaš zahtjev... Ovo može potrajati 30-60 sekundi.
+            </p>
+          ) : (
+            <p className="text-sm text-gray-500 text-center">
+              Nakon generiranja moći ćete pregledati i urediti sve sekcije prije izvoza u PDF
+            </p>
+          )}
         </div>
       </div>
     </div>

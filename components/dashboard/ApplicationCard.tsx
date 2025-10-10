@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { StatusBadge } from './StatusBadge'
-import { FileText, MoreVertical, Trash2 } from 'lucide-react'
+import { FileText, MoreVertical, Trash2, Edit2 } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { hr } from 'date-fns/locale'
 import {
@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useToast } from '@/hooks/use-toast'
 
 interface ApplicationCardProps {
@@ -34,11 +34,66 @@ export function ApplicationCard({ application }: ApplicationCardProps) {
   const router = useRouter()
   const { toast } = useToast()
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
+  const [title, setTitle] = useState(application.title || 'Novi zahtjev')
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const timeAgo = formatDistanceToNow(new Date(application.updated_at), {
     addSuffix: true,
     locale: hr,
   })
+
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus()
+      inputRef.current.select()
+    }
+  }, [isEditing])
+
+  const handleRename = async () => {
+    if (!title.trim()) {
+      setTitle(application.title || 'Novi zahtjev')
+      setIsEditing(false)
+      return
+    }
+
+    const supabase = createClient()
+
+    try {
+      const { error } = await supabase
+        .from('applications')
+        .update({ title: title.trim() })
+        .eq('id', application.id)
+
+      if (error) throw error
+
+      toast({
+        title: 'Uspješno preimenovano',
+        description: 'Naziv prijave je ažuriran.',
+      })
+
+      router.refresh()
+    } catch (error) {
+      console.error('Error renaming application:', error)
+      toast({
+        title: 'Greška',
+        description: 'Nije moguće preimenovati prijavu.',
+        variant: 'destructive',
+      })
+      setTitle(application.title || 'Novi zahtjev')
+    } finally {
+      setIsEditing(false)
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleRename()
+    } else if (e.key === 'Escape') {
+      setTitle(application.title || 'Novi zahtjev')
+      setIsEditing(false)
+    }
+  }
 
   const handleDelete = async () => {
     if (!confirm('Jeste li sigurni da želite izbrisati ovu prijavu?')) {
@@ -78,12 +133,29 @@ export function ApplicationCard({ application }: ApplicationCardProps) {
     <Card className="hover:shadow-lg transition-shadow">
       <CardHeader>
         <div className="flex items-start justify-between">
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-3 flex-1">
             <div className="p-2 bg-primary/10 rounded-lg">
               <FileText className="h-5 w-5 text-primary" />
             </div>
-            <div>
-              <CardTitle className="text-lg">{application.title || 'Novi zahtjev'}</CardTitle>
+            <div className="flex-1">
+              {isEditing ? (
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  onBlur={handleRename}
+                  onKeyDown={handleKeyDown}
+                  className="text-lg font-semibold bg-transparent border-b-2 border-primary focus:outline-none w-full"
+                />
+              ) : (
+                <CardTitle
+                  className="text-lg cursor-pointer hover:text-primary transition-colors"
+                  onClick={() => setIsEditing(true)}
+                >
+                  {title}
+                </CardTitle>
+              )}
               <CardDescription className="text-sm">{timeAgo}</CardDescription>
             </div>
           </div>
@@ -117,6 +189,12 @@ export function ApplicationCard({ application }: ApplicationCardProps) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              onClick={() => setIsEditing(true)}
+            >
+              <Edit2 className="h-4 w-4 mr-2" />
+              Preimenuj
+            </DropdownMenuItem>
             <DropdownMenuItem
               onClick={handleDelete}
               className="text-red-600 focus:text-red-600"

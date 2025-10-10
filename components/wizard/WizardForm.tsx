@@ -10,7 +10,7 @@ import { PreviewPanel } from './PreviewPanel'
 import { useToast } from '@/hooks/use-toast'
 import hzzStructure from '@/data/hzz-structure.json'
 import { ChevronLeft, ChevronRight, FileDown, PanelRightOpen, X } from 'lucide-react'
-import { jsPDF } from 'jspdf'
+import html2pdf from 'html2pdf.js'
 import {
   Sheet,
   SheetContent,
@@ -45,6 +45,7 @@ export function WizardForm({ applicationId, initialData = {} }: WizardFormProps)
   const [formData, setFormData] = useState<Record<string, any>>(initialData)
   const [isSaving, setIsSaving] = useState(false)
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false)
 
   const sections = hzzStructure.sections
 
@@ -98,6 +99,14 @@ export function WizardForm({ applicationId, initialData = {} }: WizardFormProps)
     return () => clearTimeout(timer)
   }, [formData])
 
+  // Scroll to top when section changes
+  useEffect(() => {
+    // Use setTimeout to ensure DOM has updated
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }, 50)
+  }, [currentSection])
+
   const handleSave = async () => {
     setIsSaving(true)
     const supabase = createClient()
@@ -144,74 +153,47 @@ export function WizardForm({ applicationId, initialData = {} }: WizardFormProps)
     }
   }
 
-  const handleExportPDF = () => {
-    const doc = new jsPDF()
-    let yPosition = 20
+  const handleExportPDF = async () => {
+    setIsGeneratingPDF(true)
 
-    // Add title
-    doc.setFontSize(18)
-    doc.text('HZZ Zahtjev za samozapošljavanje', 105, yPosition, { align: 'center' })
-    yPosition += 15
+    // Get the preview element
+    const previewElement = document.getElementById('pdf-preview-content')
 
-    // Add date
-    doc.setFontSize(10)
-    doc.text(`Datum: ${new Date().toLocaleDateString('hr-HR')}`, 20, yPosition)
-    yPosition += 15
+    if (!previewElement) {
+      toast({
+        title: 'Greška',
+        description: 'Molimo prvo otvorite pregled.',
+        variant: 'destructive',
+      })
+      setIsGeneratingPDF(false)
+      return
+    }
 
-    // Add sections
-    sections.forEach((section) => {
-      const sectionData = formData[section.key] || {}
-
-      // Section title
-      doc.setFontSize(14)
-      doc.setFont(undefined, 'bold')
-
-      // Check if we need a new page
-      if (yPosition > 270) {
-        doc.addPage()
-        yPosition = 20
+    try {
+      const opt = {
+        margin: [10, 10, 10, 10],
+        filename: `HZZ-Zahtjev-${new Date().toISOString().split('T')[0]}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
       }
 
-      doc.text(`${section.id}. ${section.title}`, 20, yPosition)
-      yPosition += 10
+      await html2pdf().set(opt).from(previewElement).save()
 
-      // Section fields
-      doc.setFontSize(10)
-      doc.setFont(undefined, 'normal')
-
-      section.fields.forEach((field) => {
-        const value = sectionData[field.key] || ''
-
-        if (value) {
-          // Check if we need a new page
-          if (yPosition > 270) {
-            doc.addPage()
-            yPosition = 20
-          }
-
-          // Field label
-          doc.setFont(undefined, 'bold')
-          doc.text(`${field.label}:`, 20, yPosition)
-          yPosition += 6
-
-          // Field value (handle long text)
-          doc.setFont(undefined, 'normal')
-          const splitText = doc.splitTextToSize(String(value), 170)
-          doc.text(splitText, 20, yPosition)
-          yPosition += (splitText.length * 5) + 5
-        }
+      toast({
+        title: 'PDF izvezen!',
+        description: 'Vaš zahtjev je spremljen kao PDF dokument.',
       })
-
-      yPosition += 5 // Space between sections
-    })
-
-    // Save the PDF
-    doc.save(`HZZ-Zahtjev-${new Date().toISOString().split('T')[0]}.pdf`)
-
-    toast({
-      title: 'PDF izvezen!',
-      description: 'Vaš zahtjev je spremljen kao PDF dokument.',
-    })
+    } catch (error) {
+      console.error('PDF generation error:', error)
+      toast({
+        title: 'Greška',
+        description: 'Nije moguće generirati PDF.',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsGeneratingPDF(false)
+    }
   }
 
   const currentSectionData = sections.find(s => s.key === currentSection)
@@ -253,26 +235,42 @@ export function WizardForm({ applicationId, initialData = {} }: WizardFormProps)
             </div>
             <div className="flex items-center space-x-4">
               {isSaving && <span className="text-sm text-gray-600">Spremanje...</span>}
-              <Button onClick={handleExportPDF} variant="default">
-                <FileDown className="h-4 w-4 mr-2" />
-                Izvezi PDF
-              </Button>
               <Sheet open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="outline">
+                  <Button variant="default">
                     <PanelRightOpen className="h-4 w-4 mr-2" />
-                    Pregled
+                    Pregled i PDF
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-[600px] sm:w-[600px] overflow-y-auto">
-                  <SheetHeader>
-                    <SheetTitle>Pregled zahtjeva</SheetTitle>
-                    <SheetDescription>
-                      Pregledajte sve unesene podatke
-                    </SheetDescription>
-                  </SheetHeader>
-                  <div className="mt-6">
-                    <PreviewPanel data={formData} />
+                <SheetContent side="right" className="w-full sm:max-w-full p-0 overflow-y-auto">
+                  <div className="sticky top-0 bg-white border-b z-10 px-8 py-4">
+                    <div className="flex items-center justify-between">
+                      <SheetHeader>
+                        <SheetTitle>Pregled zahtjeva</SheetTitle>
+                        <SheetDescription>
+                          Pregledajte sve unesene podatke prije preuzimanja PDF-a
+                        </SheetDescription>
+                      </SheetHeader>
+                      <div className="flex items-center gap-3">
+                        <Button
+                          onClick={handleExportPDF}
+                          disabled={isGeneratingPDF}
+                          variant="default"
+                        >
+                          <FileDown className="h-4 w-4 mr-2" />
+                          {isGeneratingPDF ? 'Generiram PDF...' : 'Preuzmi PDF'}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => setIsPreviewOpen(false)}
+                        >
+                          Natrag
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-8">
+                    <PreviewPanel data={formData} sections={sections} />
                   </div>
                 </SheetContent>
               </Sheet>
@@ -285,21 +283,18 @@ export function WizardForm({ applicationId, initialData = {} }: WizardFormProps)
       </div>
 
       {/* Sticky Navigation */}
-      <div className="bg-white border-b sticky top-[73px] z-10">
+      <div className="bg-white border-b sticky top-[73px] z-10 shadow-sm">
         <div className="container mx-auto px-4">
-          <div className="flex items-center gap-2 py-3 overflow-x-auto">
-            {sectionHierarchy.map((item) => {
+          <div className="flex items-center justify-center gap-2 py-3 overflow-x-auto">
+            {sectionHierarchy.map((item, idx) => {
               if ('subsections' in item) {
                 // This is a parent with subsections
                 const isActive = currentSectionData?.id.startsWith(item.parentKey + '.')
-                const subsectionKeys = item.subsections.map(s => s.key)
 
                 return (
                   <div key={item.parentKey} className="flex items-center gap-2">
-                    <div className="flex flex-col items-start">
-                      <span className="text-xs text-gray-500 mb-1">
-                        Sekcija {item.parentKey}
-                      </span>
+                    {isActive ? (
+                      // Show subsections when active
                       <div className="flex gap-1">
                         {item.subsections.map((subsection) => (
                           <Button
@@ -307,14 +302,31 @@ export function WizardForm({ applicationId, initialData = {} }: WizardFormProps)
                             variant={currentSection === subsection.key ? 'default' : 'outline'}
                             size="sm"
                             onClick={() => setCurrentSection(subsection.key)}
-                            className="h-8 min-w-[40px]"
+                            className="min-w-[50px] h-9 font-semibold rounded-md text-sm"
                           >
                             {subsection.id}
                           </Button>
                         ))}
                       </div>
-                    </div>
-                    <div className="h-8 w-px bg-gray-200 mx-2" />
+                    ) : (
+                      // Show parent button when not active
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          // Navigate to first subsection
+                          if (item.subsections.length > 0) {
+                            setCurrentSection(item.subsections[0].key)
+                          }
+                        }}
+                        className="min-w-[50px] h-9 font-semibold rounded-md text-sm"
+                      >
+                        {item.parentKey}
+                      </Button>
+                    )}
+                    {idx < sectionHierarchy.length - 1 && (
+                      <div className="h-9 w-px bg-gray-300" />
+                    )}
                   </div>
                 )
               } else {
@@ -326,11 +338,13 @@ export function WizardForm({ applicationId, initialData = {} }: WizardFormProps)
                       variant={currentSection === section.key ? 'default' : 'outline'}
                       size="sm"
                       onClick={() => setCurrentSection(section.key)}
-                      className="h-10 min-w-[60px]"
+                      className="min-w-[50px] h-9 font-semibold rounded-md text-sm"
                     >
                       {section.id}
                     </Button>
-                    <div className="h-8 w-px bg-gray-200 mx-2" />
+                    {idx < sectionHierarchy.length - 1 && (
+                      <div className="h-9 w-px bg-gray-300" />
+                    )}
                   </div>
                 )
               }
@@ -340,7 +354,7 @@ export function WizardForm({ applicationId, initialData = {} }: WizardFormProps)
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-6 pb-12">
         <div className="max-w-4xl mx-auto">
           <Card className="p-6">
             {currentSectionData && (
