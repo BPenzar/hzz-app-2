@@ -85,17 +85,20 @@ export async function POST(request: NextRequest) {
 
     console.log(`[AI Generate Intake] Starting generation for app_id: ${body.app_id}`)
 
-    // Read API key directly from .env.local (bypass shell environment)
-    const fs = require('fs')
-    const path = require('path')
-    const envPath = path.join(process.cwd(), '.env.local')
-    const envContent = fs.readFileSync(envPath, 'utf8')
-    const match = envContent.match(/OPENAI_API_KEY=(.+)/)
-    const apiKey = match ? match[1].trim() : process.env.OPENAI_API_KEY
+    // Get API key from environment variables
+    const apiKey = process.env.OPENAI_API_KEY
 
-    console.log(`[AI Generate Intake] Using API key, length: ${apiKey?.length}`)
+    if (!apiKey) {
+      console.error('[AI Generate Intake] OPENAI_API_KEY not found in environment')
+      return NextResponse.json(
+        { success: false, error: 'OpenAI API key not configured' },
+        { status: 500 }
+      )
+    }
 
-    // Initialize OpenAI client with API key from file
+    console.log(`[AI Generate Intake] Using API key, length: ${apiKey.length}`)
+
+    // Initialize OpenAI client
     const openai = new OpenAI({
       apiKey: apiKey,
     })
