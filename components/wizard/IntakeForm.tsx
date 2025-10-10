@@ -218,6 +218,7 @@ export function IntakeForm({ applicationId, onGenerate }: IntakeFormProps) {
       const { data: { user } } = await supabase.auth.getUser()
 
       if (user) {
+        // @ts-ignore - Supabase type generation issue
         await supabase
           .from('user_profiles')
           .update({
