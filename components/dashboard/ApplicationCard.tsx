@@ -62,7 +62,7 @@ export function ApplicationCard({ application }: ApplicationCardProps) {
     try {
       const { error } = await supabase
         .from('applications')
-        .update({ title: title.trim() })
+        .update({ title: title.trim() } as any)
         .eq('id', application.id)
 
       if (error) throw error
