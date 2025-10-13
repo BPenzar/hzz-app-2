@@ -364,6 +364,7 @@ export function WizardForm({ applicationId, initialData = {} }: WizardFormProps)
                 section={currentSectionData}
                 data={formData[currentSectionData.key] || {}}
                 onChange={(fieldKey, value) => handleFieldChange(currentSectionData.key, fieldKey, value)}
+                allData={formData}
               />
             )}
 

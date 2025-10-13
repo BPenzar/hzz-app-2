@@ -44,7 +44,7 @@
         { "key": "usavrsavanje", "label": "Osposobljavanje i usavršavanje", "type": "textarea", "required": false },
         { "key": "edukacije_za_vodenje", "label": "Završene edukacije za vođenje poslovanja", "type": "textarea", "required": false },
         { "key": "hobiji", "label": "Hobiji i drugi interesi", "type": "textarea", "required": false },
-        { "key": "radionica", "label": "Radionica za samozapošljavanje (datum i mjesto)", "type": "text", "required": false, "comment": "⚠️ VAŽNO: Navedite datum i mjesto radionice HZZ-a za samozapošljavanje - ovo daje 5 bodova! Trenutne radionice možete pronaći na: https://www.hzz.hr/default.aspx?id=10185" },
+        { "key": "radionica", "label": "Radionica za samozapošljavanje (datum i mjesto)", "type": "text", "required": false, "comment": "⚠️ VAŽNO: Navedite datum i mjesto radionice HZZ-a za samozapošljavanje - ovo daje 5 bodova! Trenutne radionice možete pronaći na: https://radionice.hzz.hr/" },
         { "key": "preth_poduzet_iskustvo_naslov", "label": "Prethodno poduzetničko iskustvo", "type": "comment", "required": false, "comment": "⚠️ Sljedeća polja (od 'Naziv poslovnog subjekta' do 'Razlog prestanka') popunjavaju SAMO osobe koje su prethodno imale registriran poslovni subjekt. Ako niste imali, preskočite ova polja." },
         { "key": "preth_poduzet_iskustvo", "label": "Naziv poslovnog subjekta", "type": "text", "required": false },
 
@@ -72,19 +72,21 @@
       "key": "2",
       "title": "Opći podaci o budućem poslovnom subjektu",
       "fields": [
-        { "key": "vrsta_subjekta", "label": "Vrsta poslovnog subjekta", "type": "radio", "required": true, "options": [
+        { "key": "vrsta_subjekta", "label": "Vrsta poslovnog subjekta", "type": "radio", "required": true, "comment": "Označite vrstu poslovnog subjekta koji planirate registrirati", "options": [
           { "value": "doo", "label": "d.o.o./j.d.o.o." },
           { "value": "obrt_pausalni", "label": "obrt s paušalnim oporezivanjem" },
           { "value": "obrt_knjige", "label": "obrt – poslovne knjige" },
           { "value": "samostalna", "label": "samostalna djelatnost" },
           { "value": "ostalo", "label": "ostalo" }
         ]},
-        { "key": "struktura_vlasnistva", "label": "Struktura vlasništva budućeg poslovnog subjekta", "type": "radio", "required": false, "options": [
+        { "key": "struktura_vlasnistva_radio", "label": "Struktura vlasništva budućeg poslovnog subjekta", "type": "radio", "required": false, "options": [
           { "value": "jedan_vlasnik", "label": "Jedan vlasnik" },
           { "value": "suvlasnistvo", "label": "Suvlasništvo" }
         ]},
+        { "key": "struktura_vlasnistva_tablica", "label": "Ukoliko imate suvlasnike, navedite ih u tablici:", "type": "table", "required": false, "tableType": "struktura_vlasnistva", "showTotal": false },
         { "key": "sjediste", "label": "Sjedište budućeg poslovnog subjekta (mjesto/grad)", "type": "text", "required": true },
-        { "key": "nkd", "label": "Unos djelatnosti prema NKD", "type": "textarea", "required": true },
+        { "key": "nkd", "label": "Unos djelatnosti prema NKD", "type": "textarea", "required": true, "comment": "Službeni popis svih djelatnosti možete vidjeti na: https://narodne-novine.nn.hr/clanci/sluzbeni/2024_04_47_800.html" },
+        { "key": "nkd_odabrani", "label": "Odabrani NKD-ovi", "type": "table", "required": false, "tableType": "nkd_lista", "showTotal": false },
         { "key": "iznos_trazene_potpore", "label": "Iznos tražene potpore (EUR)", "type": "number", "required": true }
       ]
     },
@@ -93,8 +95,8 @@
       "key": "3.1",
       "title": "Poslovni Plan - Podaci o budućem poduzetniku i poslovnom subjektu",
       "fields": [
-        { "key": "radno_iskustvo_ugovorom_o_radu", "label": "Navedite iskustvo (ugovor o radu)", "type": "textarea", "required": false },
-        { "key": "radno_iskustvo_ostalih_vrsta", "label": "Navedite iskustvo (ugovor o djelu/studentski/volontiranje...)", "type": "textarea", "required": false }
+        { "key": "radno_iskustvo_ugovorom_o_radu", "label": "Radno iskustvo temeljem ugovora o radu", "type": "table", "required": false, "tableType": "radno_iskustvo_ugovor", "showTotal": false },
+        { "key": "radno_iskustvo_ostalih_vrsta", "label": "Radno iskustvo temeljem drugih vrsta ugovora", "type": "table", "required": false, "tableType": "radno_iskustvo_ostalo", "showTotal": false }
       ]
     },
     {
@@ -126,21 +128,21 @@
       "key": "3.3",
       "title": "Poslovni Plan - Struktura ulaganja",
       "fields": [
-        { "key": "ulaganja_varijabilni_hzz", "label": "Obrazložite u što namjeravate uložiti varijabilni iznos sredstava HZZ-a", "type": "textarea", "required": true },
-        { "key": "ulaganja_iz_drugih_izvora", "label": "Navedite u što namjeravate uložiti sredstva iz drugih izvora financiranja", "type": "textarea", "required": false },
-        { "key": "prostor_i_dozvole", "label": "Podaci o Vašem poslovnom prostoru:", "type": "radio", "required": false, "options": [
+        { "key": "ulaganja_varijabilni_hzz", "label": "Obrazložite u što namjeravate uložiti varijabilni iznos sredstava HZZ-a neophodnih za obavljanje djelatnosti u prvoj godini poslovanja", "type": "textarea", "required": true },
+        { "key": "ulaganja_iz_drugih_izvora", "label": "Ulaganja sredstava iz drugih izvora financiranja", "type": "table", "required": false, "tableType": "ulaganja_drugi_izvori", "showTotal": false },
+        { "key": "prostor_i_dozvole", "label": "Poslovni prostor", "type": "radio", "required": false, "options": [
           { "value": "vlasnistvo", "label": "u vlasništvu" },
           { "value": "zakup", "label": "u zakupu" },
           { "value": "nije_potreban", "label": "nije potreban" }
         ]},
-        { "key": "grad_i_prostor_detalji", "label": "Navedite u kojem gradu/mjestu planirate registrirati sjedište budućeg poslovnog subjekta", "type": "textarea", "required": false },
-        { "key": "potrebne_dozvole", "label": "Jesu li za obavljanje Vaše djelatnosti potrebne određene dozvole, odobrenja, atesti?", "type": "radio", "required": false, "options": [
+        { "key": "grad_i_prostor_detalji", "label": "Navedite u kojem gradu/mjestu planirate registrirati sjedište budućeg poslovnog subjekta te na kojem području planirate obavljati djelatnost", "type": "textarea", "required": false },
+        { "key": "potrebne_dozvole", "label": "Jesu li za obavljanje Vaše djelatnosti potrebne određene dozvole, odobrenja, atesti ili zadovoljavanje minimalnih tehničkih uvjeta?", "type": "radio", "required": false, "options": [
           { "value": "da", "label": "Da" },
           { "value": "ne", "label": "Ne" }
         ]},
         { "key": "koje_potrebne_dozvole", "label": "Ako da, koje?", "type": "textarea", "required": false },
         { "key": "koje_potrebne_dozvole_potrebno_nabaviti", "label": "Navedite koja odobrenja, ateste, licence i sl. još morate ishoditi ili nabaviti.", "type": "textarea", "required": false },
-        { "key": "postojeca_oprema_i_prijevozna_sredstva", "label": "Navedite popis opreme i prijevoznih sredstava koje već posjedujete", "type": "textarea", "required": false }
+        { "key": "postojeca_oprema_i_prijevozna_sredstva", "label": "Popis postojeće opreme i prijevoznih sredstava", "type": "table", "required": false, "tableType": "postojeca_oprema", "showTotal": false }
       ]
     },
     {
@@ -195,7 +197,7 @@
       "fields": [
         {
           "key": "tablica_prihodi_god1_T2_1",
-          "label": "Tablica 2.1. - Procjena prihoda u prvoj godini poslovanja",
+          "label": "Procjena prihoda - Prva godina poslovanja",
           "type": "table",
           "required": true,
           "tableType": "prihodi",
@@ -203,7 +205,7 @@
         },
         {
           "key": "tablica_prihodi_god2_T2_2",
-          "label": "Tablica 2.2. - Procjena prihoda u drugoj godini poslovanja",
+          "label": "Procjena prihoda - Druga godina poslovanja",
           "type": "table",
           "required": true,
           "tableType": "prihodi",
@@ -218,7 +220,7 @@
       "fields": [
         {
           "key": "trosak_rada_god1_T3_1",
-          "label": "Tablica 3.1. - Trošak rada u prvoj godini poslovanja",
+          "label": "Trošak rada - Prva godina poslovanja",
           "type": "table",
           "required": true,
           "tableType": "trosak_rada",
@@ -226,7 +228,7 @@
         },
         {
           "key": "trosak_rada_god2_T3_2",
-          "label": "Tablica 3.2. - Trošak rada u drugoj godini poslovanja",
+          "label": "Trošak rada - Druga godina poslovanja",
           "type": "table",
           "required": true,
           "tableType": "trosak_rada",
@@ -234,7 +236,7 @@
         },
         {
           "key": "ostali_troskovi_god1_T4_1",
-          "label": "Tablica 4.1. - Ostali troškovi u prvoj godini poslovanja",
+          "label": "Ostali troškovi - Prva godina poslovanja",
           "type": "table",
           "required": true,
           "tableType": "ostali_troskovi",
@@ -242,7 +244,7 @@
         },
         {
           "key": "ostali_troskovi_god2_T4_2",
-          "label": "Tablica 4.2. - Ostali troškovi u drugoj godini poslovanja",
+          "label": "Ostali troškovi - Druga godina poslovanja",
           "type": "table",
           "required": true,
           "tableType": "ostali_troskovi",
@@ -255,9 +257,12 @@
       "key": "3.7",
       "title": "Poslovni Plan - Očekivana dobit/dohodak",
       "fields": [
-        { "key": "izracun_dobit_prve_i_druge_godine", "label": "Očekivanu dobit u prvoj i drugoj godini poslovanja", "type": "text", "required": true },
-        { "key": "ocekivana_neto_dobit_prva_godina", "label": "Očekivana neto dobit (zarada) u prvoj godini poslovanja iznosi u €", "type": "text", "required": true },
-        { "key": "ocekivana_neto_dobit_druga_godina", "label": "Očekivananeto dobit (zarada) u drugoj godini poslovanja iznosi u €", "type": "text", "required": true }
+        {
+          "key": "procjena_dobiti",
+          "label": "Procjena dobiti/dohotka",
+          "type": "profit_summary",
+          "required": false
+        }
       ]
     },
     {
@@ -267,7 +272,7 @@
       "fields": [
         {
           "key": "troskovnik",
-          "label": "Troškovnik",
+          "label": "Specifikacija troškova",
           "type": "table",
           "required": true,
           "tableType": "troskovnik",

@@ -91,6 +91,55 @@ const getTableConfig = (tableType: string) => {
         ],
       }
 
+    case 'struktura_vlasnistva':
+      return {
+        columns: [
+          { key: 'ime_prezime', label: 'Ime i prezime suvlasnika', type: 'text' as const },
+          { key: 'udio', label: 'Udio (%)', type: 'number' as const },
+        ],
+      }
+
+    case 'nkd_lista':
+      return {
+        columns: [
+          { key: 'nkd_kod', label: 'NKD kod', type: 'text' as const },
+          { key: 'naziv_djelatnosti', label: 'Naziv djelatnosti', type: 'text' as const },
+        ],
+      }
+
+    case 'radno_iskustvo_ugovor':
+      return {
+        columns: [
+          { key: 'razdoblje', label: 'Razdoblje zaposlenja', type: 'text' as const },
+          { key: 'poslodavac', label: 'Poslodavac', type: 'text' as const },
+          { key: 'zanimanje', label: 'Zanimanje - opis poslova', type: 'text' as const },
+        ],
+      }
+
+    case 'radno_iskustvo_ostalo':
+      return {
+        columns: [
+          { key: 'razdoblje', label: 'Razdoblje zaposlenja', type: 'text' as const },
+          { key: 'poslodavac', label: 'Poslodavac', type: 'text' as const },
+          { key: 'zanimanje', label: 'Zanimanje - opis poslova', type: 'text' as const },
+        ],
+      }
+
+    case 'ulaganja_drugi_izvori':
+      return {
+        columns: [
+          { key: 'vrsta_ulaganja', label: 'Vrsta ulaganja', type: 'text' as const },
+          { key: 'iznos', label: 'Iznos', type: 'number' as const },
+        ],
+      }
+
+    case 'postojeca_oprema':
+      return {
+        columns: [
+          { key: 'naziv', label: 'Postojeća oprema/prijevozna sredstva', type: 'text' as const },
+        ],
+      }
+
     case 'troskovnik':
       return {
         columns: [
@@ -116,6 +165,27 @@ const getTableConfig = (tableType: string) => {
           },
           { vrsta_troska: 'Kupnja ili zakup licenciranih IT programa', iznos: 0 },
           { vrsta_troska: 'Kupnja franšiza', iznos: 0 },
+        ],
+      }
+
+    case 'izracun_dobiti':
+      return {
+        columns: [
+          { key: 'godina', label: 'Godina', type: 'text' as const, editable: false },
+          { key: 'prihodi', label: 'Ukupni prihodi (€)', type: 'number' as const },
+          { key: 'troskovi', label: 'Ukupni troškovi (€)', type: 'number' as const },
+          {
+            key: 'dobit',
+            label: 'Očekivana dobit/dohodak (€)',
+            type: 'number' as const,
+            editable: false,
+            calculate: (row: any) =>
+              (parseFloat(row.prihodi) || 0) - (parseFloat(row.troskovi) || 0),
+          },
+        ],
+        initialRows: [
+          { godina: 'Prva godina poslovanja', prihodi: 0, troskovi: 0 },
+          { godina: 'Druga godina poslovanja', prihodi: 0, troskovi: 0 },
         ],
       }
 

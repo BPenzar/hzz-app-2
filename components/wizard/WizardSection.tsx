@@ -7,6 +7,7 @@ import { RadioField } from './fields/RadioField'
 import { SelectField } from './fields/SelectField'
 import { CheckboxField } from './fields/CheckboxField'
 import { TableField } from './fields/TableField'
+import { ProfitSummaryField } from './fields/ProfitSummaryField'
 import hzzQuestions from '@/data/hzz-questions.json'
 
 interface FieldOption {
@@ -36,9 +37,10 @@ interface WizardSectionProps {
   section: Section
   data: Record<string, any>
   onChange: (fieldKey: string, value: any) => void
+  allData?: Record<string, any>
 }
 
-export function WizardSection({ section, data, onChange }: WizardSectionProps) {
+export function WizardSection({ section, data, onChange, allData = {} }: WizardSectionProps) {
   const getQuestionText = (sectionKey: string, fieldKey: string): string => {
     const questions = hzzQuestions as Record<string, Record<string, string>>
     return questions[sectionKey]?.[fieldKey] || ''
@@ -50,15 +52,22 @@ export function WizardSection({ section, data, onChange }: WizardSectionProps) {
     switch (field.type) {
       case 'radio':
         return (
-          <RadioField
-            id={field.key}
-            label={field.label}
-            value={data[field.key] || ''}
-            onChange={(value) => onChange(field.key, value)}
-            options={field.options || []}
-            required={field.required}
-            helpText={helpText}
-          />
+          <div className="space-y-2">
+            {field.comment && (
+              <div className="bg-gray-50 border border-gray-300 rounded-md p-3 text-sm text-gray-700 mb-2">
+                {field.comment}
+              </div>
+            )}
+            <RadioField
+              id={field.key}
+              label={field.label}
+              value={data[field.key] || ''}
+              onChange={(value) => onChange(field.key, value)}
+              options={field.options || []}
+              required={field.required}
+              helpText={helpText}
+            />
+          </div>
         )
 
       case 'select':
@@ -128,6 +137,17 @@ export function WizardSection({ section, data, onChange }: WizardSectionProps) {
             required={field.required}
             helpText={helpText}
             showTotal={field.showTotal}
+          />
+        )
+
+      case 'profit_summary':
+        return (
+          <ProfitSummaryField
+            id={field.key}
+            label={field.label}
+            data={allData}
+            required={field.required}
+            helpText={helpText}
           />
         )
 
