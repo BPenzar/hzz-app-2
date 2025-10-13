@@ -3,9 +3,9 @@ export function Footer() {
     <footer className="border-t bg-gray-50 py-8 mt-auto">
       <div className="container mx-auto px-4 text-center text-gray-600">
         <p>
-          &copy; 2025 
+          &copy; 
           <a href="https://www.bsp-lab.dev/" target="_blank" rel="noopener noreferrer">
-            BSP Lab
+            2025 BSP Lab
           </a>
         </p>
       </div>
