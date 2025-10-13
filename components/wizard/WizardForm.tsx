@@ -10,7 +10,6 @@ import { PreviewPanel } from './PreviewPanel'
 import { useToast } from '@/hooks/use-toast'
 import hzzStructure from '@/data/hzz-structure.json'
 import { ChevronLeft, ChevronRight, FileDown, PanelRightOpen, X } from 'lucide-react'
-import html2pdf from 'html2pdf.js'
 import {
   Sheet,
   SheetContent,
@@ -170,6 +169,9 @@ export function WizardForm({ applicationId, initialData = {} }: WizardFormProps)
     }
 
     try {
+      // Dynamically import html2pdf only on client side
+      const html2pdf = (await import('html2pdf.js')).default
+
       const opt = {
         margin: [10, 10, 10, 10] as [number, number, number, number],
         filename: `HZZ-Zahtjev-${new Date().toISOString().split('T')[0]}.pdf`,
