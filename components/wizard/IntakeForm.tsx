@@ -406,9 +406,11 @@ export function IntakeForm({ applicationId, onGenerate }: IntakeFormProps) {
                     className="w-full border border-gray-300 rounded-md px-3 py-2"
                   >
                     <option value="">Odaberite...</option>
-                    <option value="obrt">Obrt</option>
-                    <option value="d.o.o.">d.o.o.</option>
-                    <option value="j.d.o.o.">j.d.o.o.</option>
+                    <option value="doo">d.o.o./j.d.o.o.</option>
+                    <option value="obrt_pausalni">obrt s paušalnim oporezivanjem</option>
+                    <option value="obrt_knjige">obrt – poslovne knjige</option>
+                    <option value="samostalna">samostalna djelatnost</option>
+                    <option value="ostalo">ostalo</option>
                   </select>
                 </div>
                 <div>

@@ -89,7 +89,6 @@ export function ProfitSummaryField({
     <div className="space-y-3">
       <Label htmlFor={id}>
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
       </Label>
 
       {helpText && <p className="text-sm text-gray-500">{helpText}</p>}

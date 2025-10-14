@@ -4,7 +4,12 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Plus, Trash2 } from 'lucide-react'
+import { Plus, Trash2, Info } from 'lucide-react'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import {
   Table,
   TableBody,
@@ -47,6 +52,20 @@ export function DynamicTable({
 }: DynamicTableProps) {
   // Ensure value is always an array
   const safeValue = Array.isArray(value) ? value : []
+
+  // Helper function to determine if helpText is useful
+  const isHelpTextUseful = (label: string, helpText: string): boolean => {
+    if (!helpText || helpText.trim() === '') return false
+
+    const normalizedLabel = label.toLowerCase().trim().replace(/[*:]/g, '').replace(/\(.*?\)/g, '')
+    const normalizedHelp = helpText.toLowerCase().trim()
+
+    return (
+      normalizedHelp.length > normalizedLabel.length + 5 &&
+      normalizedHelp !== normalizedLabel
+    )
+  }
+
   const addRow = () => {
     const newRow: Record<string, any> = {}
     columns.forEach((col) => {
@@ -84,14 +103,23 @@ export function DynamicTable({
     }, 0)
   }
 
+  const showTooltip = helpText && isHelpTextUseful(label, helpText || '')
+
   return (
     <div className="space-y-3">
-      <Label htmlFor={id}>
+      <Label htmlFor={id} className="flex items-center gap-1">
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {showTooltip && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className="h-4 w-4 text-gray-400 cursor-help inline-block" />
+            </TooltipTrigger>
+            <TooltipContent className="max-w-sm">
+              <p className="text-sm" dangerouslySetInnerHTML={{ __html: helpText }} />
+            </TooltipContent>
+          </Tooltip>
+        )}
       </Label>
-
-      {helpText && <p className="text-sm text-gray-500">{helpText}</p>}
 
       <div className="border rounded-md overflow-hidden">
         <Table>
@@ -172,11 +200,9 @@ export function DynamicTable({
       <Button
         type="button"
         onClick={addRow}
-        variant="outline"
         size="sm"
-        className="w-full"
+        className="bg-blue-600 hover:bg-blue-700 text-white"
       >
-        <Plus className="h-4 w-4 mr-2" />
         {addButtonText}
       </Button>
     </div>

@@ -94,8 +94,8 @@ const getTableConfig = (tableType: string) => {
     case 'struktura_vlasnistva':
       return {
         columns: [
-          { key: 'ime_prezime', label: 'Ime i prezime suvlasnika', type: 'text' as const },
-          { key: 'udio', label: 'Udio (%)', type: 'number' as const },
+          { key: 'ime_prezime', label: 'Ime i prezime', type: 'text' as const },
+          { key: 'udio', label: 'Postotak', type: 'number' as const },
         ],
       }
 
@@ -104,6 +104,13 @@ const getTableConfig = (tableType: string) => {
         columns: [
           { key: 'nkd_kod', label: 'NKD kod', type: 'text' as const },
           { key: 'naziv_djelatnosti', label: 'Naziv djelatnosti', type: 'text' as const },
+        ],
+      }
+
+    case 'nkd_lista_simple':
+      return {
+        columns: [
+          { key: 'nkd_djelatnost', label: 'NKD kod i naziv djelatnosti', type: 'text' as const },
         ],
       }
 
@@ -211,9 +218,23 @@ export function TableField({
 }: TableFieldProps) {
   const config = getTableConfig(tableType)
 
+  // Migrate string data to array format (for NKD field)
+  let migratedValue = value
+  if (typeof value === 'string' && value.trim() !== '') {
+    // Split by newlines and create array of objects
+    const lines = value.split('\n').filter(line => line.trim() !== '')
+    migratedValue = lines.map(line => ({
+      nkd_djelatnost: line.trim()
+    }))
+    // Trigger onChange to save migrated data
+    setTimeout(() => onChange(migratedValue), 0)
+  }
+
   // Initialize with default rows if provided and value is empty
   const initialValue =
-    !value || value.length === 0 ? config.initialRows || [] : value
+    !migratedValue || (Array.isArray(migratedValue) && migratedValue.length === 0)
+      ? config.initialRows || []
+      : migratedValue
 
   return (
     <DynamicTable

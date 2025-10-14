@@ -1,8 +1,73 @@
 'use client'
 
+import hzzStructure from '@/data/hzz-structure.json'
+
 interface PreviewPanelProps {
   data: Record<string, any>
   sections: any[]
+}
+
+// Helper function to get friendly label for radio/select options
+function getFriendlyLabel(field: any, value: string): string {
+  // Find the field definition in hzz-structure to get options
+  for (const section of hzzStructure.sections) {
+    const fieldDef = section.fields.find(f => f.key === field.key)
+    if (fieldDef && fieldDef.options) {
+      const option = fieldDef.options.find((opt: any) => opt.value === value)
+      if (option) return option.label
+    }
+  }
+  return value
+}
+
+// Helper function to format field value based on type
+function formatFieldValue(field: any, value: any): string | JSX.Element {
+  // Skip helper text and section labels (these are not data fields)
+  if (field.type === 'helper_text' || field.type === 'section_label') {
+    return ''
+  }
+
+  // Handle empty values
+  if (!value || (typeof value === 'string' && value.trim() === '')) {
+    return ''
+  }
+
+  // Handle arrays (tables)
+  if (Array.isArray(value)) {
+    // Empty array
+    if (value.length === 0) return ''
+
+    // Format as a table
+    return (
+      <div className="mt-1">
+        {value.map((row, idx) => {
+          // Get all non-empty values from the row
+          const entries = Object.entries(row).filter(([key, val]) => val && String(val).trim() !== '')
+
+          if (entries.length === 0) return null
+
+          return (
+            <div key={idx} className="mb-1 pl-3 text-sm">
+              {entries.map(([key, val], entryIdx) => (
+                <span key={key}>
+                  {String(val)}
+                  {entryIdx < entries.length - 1 ? ' - ' : ''}
+                </span>
+              ))}
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
+
+  // Handle radio buttons and selects - convert internal value to friendly label
+  if (field.type === 'radio' || field.type === 'select') {
+    return getFriendlyLabel(field, String(value))
+  }
+
+  // Handle regular text/textarea/date
+  return String(value)
 }
 
 export function PreviewPanel({ data, sections }: PreviewPanelProps) {
@@ -59,10 +124,18 @@ export function PreviewPanel({ data, sections }: PreviewPanelProps) {
               {/* Section Fields */}
               <div className="space-y-3 pl-3">
                 {section.fields.map((field: any) => {
+                  // Skip helper text and section labels
+                  if (field.type === 'helper_text' || field.type === 'section_label') {
+                    return null
+                  }
+
                   const value = sectionData[field.key]
+                  const formattedValue = formatFieldValue(field, value)
 
                   // Skip empty fields
-                  if (!value || String(value).trim() === '') return null
+                  if (!formattedValue || (typeof formattedValue === 'string' && formattedValue.trim() === '')) {
+                    return null
+                  }
 
                   return (
                     <div key={field.key} className="space-y-0.5 break-inside-avoid">
@@ -71,9 +144,15 @@ export function PreviewPanel({ data, sections }: PreviewPanelProps) {
                         {field.label}:
                       </p>
                       {/* Field Value */}
-                      <p className="text-sm text-gray-900 whitespace-pre-wrap leading-snug pl-3">
-                        {String(value)}
-                      </p>
+                      {typeof formattedValue === 'string' ? (
+                        <p className="text-sm text-gray-900 whitespace-pre-wrap leading-snug pl-3">
+                          {formattedValue}
+                        </p>
+                      ) : (
+                        <div className="text-sm text-gray-900 leading-snug">
+                          {formattedValue}
+                        </div>
+                      )}
                     </div>
                   )
                 })}

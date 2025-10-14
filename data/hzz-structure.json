@@ -5,7 +5,7 @@
       "key": "1",
       "title": "Podaci o podnositelju zahtjeva",
       "fields": [
-        { "key": "podrucni_ured", "label": "Odaberite nadležni područni ured...", "type": "select", "required": true, "options": [
+        { "key": "podrucni_ured", "label": "Odaberite nadležni područni ured", "type": "select", "required": true, "options": [
           { "value": "zagreb", "label": "Područna služba ZAGREB" },
           { "value": "osijek", "label": "Područna služba OSIJEK" },
           { "value": "rijeka", "label": "Područna služba RIJEKA" },
@@ -44,8 +44,8 @@
         { "key": "usavrsavanje", "label": "Osposobljavanje i usavršavanje", "type": "textarea", "required": false },
         { "key": "edukacije_za_vodenje", "label": "Završene edukacije za vođenje poslovanja", "type": "textarea", "required": false },
         { "key": "hobiji", "label": "Hobiji i drugi interesi", "type": "textarea", "required": false },
-        { "key": "radionica", "label": "Radionica za samozapošljavanje (datum i mjesto)", "type": "text", "required": false, "comment": "⚠️ VAŽNO: Navedite datum i mjesto radionice HZZ-a za samozapošljavanje - ovo daje 5 bodova! Trenutne radionice možete pronaći na: https://radionice.hzz.hr/" },
-        { "key": "preth_poduzet_iskustvo_naslov", "label": "Prethodno poduzetničko iskustvo", "type": "comment", "required": false, "comment": "⚠️ Sljedeća polja (od 'Naziv poslovnog subjekta' do 'Razlog prestanka') popunjavaju SAMO osobe koje su prethodno imale registriran poslovni subjekt. Ako niste imali, preskočite ova polja." },
+        { "key": "radionica", "label": "Radionica za samozapošljavanje (datum i mjesto)", "type": "text", "required": false },
+        { "key": "preth_poduzet_iskustvo_naslov", "label": "Prethodno poduzetničko iskustvo", "type": "section_label", "required": false },
         { "key": "preth_poduzet_iskustvo", "label": "Naziv poslovnog subjekta", "type": "text", "required": false },
 
         { "key": "oib_poslovnog_subjekta", "label": "OIB poslovnog subjekta", "type": "text", "required": false },
@@ -72,7 +72,7 @@
       "key": "2",
       "title": "Opći podaci o budućem poslovnom subjektu",
       "fields": [
-        { "key": "vrsta_subjekta", "label": "Vrsta poslovnog subjekta", "type": "radio", "required": true, "comment": "Označite vrstu poslovnog subjekta koji planirate registrirati", "options": [
+        { "key": "vrsta_subjekta", "label": "Vrsta poslovnog subjekta", "type": "radio", "required": true, "options": [
           { "value": "doo", "label": "d.o.o./j.d.o.o." },
           { "value": "obrt_pausalni", "label": "obrt s paušalnim oporezivanjem" },
           { "value": "obrt_knjige", "label": "obrt – poslovne knjige" },
@@ -81,12 +81,12 @@
         ]},
         { "key": "struktura_vlasnistva_radio", "label": "Struktura vlasništva budućeg poslovnog subjekta", "type": "radio", "required": false, "options": [
           { "value": "jedan_vlasnik", "label": "Jedan vlasnik" },
-          { "value": "suvlasnistvo", "label": "Suvlasništvo" }
+          { "value": "suvlasnistvo", "label": "Suvlasništvo: poslovni udjeli (u postocima):" }
         ]},
-        { "key": "struktura_vlasnistva_tablica", "label": "Ukoliko imate suvlasnike, navedite ih u tablici:", "type": "table", "required": false, "tableType": "struktura_vlasnistva", "showTotal": false },
+        { "key": "struktura_vlasnistva_helper", "label": "* Ukoliko ste odabrali suvlasništvo, unesite poslovne udjele u postocima.", "type": "helper_text", "required": false },
+        { "key": "struktura_vlasnistva_tablica", "label": "", "type": "table", "required": false, "tableType": "struktura_vlasnistva", "showTotal": false },
         { "key": "sjediste", "label": "Sjedište budućeg poslovnog subjekta (mjesto/grad)", "type": "text", "required": true },
-        { "key": "nkd", "label": "Unos djelatnosti prema NKD", "type": "textarea", "required": true, "comment": "Službeni popis svih djelatnosti možete vidjeti na: https://narodne-novine.nn.hr/clanci/sluzbeni/2024_04_47_800.html" },
-        { "key": "nkd_odabrani", "label": "Odabrani NKD-ovi", "type": "table", "required": false, "tableType": "nkd_lista", "showTotal": false },
+        { "key": "nkd", "label": "Unos djelatnosti prema NKD", "type": "table", "required": true, "tableType": "nkd_lista_simple", "showTotal": false },
         { "key": "iznos_trazene_potpore", "label": "Iznos tražene potpore (EUR)", "type": "number", "required": true }
       ]
     },

@@ -8,6 +8,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+import { Info } from 'lucide-react'
 
 interface SelectFieldProps {
   id: string
@@ -20,6 +26,19 @@ interface SelectFieldProps {
   placeholder?: string
 }
 
+// Helper function to determine if helpText is useful
+const isHelpTextUseful = (label: string, helpText: string): boolean => {
+  if (!helpText || helpText.trim() === '') return false
+
+  const normalizedLabel = label.toLowerCase().trim().replace(/[*:]/g, '')
+  const normalizedHelp = helpText.toLowerCase().trim()
+
+  return (
+    normalizedHelp.length > normalizedLabel.length + 20 &&
+    normalizedHelp !== normalizedLabel
+  )
+}
+
 export function SelectField({
   id,
   label,
@@ -30,14 +49,23 @@ export function SelectField({
   helpText,
   placeholder,
 }: SelectFieldProps) {
+  const showTooltip = helpText && isHelpTextUseful(label, helpText)
+
   return (
     <div className="space-y-2">
-      <Label htmlFor={id}>
+      <Label htmlFor={id} className="flex items-center gap-1">
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {showTooltip && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className="h-4 w-4 text-gray-400 cursor-help inline-block" />
+            </TooltipTrigger>
+            <TooltipContent className="max-w-sm">
+              <p className="text-sm">{helpText}</p>
+            </TooltipContent>
+          </Tooltip>
+        )}
       </Label>
-
-      {helpText && <p className="text-sm text-gray-500">{helpText}</p>}
 
       <Select value={value} onValueChange={onChange}>
         <SelectTrigger id={id}>
