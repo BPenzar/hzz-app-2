@@ -9,7 +9,7 @@ import { WizardSection } from './WizardSection'
 import { PreviewPanel } from './PreviewPanel'
 import { useToast } from '@/hooks/use-toast'
 import hzzStructure from '@/data/hzz-structure.json'
-import { ChevronLeft, ChevronRight, FileDown, PanelRightOpen, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight, FileDown, PanelRightOpen, X, AlertTriangle, CheckCircle } from 'lucide-react'
 import {
   Sheet,
   SheetContent,
@@ -273,6 +273,27 @@ export function WizardForm({ applicationId, initialData = {} }: WizardFormProps)
   }
 
   const parentInfo = getCurrentParentInfo()
+
+  // Calculate totals for HZZ compliance validation
+  const calculateTroskovnikTotal = (): number => {
+    const troskovnikData = formData['4']?.troskovnik
+    if (!Array.isArray(troskovnikData)) return 0
+
+    return troskovnikData.reduce((sum, row) => {
+      const iznos = parseFloat(row.iznos) || 0
+      return sum + iznos
+    }, 0)
+  }
+
+  const getIznosTrazenePotrope = (): number => {
+    const section2Data = formData['2']?.iznos_trazene_potpore
+    return parseFloat(section2Data) || 0
+  }
+
+  const troskovnikTotal = calculateTroskovnikTotal()
+  const iznosTrazene = getIznosTrazenePotrope()
+  const totalsMatch = Math.abs(troskovnikTotal - iznosTrazene) < 0.01 // Allow for small rounding differences
+  const bothAmountsExist = troskovnikTotal > 0 && iznosTrazene > 0
 
   return (
     <div className="min-h-screen bg-gray-50">

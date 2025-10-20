@@ -62,32 +62,164 @@ Guidelines for Section 2:
 - Leave other Section 2 fields EMPTY (vrsta_subjekta, struktura_vlasnistva_radio, sjediste, iznos_trazene_potpore)
 - The user will fill these fields manually as only they know this information
 
-Guidelines for Sections 3-5:
-- For missing details, make reasonable assumptions based on the business type
-- Use realistic Croatian market data (costs, salaries, prices)
-- Follow Croatian business regulations and practices
-- Create detailed financial projections (2 years)
-- Generate realistic cost breakdowns
-- Infer required permits/licenses based on the business type
-- Create competitive analysis based on the industry
-- Generate realistic revenue projections
-- Fill ALL business fields with relevant, specific content
+DETAILED SECTION-BY-SECTION GUIDELINES:
+
+Section 3.1 - Personal Data:
+- Generate realistic work experience entries with specific companies, positions, and timeframes
+- Include both employment and freelance experience relevant to the business idea
+- Use Croatian company names and industries where appropriate
+- Show career progression and relevant skills
+
+Section 3.2 - Business Subject:
+- Write VERY detailed business motivation (400-500 words) with:
+  * Personal journey and specific experiences that led to this business idea
+  * Concrete examples from previous work with measurable results (percentages, savings, improvements)
+  * Connection between past experience and future business opportunity
+  * Professional qualifications and certifications relevant to the business
+  * Specific market gaps identified through real interactions or research
+- Provide extremely detailed product/service descriptions (300-400 words) including:
+  * Specific features and benefits with examples
+  * Step-by-step process descriptions
+  * Concrete deliverables and outcomes for clients
+  * Implementation methodology and tools used
+  * Geographic scope and delivery methods
+
+Section 3.3 - Investment Structure:
+- Write VERY detailed explanations (200-300 words) for HZZ fund usage with:
+  * Specific equipment names, models, and exact prices
+  * Clear justification for why each item is essential for the business
+  * Technical specifications relevant to the business operations
+  * Expected ROI or productivity gains from each investment
+- Include realistic investment sources (personal savings, loans, family support)
+- Consider business location needs realistically - for digital businesses use "nije_potreban", for retail/services use "zakup" or "vlasnistvo"
+- Provide detailed city/region operational descriptions (200+ words) including:
+  * Specific areas of operation and target markets
+  * Physical space requirements and solutions
+  * Online vs offline service delivery methods
+  * Scalability plans for geographic expansion
+- Detail existing equipment with realistic brands and specifications
+
+Section 3.4 - Market Analysis:
+- Write detailed target customer analysis (250-300 words) including:
+  * Specific customer segments with company sizes, industries, and demographics
+  * Geographic distribution and market size estimates
+  * Customer pain points and purchasing behavior
+  * Seasonal factors and business cycles affecting demand
+- Provide thorough market demand validation (200-250 words) with:
+  * Evidence of market research conducted (conversations, surveys, observations)
+  * Specific examples of customer interest or demand
+  * Market trends and growth projections with sources
+  * Quantified market opportunity assessments
+- Write comprehensive competitor analysis (300-400 words) covering:
+  * 3-4 specific competitor categories with named examples where possible
+  * Detailed analysis of each competitor's strengths and weaknesses
+  * Market share estimates and positioning
+  * Pricing comparisons and service gaps
+  * Clear differentiation strategy with concrete competitive advantages
+- Describe detailed differentiation strategy (200-300 words) with:
+  * Specific activities and approaches that set the business apart
+  * Concrete examples of how services/products differ
+  * Unique value propositions with measurable benefits
+  * Implementation steps for competitive advantage
+
+Section 3.5 & 3.6 - Financial Projections - BE CONSERVATIVE AND REALISTIC:
+CRITICAL: New businesses rarely achieve high profits in year 1. Target net profit of 10,000-25,000€ maximum for first year.
+
+Revenue Guidelines (be conservative):
+- Price services at Croatian market rates (not premium pricing)
+- Assume slow customer acquisition: 1-3 clients per month in year 1
+- Average project values: 300-1,500€ for small businesses
+- Total year 1 revenue should be 15,000-35,000€ maximum
+- Year 2 can grow 30-50% if year 1 is successful
+
+Cost Guidelines (be comprehensive):
+- Include ALL real costs: insurance (300-500€/month), utilities, software subscriptions
+- Marketing budget: 200-500€/month for new business
+- Professional services (accounting, legal): 150-300€/month
+- Equipment depreciation and maintenance costs
+- Personal living costs if this is primary income source
+- Realistic salary levels: 800-1000€ monthly for employees if hired
+
+Target Financial Outcomes:
+- Year 1 net profit: 8,000-20,000€ (this is realistic for a successful new business)
+- Year 2 net profit: 15,000-35,000€ (with established client base)
+- Profit margins: 25-40% are realistic for service businesses
+- Never exceed 50% profit margin unless heavily justified
+
+⚠️ CRITICAL FINANCIAL REALITY CHECK:
+- If calculated net profit exceeds 30,000€ in year 1, REDUCE revenue or INCREASE costs
+- New businesses in Croatia typically struggle to break even in year 1
+- Be pessimistic rather than optimistic - underestimate revenue, overestimate costs
+- Better to exceed conservative projections than fail to meet optimistic ones
+
+CRITICAL PROFESSIONAL STANDARDS:
+- Write as if you are an experienced Croatian business consultant with 15+ years of experience
+- Use specific numbers, percentages, and market data relevant to Croatian economy
+- Reference actual Croatian business conditions (startup costs, market sizes, growth rates)
+- Demonstrate understanding of local competition and market dynamics
+- Provide actionable implementation steps with realistic timelines
+- Show awareness of seasonal factors, economic conditions, and industry trends
+- Use professional business language throughout
+- Support all claims with logical reasoning
+
+CROATIAN MARKET CONTEXT (use these realistic parameters):
+- Average gross salary in Croatia: €1,100-1,300 monthly (varies by sector)
+- Minimum wage: €633 monthly gross
+- Corporate tax rate: 20% (10% for small businesses under certain conditions)
+- VAT rate: 25% (13% for certain services)
+- Typical business insurance costs: €200-500 monthly
+- Office rent in Zagreb: €8-15/sqm, other cities: €4-10/sqm
+- Marketing budgets: typically 3-8% of revenue
+- Croatian market size references: Zagreb (800k population), Split (170k), Rijeka (130k), Osijek (100k)
+- Seasonal considerations: summer tourism boost, winter retail peak, agricultural cycles
+- Digital adoption rates: 75% internet penetration, growing e-commerce sector
+- EU market access advantages for export-oriented businesses
+
+CONTENT EXAMPLES FOR QUALITY REFERENCE:
+- Competitor analysis: "Glavni konkurenti uključuju XY d.o.o. (tržišni udjel 25%, fokus na korporativne klijente) i ABC obrt (lokalni lider s 15 godina iskustva). Naša konkurentska prednost leži u..."
+- Market sizing: "Procjenjujemo da lokalno tržište u Zagrebu vrijedi €2.1M godišnje, s godišnjom stopom rasta od 8%. Naš cilj je osvajanje 3% tržišnog udjela u prvoj godini..."
+- Implementation timeline: "Mjesec 1-2: Registracija i nabava opreme, Mjesec 3-4: Pilot program s 5 klijenata, Mjesec 5-6: Puno lansiranje i marketing kampanja..."
+- Customer segments: "Primarni segment: mikro poduzeća 5-20 zaposlenika u IT sektoru (procjenjeno 350 tvrtki u Zagrebu), sekundarni segment: freelanceri i konsultanti..."
 
 IMPORTANT - Radio/Select/Checkbox Values:
 - For radio buttons and select fields, use the EXACT lowercase value keys (e.g., "da" not "Da", "ne" not "Ne")
 - For checkbox arrays, use lowercase value keys (e.g., ["posjetnice", "drustvene_mreze"])
 - NEVER use label text as values - always use the value keys from the options
 
-CRITICAL - Table Field Structure:
-- For table fields, return arrays of objects with correct column keys:
-- prihodi tables: [{"naziv": "...", "cijena": 0, "broj_prodaja": 0, "mjesecni_prihod": 0, "godisnji_prihod": 0}]
-- trosak_rada tables: [{"vrsta": "...", "mjesecni_iznos": 0, "godisnji_iznos": 0}]
-- ostali_troskovi tables: [{"naziv": "...", "mjesecni_iznos": 0, "godisnji_iznos": 0}]
-- troskovnik tables: [{"vrsta_troska": "...", "iznos": 0}]
-- radno_iskustvo tables: [{"razdoblje": "...", "poslodavac": "...", "zanimanje": "..."}]
-- postojeca_oprema tables: [{"naziv": "..."}]
-- ulaganja_drugi_izvori tables: [{"vrsta_ulaganja": "...", "iznos": 0}]
+CRITICAL - ALWAYS FILL THESE RADIO BUTTON FIELDS:
+- "prostor_i_dozvole": "vlasnistvo", "zakup", or "nije_potreban" (based on business type)
+- "dogovorena_suradnja": "da" or "ne_zasad" (most new businesses: "ne_zasad")
+- "dogovorena_suradnja_pisani_dokaz": "da" or "ne_zasad" (follow dogovorena_suradnja)
+- "znate_gdje_nabaviti_opremu": "da" (most businesses should know suppliers)
+- "moguce_nabaviti_opremu_u_hrvatskoj": "rh" or "inozemstvo" (prefer "rh" unless specific reason)
+
+CRITICAL - Table Field Structure (use exact column keys):
+- prihodi tables: [{"naziv": "Naziv proizvoda/usluge", "cijena": 100, "broj_prodaja": 50, "mjesecni_prihod": 5000, "godisnji_prihod": 60000}]
+  (mjesecni_prihod = cijena * broj_prodaja, godisnji_prihod = mjesecni_prihod * 12)
+- trosak_rada tables: MUST include BOTH rows:
+  [{"vrsta": "Bruto plaća ili doprinosi za obrtnike / RPO", "mjesecni_iznos": AMOUNT, "godisnji_iznos": AMOUNT*12},
+   {"vrsta": "Bruto plaća za zaposlenike", "mjesecni_iznos": AMOUNT, "godisnji_iznos": AMOUNT*12}]
+- ostali_troskovi tables: [{"naziv": "Marketing", "mjesecni_iznos": 500, "godisnji_iznos": 6000}]
+  (godisnji_iznos = mjesecni_iznos * 12)
+- radno_iskustvo_ugovor tables: [{"razdoblje": "2020-2023", "poslodavac": "Tvrtka d.o.o.", "zanimanje": "Opis poslova"}]
+- radno_iskustvo_ostalo tables: [{"razdoblje": "2018-2020", "poslodavac": "Freelance", "zanimanje": "Opis poslova"}]
+- ulaganja_drugi_izvori tables: [{"vrsta_ulaganja": "Osobni kapital", "iznos": 10000}]
+- postojeca_oprema tables: [{"naziv": "Osobni automobil"}]
+- troskovnik tables: MUST include ALL 6 categories exactly as shown:
+  [{"vrsta_troska": "Fiksni iznos potpore", "iznos": 5000},
+   {"vrsta_troska": "Kupnja nove opreme neophodne za obavljanje djelatnosti - alati/strojevi/tehnika", "iznos": AMOUNT},
+   {"vrsta_troska": "Kupnja nove opreme neophodne za obavljanje djelatnosti - informatička oprema", "iznos": AMOUNT},
+   {"vrsta_troska": "Kupnja nove opreme neophodne za obavljanje djelatnosti - ostala oprema", "iznos": AMOUNT},
+   {"vrsta_troska": "Kupnja ili zakup licenciranih IT programa", "iznos": AMOUNT},
+   {"vrsta_troska": "Kupnja franšiza", "iznos": AMOUNT}]
 - NEVER return string values for table fields - always use array of objects with these exact keys
+
+CRITICAL - HZZ COMPLIANCE REQUIREMENT:
+- Section 4 "Troškovnik" total must match the requested amount from intake data
+- The sum of all "iznos" values in the troskovnik table MUST EQUAL the "iznos_trazene_potpore" amount
+- Use the fixed troskovnik categories and distribute the total amount across them logically
+- Ensure "Fiksni iznos potpore" is always 5000€, distribute remaining amount across other categories
+- Example: If requested amount is 25000€, troskovnik should total exactly 25000€ (5000€ fixed + 20000€ distributed)
 
 JSON Structure:
 - Each section is a key (e.g., "2", "3.1", "3.2", etc.)
@@ -247,8 +379,8 @@ Generate the complete application now.`,
           },
         ],
         response_format: { type: 'json_object' },
-        temperature: 0.7,
-        max_tokens: 8000,
+        temperature: 0.5,
+        max_tokens: 16000,
       })
 
       const latency = Date.now() - startTime
@@ -320,7 +452,7 @@ Generate the complete application now.`,
         section.fields.forEach((field) => {
           if (field.type === 'table') {
             const value = sectionData[field.key]
-            const tableType = field.tableType || 'default'
+            const tableType = (field as any).tableType || 'default'
 
             console.log(`[AI Parser] Processing table field "${field.key}" (type: ${tableType}), value:`, value)
 
@@ -584,14 +716,15 @@ Generate the complete application now.`,
           }
 
           // Only process fields with options (radio, select, checkbox)
-          if (!field.options || field.options.length === 0) return
+          const fieldOptions = (field as any).options
+          if (!fieldOptions || fieldOptions.length === 0) return
 
           // Handle checkbox (array of values)
           if (field.type === 'checkbox') {
             if (Array.isArray(currentValue)) {
               sectionData[field.key] = currentValue.map((val: string) => {
                 // Check if val matches a label instead of a value
-                const matchingOption = field.options?.find((opt: any) =>
+                const matchingOption = fieldOptions?.find((opt: any) =>
                   opt.label.toLowerCase() === val.toLowerCase()
                 )
                 return matchingOption ? matchingOption.value : val
@@ -602,14 +735,14 @@ Generate the complete application now.`,
           else if (field.type === 'radio' || field.type === 'select') {
             if (typeof currentValue === 'string') {
               // First check if currentValue is already a valid option value
-              const validValue = field.options?.find((opt: any) => opt.value === currentValue)
+              const validValue = fieldOptions?.find((opt: any) => opt.value === currentValue)
               if (validValue) {
                 // Already correct, do nothing
                 return
               }
 
               // Check if currentValue matches a label instead of a value
-              const matchingOption = field.options?.find((opt: any) =>
+              const matchingOption = fieldOptions?.find((opt: any) =>
                 opt.label.toLowerCase() === currentValue.toLowerCase()
               )
               if (matchingOption) {
@@ -621,14 +754,14 @@ Generate the complete application now.`,
               const lowerValue = currentValue.toLowerCase().trim()
 
               // For yes/no questions, map various responses to "da" or "ne"
-              if (field.options?.some((opt: any) => opt.value === 'da' || opt.value === 'ne')) {
+              if (fieldOptions?.some((opt: any) => opt.value === 'da' || opt.value === 'ne')) {
                 if (['da', 'yes', 'y', '1', 'true', 'potvrdan'].includes(lowerValue)) {
                   sectionData[field.key] = 'da'
                 } else if (['ne', 'no', 'n', '0', 'false', 'negativan'].includes(lowerValue)) {
                   sectionData[field.key] = 'ne'
                 } else if (['ne_mogu_procijeniti', 'ne mogu procijeniti', 'unclear', 'unknown'].includes(lowerValue)) {
                   // Check if this is a valid option for this field
-                  const cannotEstimate = field.options?.find((opt: any) => opt.value === 'ne_mogu_procijeniti')
+                  const cannotEstimate = fieldOptions?.find((opt: any) => opt.value === 'ne_mogu_procijeniti')
                   if (cannotEstimate) {
                     sectionData[field.key] = 'ne_mogu_procijeniti'
                   }
@@ -636,7 +769,7 @@ Generate the complete application now.`,
               }
 
               // If still no match found, clear the field (better than invalid value)
-              if (!field.options?.find((opt: any) => opt.value === sectionData[field.key])) {
+              if (!fieldOptions?.find((opt: any) => opt.value === sectionData[field.key])) {
                 console.warn(`[AI Generate] Invalid value "${currentValue}" for field ${field.key}, clearing field`)
                 sectionData[field.key] = ''
               }

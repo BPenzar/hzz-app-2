@@ -10,7 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { Info } from 'lucide-react'
+import { Info, AlertTriangle, CheckCircle } from 'lucide-react'
 import { RadioField } from './fields/RadioField'
 import { SelectField } from './fields/SelectField'
 import { CheckboxField } from './fields/CheckboxField'
@@ -330,10 +330,68 @@ export function WizardSection({ section, data, onChange, allData = {} }: WizardS
     }
   }
 
+  // HZZ Compliance calculations for Section 4
+  const renderHZZComplianceIndicator = () => {
+    if (section.key !== '4') return null
+
+    const calculateTroskovnikTotal = (): number => {
+      const troskovnikData = data.troskovnik
+      if (!Array.isArray(troskovnikData)) return 0
+
+      return troskovnikData.reduce((sum, row) => {
+        const iznos = parseFloat(row.iznos) || 0
+        return sum + iznos
+      }, 0)
+    }
+
+    const getIznosTrazenePotrope = (): number => {
+      const section2Data = allData['2']?.iznos_trazene_potpore
+      return parseFloat(section2Data) || 0
+    }
+
+    const troskovnikTotal = calculateTroskovnikTotal()
+    const iznosTrazene = getIznosTrazenePotrope()
+    const totalsMatch = Math.abs(troskovnikTotal - iznosTrazene) < 0.01 // Allow for small rounding differences
+    const bothAmountsExist = troskovnikTotal > 0 && iznosTrazene > 0
+
+    if (!bothAmountsExist) return null
+
+    return (
+      <div className={`flex items-center gap-2 px-4 py-3 rounded-md text-sm mb-4 ${
+        totalsMatch
+          ? 'bg-green-100 text-green-800 border border-green-200'
+          : 'bg-amber-100 text-amber-800 border border-amber-200'
+      }`}>
+        {totalsMatch ? (
+          <>
+            <CheckCircle className="h-5 w-5" />
+            <div>
+              <span className="font-semibold">HZZ usklađenost ✓</span>
+              <div className="text-xs text-green-700">
+                Sekcija 2 ({iznosTrazene.toFixed(2)}€) = Sekcija 4 ({troskovnikTotal.toFixed(2)}€)
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <AlertTriangle className="h-5 w-5" />
+            <div>
+              <span className="font-semibold">Neusklađenost ukupnih iznosa</span>
+              <div className="text-xs text-amber-700">
+                Sekcija 2: {iznosTrazene.toFixed(2)}€ ≠ Sekcija 4: {troskovnikTotal.toFixed(2)}€
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    )
+  }
+
   return (
     <TooltipProvider>
       <div className="space-y-6">
         <h2 className="text-2xl font-bold mb-6">{section.title}</h2>
+        {renderHZZComplianceIndicator()}
 
         {section.fields.map((field) => {
           // Add separator before certain fields

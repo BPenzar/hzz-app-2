@@ -150,11 +150,11 @@ const getTableConfig = (tableType: string) => {
     case 'troskovnik':
       return {
         columns: [
-          { key: 'vrsta_troska', label: 'Vrsta troška', type: 'text' as const },
+          { key: 'vrsta_troska', label: 'Vrsta troška', type: 'text' as const, editable: false },
           { key: 'iznos', label: 'Iznos bez PDV-a', type: 'number' as const },
         ],
         initialRows: [
-          { vrsta_troska: 'Fiksni iznos potpore', iznos: 5000, editable: false },
+          { vrsta_troska: 'Fiksni iznos potpore', iznos: 5000 },
           {
             vrsta_troska:
               'Kupnja nove opreme neophodne za obavljanje djelatnosti - alati/strojevi/tehnika',

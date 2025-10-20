@@ -477,7 +477,7 @@ export function IntakeForm({ applicationId, onGenerate }: IntakeFormProps) {
           </Button>
           {isGenerating ? (
             <p className="text-sm text-gray-500 text-center animate-pulse">
-              AI generira vaš zahtjev... Ovo može potrajati 30-60 sekundi.
+              AI generira vaš zahtjev... Ovo može potrajati 1-3 minute.
             </p>
           ) : (
             <p className="text-sm text-gray-500 text-center">
