@@ -157,9 +157,10 @@ Infer and expand on all business details that would be necessary for a comprehen
       // Skip section 1 (personal data)
       if (section.key === '1') return
 
-      const sectionFields: Record<string, string> = {}
+      const sectionFields: Record<string, any> = {}
       section.fields.forEach((field) => {
-        sectionFields[field.key] = '' // Empty string as placeholder
+        // Use empty array for table fields, empty string for others
+        sectionFields[field.key] = field.type === 'table' ? [] : ''
       })
       sectionTemplate[section.key] = sectionFields
     })
@@ -290,6 +291,40 @@ Generate the complete application now.`,
           return item
         })
       }
+
+      // Normalize ALL table fields in generated content to ensure they are arrays
+      hzzStructure.sections.forEach((section) => {
+        if (section.key === '1' || section.key === '2') return // Skip sections 1 and 2 (handled separately)
+
+        const sectionData = generatedContent[section.key]
+        if (!sectionData) return
+
+        section.fields.forEach((field) => {
+          if (field.type === 'table') {
+            const value = sectionData[field.key]
+
+            // Ensure table fields are arrays
+            if (!Array.isArray(value)) {
+              if (value && typeof value === 'object') {
+                // Convert single object to array
+                sectionData[field.key] = [value]
+              } else if (typeof value === 'string' && value.trim()) {
+                // Try to parse string as JSON array
+                try {
+                  const parsed = JSON.parse(value)
+                  sectionData[field.key] = Array.isArray(parsed) ? parsed : [parsed]
+                } catch {
+                  // If not JSON, create empty array
+                  sectionData[field.key] = []
+                }
+              } else {
+                // Empty or invalid value, use empty array
+                sectionData[field.key] = []
+              }
+            }
+          }
+        })
+      })
 
       // Merge Section 2: Use pre-populated data + AI-generated NKD
       const mergedSection2 = {
