@@ -71,6 +71,13 @@ export function ApplicationWorkflow({
             .match({ app_id: applicationId, code: sectionKey })
         }
 
+        // Update application status to 'valid' after AI generation
+        await supabase
+          .from('applications')
+          // @ts-expect-error - Supabase type inference issue
+          .update({ status: 'valid' })
+          .eq('id', applicationId)
+
         setFormData(result.data)
         setMode('edit')
 

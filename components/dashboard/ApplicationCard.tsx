@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { Card, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { StatusBadge } from './StatusBadge'
-import { FileText, MoreVertical, Trash2, Edit2 } from 'lucide-react'
+import { MoreVertical, Trash2, Edit2 } from 'lucide-react'
 import { formatDistanceToNow, format } from 'date-fns'
 import { hr } from 'date-fns/locale'
 import {
@@ -132,9 +132,6 @@ export function ApplicationCard({ application }: ApplicationCardProps) {
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-3 flex-1">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              <FileText className="h-5 w-5 text-primary" />
-            </div>
             <div className="flex-1">
               {isEditing ? (
                 <input

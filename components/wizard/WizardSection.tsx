@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
@@ -52,6 +53,37 @@ export function WizardSection({ section, data, onChange, allData = {} }: WizardS
     const questions = hzzQuestions as Record<string, Record<string, string>>
     return questions[sectionKey]?.[fieldKey] || ''
   }
+
+  // Auto-update pravni_oblik_i_djelatnost when section 2 data changes
+  useEffect(() => {
+    if (section.key === '3.2') {
+      const vrstaSubjekta = allData?.['2']?.vrsta_subjekta || ''
+      const nkdArray = allData?.['2']?.nkd || []
+      const firstNkd = Array.isArray(nkdArray) && nkdArray.length > 0
+        ? nkdArray[0]?.nkd_djelatnost || ''
+        : ''
+
+      if (vrstaSubjekta || firstNkd) {
+        const vrstaSubjektaLabels: Record<string, string> = {
+          'doo': 'd.o.o./j.d.o.o.',
+          'obrt_pausalni': 'obrt s paušalnim oporezivanjem',
+          'obrt_knjige': 'obrt – poslovne knjige',
+          'samostalna': 'samostalna djelatnost',
+          'ostalo': 'ostalo'
+        }
+
+        const vrstaLabel = vrstaSubjektaLabels[vrstaSubjekta] || vrstaSubjekta
+        const autoValue = vrstaLabel && firstNkd
+          ? `${vrstaLabel} - ${firstNkd}`
+          : vrstaLabel || firstNkd || ''
+
+        // Only update if different from current value
+        if (autoValue && data.pravni_oblik_i_djelatnost !== autoValue) {
+          onChange('pravni_oblik_i_djelatnost', autoValue)
+        }
+      }
+    }
+  }, [section.key, allData, data.pravni_oblik_i_djelatnost, onChange])
 
   // Helper function to determine if helpText is useful (not just a duplicate of the label)
   const isHelpTextUseful = (label: string, helpText: string): boolean => {
@@ -233,6 +265,55 @@ export function WizardSection({ section, data, onChange, allData = {} }: WizardS
 
       default:
         // text, email, tel, date, number, etc.
+
+        // Special handling for pravni_oblik_i_djelatnost field
+        // Auto-populate with vrsta_subjekta + first NKD from section 2
+        if (field.key === 'pravni_oblik_i_djelatnost') {
+          const vrstaSubjekta = allData?.['2']?.vrsta_subjekta || ''
+          const nkdArray = allData?.['2']?.nkd || []
+          const firstNkd = Array.isArray(nkdArray) && nkdArray.length > 0
+            ? nkdArray[0]?.nkd_djelatnost || ''
+            : ''
+
+          // Map internal value to label
+          const vrstaSubjektaLabels: Record<string, string> = {
+            'doo': 'd.o.o./j.d.o.o.',
+            'obrt_pausalni': 'obrt s paušalnim oporezivanjem',
+            'obrt_knjige': 'obrt – poslovne knjige',
+            'samostalna': 'samostalna djelatnost',
+            'ostalo': 'ostalo'
+          }
+
+          const vrstaLabel = vrstaSubjektaLabels[vrstaSubjekta] || vrstaSubjekta
+          const autoValue = vrstaLabel && firstNkd
+            ? `${vrstaLabel} - ${firstNkd}`
+            : vrstaLabel || firstNkd || ''
+
+          return (
+            <div className="space-y-2">
+              <LabelWithTooltip
+                htmlFor={field.key}
+                label={field.label}
+                required={field.required}
+                helpText={helpText}
+              />
+              <Input
+                id={field.key}
+                type={field.type}
+                value={autoValue}
+                onChange={(e) => onChange(field.key, e.target.value)}
+                placeholder={field.label}
+                required={field.required}
+                readOnly
+                className="bg-gray-50 cursor-not-allowed"
+              />
+              <p className="text-xs text-gray-500">
+                * Automatski popunjeno na temelju odabira vrste subjekta i NKD djelatnosti u sekciji 2
+              </p>
+            </div>
+          )
+        }
+
         return (
           <div className="space-y-2">
             <LabelWithTooltip

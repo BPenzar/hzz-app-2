@@ -106,9 +106,19 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Initialize OpenAI client
+    // Debug: Check API key length and content (don't log the full key for security)
+    console.log(`[AI Generate Intake] API key length: ${apiKey.length} characters`)
+    console.log(`[AI Generate Intake] API key starts with: ${apiKey.substring(0, 20)}...`)
+    console.log(`[AI Generate Intake] API key ends with: ...${apiKey.substring(apiKey.length - 20)}`)
+    console.log(`[AI Generate Intake] First 50 chars hex:`, Buffer.from(apiKey.substring(0, 50)).toString('hex'))
+
+    // Check for invisible characters or encoding issues
+    const hasWeirdChars = /[\x00-\x1F\x7F-\x9F]/.test(apiKey)
+    console.log(`[AI Generate Intake] Has control characters: ${hasWeirdChars}`)
+
+    // Initialize OpenAI client - DO NOT TRIM, use as-is
     const openai = new OpenAI({
-      apiKey: apiKey.trim(),
+      apiKey: apiKey,
     })
 
     // Build comprehensive prompt from intake data (NO personal info for AI)
