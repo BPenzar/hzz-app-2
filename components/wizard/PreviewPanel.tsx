@@ -1,21 +1,8 @@
 'use client'
 
 import hzzStructure from '@/data/hzz-structure.json'
-
-const TABLE_COLUMN_ORDER: Record<string, string[]> = {
-  prihodi: ['naziv', 'cijena', 'broj_prodaja', 'mjesecni_prihod', 'godisnji_prihod'],
-  trosak_rada: ['vrsta', 'mjesecni_iznos', 'godisnji_iznos'],
-  ostali_troskovi: ['naziv', 'mjesecni_iznos', 'godisnji_iznos'],
-  struktura_vlasnistva: ['ime_prezime', 'udio'],
-  nkd_lista: ['nkd_kod', 'naziv_djelatnosti'],
-  nkd_lista_simple: ['nkd_djelatnost'],
-  radno_iskustvo_ugovor: ['razdoblje', 'poslodavac', 'zanimanje'],
-  radno_iskustvo_ostalo: ['razdoblje', 'poslodavac', 'zanimanje'],
-  ulaganja_drugi_izvori: ['vrsta_ulaganja', 'iznos'],
-  postojeca_oprema: ['naziv'],
-  troskovnik: ['vrsta_troska', 'iznos'],
-  izracun_dobiti: ['godina', 'prihodi', 'troskovi', 'dobit']
-}
+import { TABLE_COLUMN_LABELS, resolveTableColumns } from '@/lib/hzz/tableSchema'
+import type { Json } from '@/types/supabase'
 
 interface PreviewPanelProps {
   data: Record<string, any>
@@ -202,53 +189,10 @@ function formatFieldValue(field: any, value: any, allData?: Record<string, any>)
     const firstRow = value[0]
     if (!firstRow || typeof firstRow !== 'object') return ''
 
-    const rawColumns = Object.keys(firstRow)
-    const columnsWithData = rawColumns.filter(key => {
-      // Check if any row has a non-empty value for this key
-      return value.some(row => row[key] && String(row[key]).trim() !== '')
-    })
-
-    if (columnsWithData.length === 0) return ''
-
     const tableType = (field as any).tableType || 'default'
-    const orderedColumns = TABLE_COLUMN_ORDER[tableType]
+    const columns = resolveTableColumns(tableType, value as Json[])
 
-    let columns = columnsWithData
-
-    if (orderedColumns && orderedColumns.length > 0) {
-      const dataColumnSet = new Set(columnsWithData)
-      columns = [
-        ...orderedColumns.filter(col => dataColumnSet.has(col)),
-        ...columnsWithData.filter(col => !orderedColumns.includes(col)),
-      ]
-    }
-
-    // Create column labels mapping
-    const columnLabels: Record<string, string> = {
-      'naziv': 'Naziv',
-      'godina': 'Godina',
-      'cijena': 'Cijena',
-      'broj_prodaja': 'Broj prodaja',
-      'mjesecni_prihod': 'Mjesečni prihod',
-      'godisnji_prihod': 'Godišnji prihod',
-      'vrsta': 'Vrsta',
-      'mjesecni_iznos': 'Mjesečni iznos',
-      'godisnji_iznos': 'Godišnji iznos',
-      'vrsta_troska': 'Vrsta troška',
-      'iznos': 'Iznos',
-      'prihodi': 'Ukupni prihodi (€)',
-      'troskovi': 'Ukupni troškovi (€)',
-      'dobit': 'Očekivana dobit (€)',
-      'razdoblje': 'Razdoblje',
-      'poslodavac': 'Poslodavac',
-      'zanimanje': 'Zanimanje',
-      'vrsta_ulaganja': 'Vrsta ulaganja',
-      'ime_prezime': 'Ime i prezime',
-      'udio': 'Udio (%)',
-      'nkd_kod': 'NKD kod',
-      'naziv_djelatnosti': 'Naziv djelatnosti',
-      'nkd_djelatnost': 'NKD kod i naziv djelatnosti'
-    }
+    if (columns.length === 0) return ''
 
     // Format as a proper table
     return (
@@ -258,7 +202,7 @@ function formatFieldValue(field: any, value: any, allData?: Record<string, any>)
             <tr>
               {columns.map(col => (
                 <th key={col}>
-                  {columnLabels[col] || col}
+                  {TABLE_COLUMN_LABELS[col] || col}
                 </th>
               ))}
             </tr>

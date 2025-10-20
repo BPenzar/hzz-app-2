@@ -1,7 +1,7 @@
 'use client'
 
 import { ApplicationCard } from './ApplicationCard'
-import { Database } from '@/types/supabase'
+import type { Database } from '@/types/supabase'
 
 type Application = Database['public']['Tables']['applications']['Row']
 

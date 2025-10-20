@@ -7,6 +7,7 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { createClient } from '@/lib/supabase/client'
 import { useToast } from '@/hooks/use-toast'
+import type { Database, Json } from '@/types/supabase'
 
 interface ApplicationWorkflowProps {
   applicationId: string
@@ -48,11 +49,19 @@ export function ApplicationWorkflow({
         }),
       })
 
-      if (!response.ok) {
-        throw new Error('Generation failed')
-      }
-
       const result = await response.json()
+
+      if (!response.ok || !result.success) {
+        const errorMessage =
+          result?.error || 'Generiranje nije uspjelo. Pokušajte ponovno.'
+        const issues = Array.isArray(result?.issues) ? result.issues : []
+        const fullMessage =
+          issues.length > 0 ? `${errorMessage} (${issues.join(' | ')})` : errorMessage
+
+        const error = new Error(fullMessage)
+        ;(error as any).issues = issues
+        throw error
+      }
 
       if (result.success) {
         // Save generated data to Supabase
@@ -60,21 +69,23 @@ export function ApplicationWorkflow({
 
         // Update sections with generated data
         for (const [sectionKey, sectionData] of Object.entries(result.data)) {
+          const payload: Database['public']['Tables']['sections']['Insert'] = {
+            app_id: applicationId,
+            code: sectionKey,
+            data_json: sectionData as unknown as Json,
+            status: 'draft',
+          }
+
           await supabase
             .from('sections')
-            .upsert({
-              app_id: applicationId,
-              code: sectionKey,
-              data_json: sectionData,
-              status: 'draft',
-            } as any)
-            .match({ app_id: applicationId, code: sectionKey })
+            .upsert(payload, {
+              onConflict: 'app_id,code',
+            })
         }
 
         // Update application status to 'valid' after AI generation
         await supabase
           .from('applications')
-          // @ts-expect-error - Supabase type inference issue
           .update({ status: 'valid' })
           .eq('id', applicationId)
 

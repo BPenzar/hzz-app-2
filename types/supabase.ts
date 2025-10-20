@@ -1,10 +1,8 @@
 /**
  * Supabase Database Types
  *
- * Generate these types by running:
- * npx supabase gen types typescript --project-id <your-project-id> > types/supabase.ts
- *
- * For now, this is a placeholder. Update after Supabase project is linked.
+ * Regenerate with:
+ * npx supabase gen types typescript --project-id <project-ref> > types/supabase.ts
  */
 
 export type Json =
@@ -21,69 +19,80 @@ export interface Database {
       user_profiles: {
         Row: {
           id: string
-          created_at: string
-          email: string
-          name: string | null
-          phone: string | null
+          role: 'applicant' | 'consultant' | 'admin'
           cv_parsed: Json | null
-          eligibility_status: string | null
+          eligibility_status: 'eligible' | 'ineligible' | 'skipped' | null
+          created_at: string
+          updated_at: string
+          ime: string | null
+          prezime: string | null
+          oib: string | null
+          kontakt_email: string | null
+          kontakt_tel: string | null
         }
         Insert: {
           id: string
-          created_at?: string
-          email: string
-          name?: string | null
-          phone?: string | null
+          role?: 'applicant' | 'consultant' | 'admin'
           cv_parsed?: Json | null
-          eligibility_status?: string | null
+          eligibility_status?: 'eligible' | 'ineligible' | 'skipped' | null
+          created_at?: string
+          updated_at?: string
+          ime?: string | null
+          prezime?: string | null
+          oib?: string | null
+          kontakt_email?: string | null
+          kontakt_tel?: string | null
         }
         Update: {
           id?: string
-          created_at?: string
-          email?: string
-          name?: string | null
-          phone?: string | null
+          role?: 'applicant' | 'consultant' | 'admin'
           cv_parsed?: Json | null
-          eligibility_status?: string | null
+          eligibility_status?: 'eligible' | 'ineligible' | 'skipped' | null
+          created_at?: string
+          updated_at?: string
+          ime?: string | null
+          prezime?: string | null
+          oib?: string | null
+          kontakt_email?: string | null
+          kontakt_tel?: string | null
         }
+        Relationships: []
       }
       applications: {
         Row: {
           id: string
           user_id: string
+          client_id: string | null
+          title: string
+          status: 'draft' | 'valid' | 'submitted' | 'archived'
+          subject_type: 'samozaposleni' | 'pausalni_obrt' | 'obrt_sa_zaposlenima' | 'jdoo' | null
+          total_amount: number | null
           created_at: string
           updated_at: string
-          status: string
-          subject_type: string | null
-          title: string | null
-          business_idea: string | null
-          total_costs: number | null
-          generated_data: Json | null
         }
         Insert: {
           id?: string
           user_id: string
+          client_id?: string | null
+          title?: string
+          status?: 'draft' | 'valid' | 'submitted' | 'archived'
+          subject_type?: 'samozaposleni' | 'pausalni_obrt' | 'obrt_sa_zaposlenima' | 'jdoo' | null
+          total_amount?: number | null
           created_at?: string
           updated_at?: string
-          status?: string
-          subject_type?: string | null
-          title?: string | null
-          business_idea?: string | null
-          total_costs?: number | null
-          generated_data?: Json | null
         }
         Update: {
           id?: string
           user_id?: string
+          client_id?: string | null
+          title?: string
+          status?: 'draft' | 'valid' | 'submitted' | 'archived'
+          subject_type?: 'samozaposleni' | 'pausalni_obrt' | 'obrt_sa_zaposlenima' | 'jdoo' | null
+          total_amount?: number | null
           created_at?: string
           updated_at?: string
-          status?: string
-          subject_type?: string | null
-          title?: string | null
-          business_idea?: string | null
-          total_costs?: number | null
-          generated_data?: Json | null
         }
+        Relationships: []
       }
       sections: {
         Row: {
@@ -91,28 +100,26 @@ export interface Database {
           app_id: string
           code: string
           data_json: Json
-          status: string
+          status: 'draft' | 'missing' | 'valid'
           updated_at: string
-          created_at?: string | null
         }
         Insert: {
           id?: string
           app_id: string
           code: string
           data_json?: Json
-          status?: string
+          status?: 'draft' | 'missing' | 'valid'
           updated_at?: string
-          created_at?: string | null
         }
         Update: {
           id?: string
           app_id?: string
           code?: string
           data_json?: Json
-          status?: string
+          status?: 'draft' | 'missing' | 'valid'
           updated_at?: string
-          created_at?: string | null
         }
+        Relationships: []
       }
       costs: {
         Row: {
@@ -121,6 +128,8 @@ export interface Database {
           category: string
           description: string
           amount: number
+          type: 'fiksni' | 'varijabilni' | null
+          is_allowed: boolean
           created_at: string
         }
         Insert: {
@@ -129,6 +138,8 @@ export interface Database {
           category: string
           description: string
           amount: number
+          type?: 'fiksni' | 'varijabilni' | null
+          is_allowed?: boolean
           created_at?: string
         }
         Update: {
@@ -137,121 +148,139 @@ export interface Database {
           category?: string
           description?: string
           amount?: number
+          type?: 'fiksni' | 'varijabilni' | null
+          is_allowed?: boolean
           created_at?: string
         }
+        Relationships: []
       }
       generated_documents: {
         Row: {
           id: string
           app_id: string
-          file_path: string
-          file_size_kb: number
+          type: 'pdf' | 'zip' | 'docx'
+          storage_url: string
+          validation_status: 'complete' | 'incomplete' | null
+          file_size_kb: number | null
           created_at: string
         }
         Insert: {
           id?: string
           app_id: string
-          file_path: string
-          file_size_kb: number
+          type?: 'pdf' | 'zip' | 'docx'
+          storage_url: string
+          validation_status?: 'complete' | 'incomplete' | null
+          file_size_kb?: number | null
           created_at?: string
         }
         Update: {
           id?: string
           app_id?: string
-          file_path?: string
-          file_size_kb?: number
+          type?: 'pdf' | 'zip' | 'docx'
+          storage_url?: string
+          validation_status?: 'complete' | 'incomplete' | null
+          file_size_kb?: number | null
           created_at?: string
         }
+        Relationships: []
       }
       hzz_rules: {
         Row: {
           id: string
+          source_url: string | null
+          rules_json: Json
           version: string
-          allowed_costs: string[]
-          disallowed_costs: string[]
-          max_amounts: Json
-          active: boolean
-          created_at: string
+          fetched_at: string
         }
         Insert: {
           id?: string
+          source_url?: string | null
+          rules_json: Json
           version: string
-          allowed_costs: string[]
-          disallowed_costs: string[]
-          max_amounts: Json
-          active?: boolean
-          created_at?: string
+          fetched_at?: string
         }
         Update: {
           id?: string
+          source_url?: string | null
+          rules_json?: Json
           version?: string
-          allowed_costs?: string[]
-          disallowed_costs?: string[]
-          max_amounts?: Json
-          active?: boolean
-          created_at?: string
+          fetched_at?: string
         }
+        Relationships: []
       }
       deadlines: {
         Row: {
           id: string
-          submission_start: string
-          submission_end: string
-          year: number
+          label: string
+          date: string
+          category: 'submission' | 'decision' | 'payment' | null
+          source_url: string | null
           created_at: string
         }
         Insert: {
           id?: string
-          submission_start: string
-          submission_end: string
-          year: number
+          label: string
+          date: string
+          category?: 'submission' | 'decision' | 'payment' | null
+          source_url?: string | null
           created_at?: string
         }
         Update: {
           id?: string
-          submission_start?: string
-          submission_end?: string
-          year?: number
+          label?: string
+          date?: string
+          category?: 'submission' | 'decision' | 'payment' | null
+          source_url?: string | null
           created_at?: string
         }
+        Relationships: []
       }
       audits: {
         Row: {
           id: string
-          user_id: string
-          action: string
-          resource_type: string
-          resource_id: string
+          actor_id: string | null
+          entity: 'application' | 'section' | 'document' | 'user' | 'cost'
+          entity_id: string
+          action: 'create' | 'update' | 'delete' | 'generate' | 'export' | 'view'
           metadata: Json | null
           created_at: string
         }
         Insert: {
           id?: string
-          user_id: string
-          action: string
-          resource_type: string
-          resource_id: string
+          actor_id?: string | null
+          entity: 'application' | 'section' | 'document' | 'user' | 'cost'
+          entity_id: string
+          action: 'create' | 'update' | 'delete' | 'generate' | 'export' | 'view'
           metadata?: Json | null
           created_at?: string
         }
         Update: {
           id?: string
-          user_id?: string
-          action?: string
-          resource_type?: string
-          resource_id?: string
+          actor_id?: string | null
+          entity?: 'application' | 'section' | 'document' | 'user' | 'cost'
+          entity_id?: string
+          action?: 'create' | 'update' | 'delete' | 'generate' | 'export' | 'view'
           metadata?: Json | null
           created_at?: string
         }
+        Relationships: []
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      calculate_total_costs: {
+        Args: {
+          app_id_param: string
+        }
+        Returns: number
+      }
     }
     Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
       [_ in never]: never
     }
   }

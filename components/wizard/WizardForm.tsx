@@ -9,7 +9,8 @@ import { WizardSection } from './WizardSection'
 import { PreviewPanel } from './PreviewPanel'
 import { useToast } from '@/hooks/use-toast'
 import hzzStructure from '@/data/hzz-structure.json'
-import { ChevronLeft, ChevronRight, FileDown, PanelRightOpen, X, AlertTriangle, CheckCircle } from 'lucide-react'
+import type { Database, Json } from '@/types/supabase'
+import { ChevronLeft, ChevronRight, FileDown, PanelRightOpen, Printer, X, AlertTriangle, CheckCircle } from 'lucide-react'
 import {
   Sheet,
   SheetContent,
@@ -114,16 +115,17 @@ export function WizardForm({ applicationId, initialData = {} }: WizardFormProps)
     try {
       // Save to sections table
       for (const section of sections) {
-        const sectionData = formData[section.key] || {}
+        const sectionData = (formData[section.key] ?? {}) as Json
+        const payload: Database['public']['Tables']['sections']['Insert'] = {
+          app_id: applicationId,
+          code: section.key,
+          data_json: sectionData,
+          status: 'draft',
+        }
 
         const { error } = await supabase
           .from('sections')
-          .upsert({
-            app_id: applicationId,
-            code: section.key,
-            data_json: sectionData,
-            status: 'draft',
-          } as any, {
+          .upsert(payload, {
             onConflict: 'app_id,code'
           })
 
@@ -148,16 +150,17 @@ export function WizardForm({ applicationId, initialData = {} }: WizardFormProps)
     try {
       // Save to sections table
       for (const section of sections) {
-        const sectionData = formData[section.key] || {}
+        const sectionData = (formData[section.key] ?? {}) as Json
+        const payload: Database['public']['Tables']['sections']['Insert'] = {
+          app_id: applicationId,
+          code: section.key,
+          data_json: sectionData,
+          status: 'draft',
+        }
 
         const { error } = await supabase
           .from('sections')
-          .upsert({
-            app_id: applicationId,
-            code: section.key,
-            data_json: sectionData,
-            status: 'draft',
-          } as any, {
+          .upsert(payload, {
             onConflict: 'app_id,code'
           })
 
@@ -210,7 +213,6 @@ export function WizardForm({ applicationId, initialData = {} }: WizardFormProps)
   const handleExportPDF = async () => {
     setIsGeneratingPDF(true)
 
-    // Get the preview element
     const previewElement = document.getElementById('pdf-preview-content')
 
     if (!previewElement) {
@@ -224,28 +226,47 @@ export function WizardForm({ applicationId, initialData = {} }: WizardFormProps)
     }
 
     try {
-      // Dynamically import html2pdf only on client side
-      const html2pdf = (await import('html2pdf.js')).default
+      const printWindow = window.open('', '_blank', 'width=900,height=600')
 
-      const opt = {
-        margin: [10, 10, 10, 10] as [number, number, number, number],
-        filename: `HZZ-Zahtjev-${new Date().toISOString().split('T')[0]}.pdf`,
-        image: { type: 'jpeg' as const, quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, letterRendering: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const }
+      if (!printWindow) {
+        throw new Error('Blokiran je skočni prozor. Dopustite otvaranje prozora i pokušajte ponovno.')
       }
 
-      await html2pdf().set(opt).from(previewElement).save()
+      const html = `
+        <html>
+          <head>
+            ${document.head.innerHTML}
+            <style>
+              body {
+                margin: 0;
+                font-family: Inter, sans-serif;
+              }
+              #print-root {
+                padding: 32px;
+              }
+            </style>
+          </head>
+          <body>
+            <div id="print-root">${previewElement.outerHTML}</div>
+          </body>
+        </html>
+      `
 
-      toast({
-        title: 'PDF izvezen!',
-        description: 'Vaš zahtjev je spremljen kao PDF dokument.',
-      })
+      printWindow.document.open()
+      printWindow.document.write(html)
+      printWindow.document.close()
+
+      printWindow.onload = () => {
+        printWindow.focus()
+        printWindow.print()
+        printWindow.close()
+      }
     } catch (error) {
       console.error('PDF generation error:', error)
       toast({
         title: 'Greška',
-        description: 'Nije moguće generirati PDF.',
+        description:
+          error instanceof Error ? error.message : 'Nije moguće kreirati PDF.',
         variant: 'destructive',
       })
     } finally {

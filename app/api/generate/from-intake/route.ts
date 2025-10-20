@@ -1,6 +1,7 @@
 import { OpenAI } from 'openai'
 import { NextRequest, NextResponse } from 'next/server'
 import hzzStructure from '@/data/hzz-structure.json'
+import { validateGeneratedSections } from '@/lib/validation/hzz'
 
 // Types
 interface IntakeData {
@@ -39,6 +40,7 @@ interface GenerateResponse {
   success: boolean
   data?: Record<string, any>
   error?: string
+  issues?: string[]
 }
 
 // Enhanced system prompt for intake-based generation
@@ -778,10 +780,35 @@ Generate the complete application now.`,
         })
       })
 
+      const validationResult = validateGeneratedSections(generatedContent)
+
+      if (!validationResult.success) {
+        console.warn(
+          '[AI Validation] Generated data failed schema validation:',
+          validationResult.issues
+        )
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'AI generirani podaci nisu prošli validaciju. Pokušajte ponovno.',
+            issues: validationResult.issues,
+          } as GenerateResponse,
+          { status: 422 }
+        )
+      }
+
+      const sanitizedSections = validationResult.data
+
       // Merge Section 2: Use pre-populated data + AI-generated NKD
+      const sanitizedSection2 = sanitizedSections['2'] || {}
+      const nkdFromAI =
+        Array.isArray((sanitizedSection2 as Record<string, unknown>).nkd) &&
+        (sanitizedSection2 as Record<string, any>).nkd
+          ? (sanitizedSection2 as Record<string, any>).nkd
+          : nkdData
       const mergedSection2 = {
         ...section2Data,
-        nkd: nkdData,
+        nkd: nkdFromAI,
       }
 
       // Add Section 1 and 2 with pre-populated data, plus AI-generated sections 3-5
@@ -789,7 +816,7 @@ Generate the complete application now.`,
         '1': section1Data,
         '2': mergedSection2,
         ...Object.fromEntries(
-          Object.entries(generatedContent).filter(([key]) => key !== '2')
+          Object.entries(sanitizedSections).filter(([key]) => key !== '2')
         ),
       }
 

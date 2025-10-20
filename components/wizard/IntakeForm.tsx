@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Sparkles, ArrowLeft, Save, Loader2 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { createClient } from '@/lib/supabase/client'
+import type { Database, Json } from '@/types/supabase'
 
 interface IntakeFormProps {
   applicationId: string
@@ -41,6 +42,26 @@ export interface IntakeData {
 
   // Additional context
   dodatne_informacije?: string
+
+  [key: string]: string | undefined
+}
+
+const isIntakeData = (value: Json): value is IntakeData => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return false
+  }
+
+  const record = value as Record<string, unknown>
+
+  return (
+    typeof record.ime === 'string' &&
+    typeof record.prezime === 'string' &&
+    typeof record.poslovna_ideja === 'string' &&
+    typeof record.vrsta_djelatnosti === 'string' &&
+    typeof record.vrsta_subjekta === 'string' &&
+    typeof record.lokacija === 'string' &&
+    typeof record.iznos_trazene_potpore === 'string'
+  )
 }
 
 export function IntakeForm({ applicationId, onGenerate }: IntakeFormProps) {
@@ -67,7 +88,6 @@ export function IntakeForm({ applicationId, onGenerate }: IntakeFormProps) {
       const supabase = createClient()
 
       // First, try to load from saved intake section
-      // @ts-ignore - Supabase type inference issue (data_json field)
       const { data: sectionData, error: sectionError } = await supabase
         .from('sections')
         .select('data_json')
@@ -76,19 +96,15 @@ export function IntakeForm({ applicationId, onGenerate }: IntakeFormProps) {
         .single()
 
       // If we have saved intake data, use it (this is the priority!)
-      // @ts-ignore - Supabase type inference issue (data_json field)
-      if (sectionData?.data_json && !sectionError) {
-        // @ts-ignore - Supabase type inference issue (data_json field)
+      if (sectionData?.data_json && !sectionError && isIntakeData(sectionData.data_json)) {
         console.log('Loading saved intake data:', sectionData.data_json)
-        // @ts-ignore - Supabase type inference issue (data_json field)
-        setFormData(sectionData.data_json as IntakeData)
+        setFormData(sectionData.data_json)
       } else {
         // Only if NO saved intake exists, pre-fill basic info from user profile
         console.log('No saved intake, loading from user_profiles')
         const { data: { user } } = await supabase.auth.getUser()
 
         if (user) {
-          // @ts-ignore - Supabase type inference issue (custom fields)
           const { data: profileData } = await supabase
             .from('user_profiles')
             .select('ime, prezime, oib, kontakt_email, kontakt_tel')
@@ -97,19 +113,13 @@ export function IntakeForm({ applicationId, onGenerate }: IntakeFormProps) {
 
           if (profileData) {
             console.log('Pre-filling from user_profiles:', profileData)
-            // @ts-ignore - Supabase type inference issue (custom fields)
             setFormData((prev) => ({
               ...prev,
-              // @ts-ignore - Supabase type inference issue (custom fields)
-              ime: profileData.ime || '',
-              // @ts-ignore - Supabase type inference issue (custom fields)
-              prezime: profileData.prezime || '',
-              // @ts-ignore - Supabase type inference issue (custom fields)
-              oib: profileData.oib || '',
-              // @ts-ignore - Supabase type inference issue (custom fields)
-              kontakt_email: profileData.kontakt_email || '',
-              // @ts-ignore - Supabase type inference issue (custom fields)
-              kontakt_tel: profileData.kontakt_tel || '',
+              ime: profileData.ime ?? '',
+              prezime: profileData.prezime ?? '',
+              oib: profileData.oib ?? '',
+              kontakt_email: profileData.kontakt_email ?? '',
+              kontakt_tel: profileData.kontakt_tel ?? '',
             }))
           }
         }
@@ -127,16 +137,17 @@ export function IntakeForm({ applicationId, onGenerate }: IntakeFormProps) {
         setIsSaving(true)
         const supabase = createClient()
 
+        const payload: Database['public']['Tables']['sections']['Insert'] = {
+          app_id: applicationId,
+          code: 'intake',
+          data_json: formData as unknown as Json,
+          status: 'draft',
+        }
+
         const { error } = await supabase
           .from('sections')
-          // @ts-ignore - Supabase type inference issue (code and data_json fields)
           .upsert(
-            {
-              app_id: applicationId,
-              code: 'intake',
-              data_json: formData,
-              status: 'draft',
-            },
+            payload,
             {
               onConflict: 'app_id,code'
             }
@@ -166,16 +177,17 @@ export function IntakeForm({ applicationId, onGenerate }: IntakeFormProps) {
     try {
       console.log('Manual save - saving data:', formData)
 
+      const payload: Database['public']['Tables']['sections']['Insert'] = {
+        app_id: applicationId,
+        code: 'intake',
+        data_json: formData as unknown as Json,
+        status: 'draft',
+      }
+
       const { error } = await supabase
         .from('sections')
-        // @ts-ignore - Supabase type inference issue (code and data_json fields)
         .upsert(
-          {
-            app_id: applicationId,
-            code: 'intake',
-            data_json: formData,
-            status: 'draft',
-          },
+          payload,
           {
             onConflict: 'app_id,code'
           }
@@ -233,7 +245,6 @@ export function IntakeForm({ applicationId, onGenerate }: IntakeFormProps) {
       if (user) {
         await supabase
           .from('user_profiles')
-          // @ts-ignore - Supabase type inference issue (custom fields)
           .update({
             ime: formData.ime,
             prezime: formData.prezime,
@@ -249,7 +260,10 @@ export function IntakeForm({ applicationId, onGenerate }: IntakeFormProps) {
     } catch (error) {
       toast({
         title: 'Greška pri generiranju',
-        description: 'Došlo je do greške. Pokušajte ponovno.',
+        description:
+          error instanceof Error && error.message
+            ? error.message
+            : 'Došlo je do greške. Pokušajte ponovno.',
         variant: 'destructive',
       })
     } finally {

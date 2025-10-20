@@ -17,17 +17,12 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { useState, useRef, useEffect } from 'react'
 import { useToast } from '@/hooks/use-toast'
+import type { Database } from '@/types/supabase'
+
+type ApplicationRow = Database['public']['Tables']['applications']['Row']
 
 interface ApplicationCardProps {
-  application: {
-    id: string
-    title: string | null
-    status: string
-    subject_type?: string | null
-    total_costs?: number | null
-    created_at: string
-    updated_at: string
-  }
+  application: ApplicationRow
 }
 
 export function ApplicationCard({ application }: ApplicationCardProps) {
@@ -63,7 +58,6 @@ export function ApplicationCard({ application }: ApplicationCardProps) {
     try {
       const { error } = await supabase
         .from('applications')
-        // @ts-expect-error - Supabase type inference issue in production build
         .update({ title: title.trim() })
         .eq('id', application.id)
 
@@ -157,7 +151,7 @@ export function ApplicationCard({ application }: ApplicationCardProps) {
               </div>
             </div>
           </div>
-          <StatusBadge status={application.status as any} />
+          <StatusBadge status={application.status} />
         </div>
       </CardHeader>
       <CardFooter className="flex justify-between">
