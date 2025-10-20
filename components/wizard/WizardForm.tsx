@@ -123,7 +123,7 @@ export function WizardForm({ applicationId, initialData = {} }: WizardFormProps)
             code: section.key,
             data_json: sectionData,
             status: 'draft',
-          }, {
+          } as any, {
             onConflict: 'app_id,code'
           })
 
@@ -157,7 +157,7 @@ export function WizardForm({ applicationId, initialData = {} }: WizardFormProps)
             code: section.key,
             data_json: sectionData,
             status: 'draft',
-          }, {
+          } as any, {
             onConflict: 'app_id,code'
           })
 

@@ -89,26 +89,29 @@ export interface Database {
         Row: {
           id: string
           app_id: string
-          section_key: string
-          data: Json
-          created_at: string
+          code: string
+          data_json: Json
+          status: string
           updated_at: string
+          created_at?: string | null
         }
         Insert: {
           id?: string
           app_id: string
-          section_key: string
-          data: Json
-          created_at?: string
+          code: string
+          data_json?: Json
+          status?: string
           updated_at?: string
+          created_at?: string | null
         }
         Update: {
           id?: string
           app_id?: string
-          section_key?: string
-          data?: Json
-          created_at?: string
+          code?: string
+          data_json?: Json
+          status?: string
           updated_at?: string
+          created_at?: string | null
         }
       }
       costs: {
