@@ -2,6 +2,21 @@
 
 import hzzStructure from '@/data/hzz-structure.json'
 
+const TABLE_COLUMN_ORDER: Record<string, string[]> = {
+  prihodi: ['naziv', 'cijena', 'broj_prodaja', 'mjesecni_prihod', 'godisnji_prihod'],
+  trosak_rada: ['vrsta', 'mjesecni_iznos', 'godisnji_iznos'],
+  ostali_troskovi: ['naziv', 'mjesecni_iznos', 'godisnji_iznos'],
+  struktura_vlasnistva: ['ime_prezime', 'udio'],
+  nkd_lista: ['nkd_kod', 'naziv_djelatnosti'],
+  nkd_lista_simple: ['nkd_djelatnost'],
+  radno_iskustvo_ugovor: ['razdoblje', 'poslodavac', 'zanimanje'],
+  radno_iskustvo_ostalo: ['razdoblje', 'poslodavac', 'zanimanje'],
+  ulaganja_drugi_izvori: ['vrsta_ulaganja', 'iznos'],
+  postojeca_oprema: ['naziv'],
+  troskovnik: ['vrsta_troska', 'iznos'],
+  izracun_dobiti: ['godina', 'prihodi', 'troskovi', 'dobit']
+}
+
 interface PreviewPanelProps {
   data: Record<string, any>
   sections: any[]
@@ -187,16 +202,31 @@ function formatFieldValue(field: any, value: any, allData?: Record<string, any>)
     const firstRow = value[0]
     if (!firstRow || typeof firstRow !== 'object') return ''
 
-    const columns = Object.keys(firstRow).filter(key => {
+    const rawColumns = Object.keys(firstRow)
+    const columnsWithData = rawColumns.filter(key => {
       // Check if any row has a non-empty value for this key
       return value.some(row => row[key] && String(row[key]).trim() !== '')
     })
 
-    if (columns.length === 0) return ''
+    if (columnsWithData.length === 0) return ''
+
+    const tableType = (field as any).tableType || 'default'
+    const orderedColumns = TABLE_COLUMN_ORDER[tableType]
+
+    let columns = columnsWithData
+
+    if (orderedColumns && orderedColumns.length > 0) {
+      const dataColumnSet = new Set(columnsWithData)
+      columns = [
+        ...orderedColumns.filter(col => dataColumnSet.has(col)),
+        ...columnsWithData.filter(col => !orderedColumns.includes(col)),
+      ]
+    }
 
     // Create column labels mapping
     const columnLabels: Record<string, string> = {
       'naziv': 'Naziv',
+      'godina': 'Godina',
       'cijena': 'Cijena',
       'broj_prodaja': 'Broj prodaja',
       'mjesecni_prihod': 'Mjesečni prihod',
@@ -206,6 +236,9 @@ function formatFieldValue(field: any, value: any, allData?: Record<string, any>)
       'godisnji_iznos': 'Godišnji iznos',
       'vrsta_troska': 'Vrsta troška',
       'iznos': 'Iznos',
+      'prihodi': 'Ukupni prihodi (€)',
+      'troskovi': 'Ukupni troškovi (€)',
+      'dobit': 'Očekivana dobit (€)',
       'razdoblje': 'Razdoblje',
       'poslodavac': 'Poslodavac',
       'zanimanje': 'Zanimanje',
@@ -258,7 +291,15 @@ function formatFieldValue(field: any, value: any, allData?: Record<string, any>)
                 </td>
                 {columns.slice(1).map(col => {
                   // Calculate total for numeric columns
-                  const isNumeric = value.some(row => typeof row[col] === 'number')
+                  const isNumeric = value.some(row => {
+                    const raw = row[col]
+                    if (raw === null || raw === undefined) return false
+                    if (typeof raw === 'number') return true
+                    if (typeof raw === 'string' && raw.trim() !== '' && !Number.isNaN(parseFloat(raw))) {
+                      return true
+                    }
+                    return false
+                  })
                   if (isNumeric) {
                     const total = value.reduce((sum, row) => {
                       const val = parseFloat(row[col]) || 0
@@ -377,7 +418,11 @@ export function PreviewPanel({ data, sections }: PreviewPanelProps) {
           const sectionData = data[section.key]
 
           // Skip if no data
-          if (!sectionData || Object.keys(sectionData).length === 0) return null
+          if (!sectionData || (typeof sectionData === 'object' && !Array.isArray(sectionData) && Object.keys(sectionData).length === 0)) {
+            return null
+          }
+
+          const isObjectSection = sectionData && typeof sectionData === 'object' && !Array.isArray(sectionData)
 
           return (
             <div key={section.key} className="mb-6 break-inside-avoid-page">
@@ -388,11 +433,34 @@ export function PreviewPanel({ data, sections }: PreviewPanelProps) {
 
               {/* Section Fields */}
               <div className="space-y-3 pl-3">
-                {section.fields.map((field: any) => {
-                  // Skip helper text and section labels
-                  if (field.type === 'helper_text' || field.type === 'section_label') {
-                    return null
-                  }
+                {!isObjectSection ? (
+                  (() => {
+                    const rawValue =
+                      typeof sectionData === 'string'
+                        ? sectionData
+                        : JSON.stringify(sectionData, null, 2)
+
+                    if (!rawValue || rawValue.trim() === '') {
+                      return null
+                    }
+
+                    return (
+                      <div className="space-y-0.5 break-inside-avoid">
+                        <p className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
+                          Sadržaj
+                        </p>
+                        <p className="text-sm text-gray-900 whitespace-pre-wrap leading-snug pl-3">
+                          {rawValue}
+                        </p>
+                      </div>
+                    )
+                  })()
+                ) : (
+                  section.fields.map((field: any) => {
+                    // Skip helper text and section labels
+                    if (field.type === 'helper_text' || field.type === 'section_label') {
+                      return null
+                    }
 
                   const value = sectionData[field.key]
                   const formattedValue = formatFieldValue(field, value, data)
@@ -420,7 +488,8 @@ export function PreviewPanel({ data, sections }: PreviewPanelProps) {
                       )}
                     </div>
                   )
-                })}
+                })
+                )}
               </div>
             </div>
           )
