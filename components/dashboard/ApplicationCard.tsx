@@ -1,11 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { StatusBadge } from './StatusBadge'
 import { FileText, MoreVertical, Trash2, Edit2 } from 'lucide-react'
-import { formatDistanceToNow } from 'date-fns'
+import { formatDistanceToNow, format } from 'date-fns'
 import { hr } from 'date-fns/locale'
 import {
   DropdownMenu,
@@ -38,6 +38,7 @@ export function ApplicationCard({ application }: ApplicationCardProps) {
   const [title, setTitle] = useState(application.title || 'Novi zahtjev')
   const inputRef = useRef<HTMLInputElement>(null)
 
+  const createdDate = format(new Date(application.created_at), 'dd.MM.yyyy', { locale: hr })
   const timeAgo = formatDistanceToNow(new Date(application.updated_at), {
     addSuffix: true,
     locale: hr,
@@ -153,28 +154,15 @@ export function ApplicationCard({ application }: ApplicationCardProps) {
                   {title}
                 </CardTitle>
               )}
-              <CardDescription className="text-sm">{timeAgo}</CardDescription>
+              <div className="text-sm text-gray-500 space-y-0.5">
+                <div>Kreirano: {createdDate}</div>
+                <div>Zadnja izmjena: {timeAgo}</div>
+              </div>
             </div>
           </div>
           <StatusBadge status={application.status as any} />
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-2 text-sm">
-          {application.subject_type && (
-            <div className="flex justify-between">
-              <span className="text-gray-600">Tip subjekta:</span>
-              <span className="font-medium">{application.subject_type}</span>
-            </div>
-          )}
-          {application.total_costs !== null && (
-            <div className="flex justify-between">
-              <span className="text-gray-600">Ukupni troškovi:</span>
-              <span className="font-medium">{application.total_costs?.toFixed(2)} €</span>
-            </div>
-          )}
-        </div>
-      </CardContent>
       <CardFooter className="flex justify-between">
         <Link href={`/applications/${application.id}`}>
           <Button variant="default">Uredi</Button>

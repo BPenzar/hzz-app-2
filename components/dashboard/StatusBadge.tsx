@@ -7,14 +7,28 @@ interface StatusBadgeProps {
 }
 
 export function StatusBadge({ status }: StatusBadgeProps) {
+  // "Upitnik" (narančasto) - dok je u izradi prije AI generiranja
+  // "Zahtjev" (zeleno) - nakon što je AI ispunio zahtjev
   const variants = {
-    draft: { variant: 'secondary' as const, label: 'Nacrt' },
-    valid: { variant: 'default' as const, label: 'Validan' },
-    submitted: { variant: 'default' as const, label: 'Poslan' },
-    archived: { variant: 'outline' as const, label: 'Arhiviran' },
+    draft: {
+      className: 'bg-orange-100 text-orange-700 hover:bg-orange-100',
+      label: 'Upitnik'
+    },
+    valid: {
+      className: 'bg-green-100 text-green-700 hover:bg-green-100',
+      label: 'Zahtjev'
+    },
+    submitted: {
+      className: 'bg-green-100 text-green-700 hover:bg-green-100',
+      label: 'Zahtjev'
+    },
+    archived: {
+      className: 'bg-green-100 text-green-700 hover:bg-green-100',
+      label: 'Zahtjev'
+    },
   }
 
-  const { variant, label } = variants[status] || variants.draft
+  const config = variants[status] || variants.draft
 
-  return <Badge variant={variant}>{label}</Badge>
+  return <Badge className={config.className}>{config.label}</Badge>
 }
