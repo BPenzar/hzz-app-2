@@ -97,10 +97,6 @@ export function ApplicationCard({ application }: ApplicationCardProps) {
   }
 
   const handleDelete = async () => {
-    if (!confirm('Jeste li sigurni da želite izbrisati ovu prijavu?')) {
-      return
-    }
-
     setIsDeleting(true)
     const supabase = createClient()
 
