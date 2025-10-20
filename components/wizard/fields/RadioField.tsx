@@ -23,11 +23,11 @@ interface RadioFieldProps {
 const isHelpTextUseful = (label: string, helpText: string): boolean => {
   if (!helpText || helpText.trim() === '') return false
 
-  const normalizedLabel = label.toLowerCase().trim().replace(/[*:]/g, '')
+  const normalizedLabel = label.toLowerCase().trim().replace(/[*:]/g, '').replace(/\(.*?\)/g, '')
   const normalizedHelp = helpText.toLowerCase().trim()
 
   return (
-    normalizedHelp.length > normalizedLabel.length + 20 &&
+    normalizedHelp.length > normalizedLabel.length + 5 &&
     normalizedHelp !== normalizedLabel
   )
 }
@@ -50,10 +50,10 @@ export function RadioField({
         {showTooltip && (
           <Tooltip>
             <TooltipTrigger asChild>
-              <Info className="h-4 w-4 text-gray-400 cursor-help inline-block" />
+              <Info className="h-4 w-4 text-blue-500 cursor-help inline-block" />
             </TooltipTrigger>
             <TooltipContent className="max-w-sm">
-              <p className="text-sm">{helpText}</p>
+              <p className="text-sm" dangerouslySetInnerHTML={{ __html: helpText }} />
             </TooltipContent>
           </Tooltip>
         )}

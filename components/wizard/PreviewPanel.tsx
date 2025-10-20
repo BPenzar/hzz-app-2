@@ -32,6 +32,16 @@ function formatFieldValue(field: any, value: any): string | JSX.Element {
     return ''
   }
 
+  // Handle checkbox arrays (simple array of values)
+  if (Array.isArray(value) && field.type === 'checkbox') {
+    // Empty array
+    if (value.length === 0) return ''
+
+    // Convert checkbox values to friendly labels
+    const labels = value.map(val => getFriendlyLabel(field, String(val))).filter(label => label)
+    return labels.join(', ')
+  }
+
   // Handle arrays (tables)
   if (Array.isArray(value)) {
     // Empty array

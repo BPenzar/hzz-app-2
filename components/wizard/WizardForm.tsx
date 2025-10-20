@@ -91,7 +91,7 @@ export function WizardForm({ applicationId, initialData = {} }: WizardFormProps)
   useEffect(() => {
     const timer = setTimeout(() => {
       if (Object.keys(formData).length > 0) {
-        handleSave()
+        handleAutoSave()
       }
     }, 2000)
 
@@ -106,26 +106,81 @@ export function WizardForm({ applicationId, initialData = {} }: WizardFormProps)
     }, 50)
   }, [currentSection])
 
+  // Silent autosave without toast
+  const handleAutoSave = async () => {
+    setIsSaving(true)
+    const supabase = createClient()
+
+    try {
+      // Save to sections table
+      for (const section of sections) {
+        const sectionData = formData[section.key] || {}
+
+        const { error } = await supabase
+          .from('sections')
+          .upsert({
+            app_id: applicationId,
+            code: section.key,
+            data_json: sectionData,
+            status: 'draft',
+          }, {
+            onConflict: 'app_id,code'
+          })
+
+        if (error) {
+          console.error('Auto-save error for section', section.key, error)
+          throw error
+        }
+      }
+    } catch (error) {
+      console.error('Auto-save error:', error)
+      // No toast for autosave errors to avoid spam
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  // Manual save with toast feedback
   const handleSave = async () => {
     setIsSaving(true)
     const supabase = createClient()
 
-    // Save to sections table
-    for (const section of sections) {
-      const sectionData = formData[section.key] || {}
+    try {
+      // Save to sections table
+      for (const section of sections) {
+        const sectionData = formData[section.key] || {}
 
-      await supabase
-        .from('sections')
-        .upsert({
-          app_id: applicationId,
-          code: section.key,
-          data_json: sectionData,
-          status: 'draft',
-        } as any)
-        .match({ app_id: applicationId, code: section.key })
+        const { error } = await supabase
+          .from('sections')
+          .upsert({
+            app_id: applicationId,
+            code: section.key,
+            data_json: sectionData,
+            status: 'draft',
+          }, {
+            onConflict: 'app_id,code'
+          })
+
+        if (error) {
+          console.error('Manual save error for section', section.key, error)
+          throw error
+        }
+      }
+
+      toast({
+        title: 'Spremljeno!',
+        description: 'Vaše izmjene su uspješno spremljene.',
+      })
+    } catch (error) {
+      console.error('Manual save error:', error)
+      toast({
+        title: 'Greška',
+        description: 'Nije moguće spremiti izmjene.',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsSaving(false)
     }
-
-    setIsSaving(false)
   }
 
   const handleFieldChange = (sectionKey: string, fieldKey: string, value: any) => {
@@ -237,6 +292,14 @@ export function WizardForm({ applicationId, initialData = {} }: WizardFormProps)
             </div>
             <div className="flex items-center space-x-4">
               {isSaving && <span className="text-sm text-gray-600">Spremanje...</span>}
+              <Button
+                onClick={handleSave}
+                disabled={isSaving}
+                variant="outline"
+                size="sm"
+              >
+                {isSaving ? 'Spremanje...' : 'Spremi izmjene'}
+              </Button>
               <Sheet open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
                 <SheetTrigger asChild>
                   <Button variant="default">

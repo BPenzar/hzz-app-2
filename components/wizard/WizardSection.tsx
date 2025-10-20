@@ -304,12 +304,7 @@ export function WizardSection({ section, data, onChange, allData = {} }: WizardS
                 onChange={(e) => onChange(field.key, e.target.value)}
                 placeholder={field.label}
                 required={field.required}
-                readOnly
-                className="bg-gray-50 cursor-not-allowed"
               />
-              <p className="text-xs text-gray-500">
-                * Automatski popunjeno na temelju odabira vrste subjekta i NKD djelatnosti u sekciji 2
-              </p>
             </div>
           )
         }
@@ -340,11 +335,21 @@ export function WizardSection({ section, data, onChange, allData = {} }: WizardS
       <div className="space-y-6">
         <h2 className="text-2xl font-bold mb-6">{section.title}</h2>
 
-        {section.fields.map((field) => (
-          <div key={field.key}>
-            {renderField(field)}
-          </div>
-        ))}
+        {section.fields.map((field) => {
+          // Add separator before certain fields
+          const needsSeparator =
+            field.key === 'obitelj_srodna_djelatnost' ||
+            field.key === 'procjena_zaposljavanja_u_prvoj_godini'
+
+          return (
+            <div key={field.key}>
+              {needsSeparator && (
+                <div className="border-t border-gray-300 my-6"></div>
+              )}
+              {renderField(field)}
+            </div>
+          )
+        })}
       </div>
     </TooltipProvider>
   )

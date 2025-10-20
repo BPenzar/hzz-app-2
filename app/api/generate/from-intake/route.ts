@@ -73,6 +73,22 @@ Guidelines for Sections 3-5:
 - Generate realistic revenue projections
 - Fill ALL business fields with relevant, specific content
 
+IMPORTANT - Radio/Select/Checkbox Values:
+- For radio buttons and select fields, use the EXACT lowercase value keys (e.g., "da" not "Da", "ne" not "Ne")
+- For checkbox arrays, use lowercase value keys (e.g., ["posjetnice", "drustvene_mreze"])
+- NEVER use label text as values - always use the value keys from the options
+
+CRITICAL - Table Field Structure:
+- For table fields, return arrays of objects with correct column keys:
+- prihodi tables: [{"naziv": "...", "cijena": 0, "broj_prodaja": 0, "mjesecni_prihod": 0, "godisnji_prihod": 0}]
+- trosak_rada tables: [{"vrsta": "...", "mjesecni_iznos": 0, "godisnji_iznos": 0}]
+- ostali_troskovi tables: [{"naziv": "...", "mjesecni_iznos": 0, "godisnji_iznos": 0}]
+- troskovnik tables: [{"vrsta_troska": "...", "iznos": 0}]
+- radno_iskustvo tables: [{"razdoblje": "...", "poslodavac": "...", "zanimanje": "..."}]
+- postojeca_oprema tables: [{"naziv": "..."}]
+- ulaganja_drugi_izvori tables: [{"vrsta_ulaganja": "...", "iznos": 0}]
+- NEVER return string values for table fields - always use array of objects with these exact keys
+
 JSON Structure:
 - Each section is a key (e.g., "2", "3.1", "3.2", etc.)
 - Each section contains an object with field keys and values
@@ -243,6 +259,8 @@ Generate the complete application now.`,
         completion.choices[0].message.content || '{}'
       )
 
+      console.log('[AI Parser] Raw generated content:', JSON.stringify(generatedContent, null, 2))
+
       // Validate structure (check only business sections, not section 1)
       const templateKeys = Object.keys(sectionTemplate)
       const generatedKeys = Object.keys(generatedContent)
@@ -292,7 +310,7 @@ Generate the complete application now.`,
         })
       }
 
-      // Normalize ALL table fields in generated content to ensure they are arrays
+      // Normalize ALL table fields in generated content to ensure they are arrays with proper structure
       hzzStructure.sections.forEach((section) => {
         if (section.key === '1' || section.key === '2') return // Skip sections 1 and 2 (handled separately)
 
@@ -302,24 +320,325 @@ Generate the complete application now.`,
         section.fields.forEach((field) => {
           if (field.type === 'table') {
             const value = sectionData[field.key]
+            const tableType = field.tableType || 'default'
 
-            // Ensure table fields are arrays
+            console.log(`[AI Parser] Processing table field "${field.key}" (type: ${tableType}), value:`, value)
+
+            // Ensure table fields are arrays with correct object structure
             if (!Array.isArray(value)) {
               if (value && typeof value === 'object') {
                 // Convert single object to array
                 sectionData[field.key] = [value]
               } else if (typeof value === 'string' && value.trim()) {
-                // Try to parse string as JSON array
-                try {
-                  const parsed = JSON.parse(value)
-                  sectionData[field.key] = Array.isArray(parsed) ? parsed : [parsed]
-                } catch {
-                  // If not JSON, create empty array
-                  sectionData[field.key] = []
-                }
+                // Parse string data into proper table format based on tableType
+                sectionData[field.key] = parseTableData(value, tableType)
               } else {
                 // Empty or invalid value, use empty array
                 sectionData[field.key] = []
+              }
+            } else {
+              // Already array, ensure objects have correct structure
+              sectionData[field.key] = value.map(item =>
+                typeof item === 'string' ? parseTableRowData(item, tableType) : item
+              ).filter(item => item) // Remove null/undefined items
+            }
+          }
+        })
+      })
+
+      // Helper function to parse table data based on type
+      function parseTableData(text: string, tableType: string): any[] {
+        const lines = text.split('\n').filter(line => line.trim())
+
+        return lines.map(line => parseTableRowData(line, tableType)).filter(item => item)
+      }
+
+      // Helper function to parse individual table row based on type
+      function parseTableRowData(text: string, tableType: string): any | null {
+        const cleanText = text.trim()
+        if (!cleanText) return null
+
+        console.log(`[AI Parser] Parsing table row for type "${tableType}": "${cleanText}"`)
+
+        let result = null
+
+        switch (tableType) {
+          case 'radno_iskustvo_ugovor':
+          case 'radno_iskustvo_ostalo':
+            // Parse "Igrač košarke u lokalnom klubu - 5 godina"
+            if (cleanText.includes(' - ')) {
+              const parts = cleanText.split(' - ')
+              result = {
+                razdoblje: parts[1] || '',
+                poslodavac: '',
+                zanimanje: parts[0] || cleanText
+              }
+            } else {
+              result = {
+                razdoblje: '',
+                poslodavac: '',
+                zanimanje: cleanText
+              }
+            }
+            break
+
+          case 'ulaganja_drugi_izvori':
+            // Parse "Osobni kapital - 5000" or "vlasnita_sredstva"
+            if (cleanText.includes(' - ')) {
+              const parts = cleanText.split(' - ')
+              return {
+                vrsta_ulaganja: parts[0] || cleanText,
+                iznos: parseFloat(parts[1]) || 0
+              }
+            }
+            return {
+              vrsta_ulaganja: cleanText,
+              iznos: 0
+            }
+
+          case 'postojeca_oprema':
+            // Parse "Košarkaške lopte - 10" or "goli"
+            if (cleanText.includes(' - ')) {
+              const parts = cleanText.split(' - ')
+              return { naziv: parts[0] }
+            }
+            return { naziv: cleanText }
+
+          case 'prihodi':
+            // Parse "Prihodi od tura - 20000 - 100 - 200" (naziv - godisnji - broj_prodaja - cijena)
+            if (cleanText.includes(' - ')) {
+              const parts = cleanText.split(' - ')
+              if (parts.length >= 4) {
+                // Format: "Prihodi od tura - 20000 - 100 - 200"
+                const naziv = parts[0]
+                const godisnji = parseFloat(parts[1]) || 0
+                const broj_prodaja = parseFloat(parts[2]) || 0
+                const cijena = parseFloat(parts[3]) || 0
+                return {
+                  naziv: naziv,
+                  cijena: cijena,
+                  broj_prodaja: broj_prodaja,
+                  mjesecni_prihod: Math.round(godisnji / 12),
+                  godisnji_prihod: godisnji
+                }
+              } else if (parts.length >= 3) {
+                // Format: "HRK - Najam terena - 150000"
+                const godisnji = parseFloat(parts[2]) || 0
+                return {
+                  naziv: parts[1] || cleanText,
+                  cijena: Math.round(godisnji / 12 / 10), // Estimate monthly price per unit
+                  broj_prodaja: 10, // Default estimate
+                  mjesecni_prihod: Math.round(godisnji / 12),
+                  godisnji_prihod: godisnji
+                }
+              } else {
+                // Format: "Članarine - 30000"
+                const godisnji = parseFloat(parts[1]) || 0
+                return {
+                  naziv: parts[0] || cleanText,
+                  cijena: Math.round(godisnji / 12 / 10),
+                  broj_prodaja: 10,
+                  mjesecni_prihod: Math.round(godisnji / 12),
+                  godisnji_prihod: godisnji
+                }
+              }
+            }
+            return {
+              naziv: cleanText,
+              cijena: 0,
+              broj_prodaja: 0,
+              mjesecni_prihod: 0,
+              godisnji_prihod: 0
+            }
+
+          case 'trosak_rada':
+            // Parse "Osobni dohodak - 60000 - 12 - 5000" (vrsta - godisnji - mjeseci - mjesecni)
+            if (cleanText.includes(' - ')) {
+              const parts = cleanText.split(' - ')
+              if (parts.length >= 4) {
+                // New format: "Osobni dohodak - 60000 - 12 - 5000"
+                const vrsta = parts[0]
+                const godisnji = parseFloat(parts[1]) || 0
+                const mjesecni = parseFloat(parts[3]) || 0
+                return {
+                  vrsta: vrsta,
+                  mjesecni_iznos: mjesecni,
+                  godisnji_iznos: godisnji
+                }
+              } else {
+                // Old format: "HRK - Plaće osoblja - 180000"
+                const godisnji = parseFloat(parts[parts.length - 1]) || 0
+                const naziv = parts.length > 2 ? parts[1] : parts[0]
+                return {
+                  vrsta: naziv || 'Bruto plaća za zaposlenike',
+                  mjesecni_iznos: Math.round(godisnji / 12),
+                  godisnji_iznos: godisnji
+                }
+              }
+            }
+            return {
+              vrsta: cleanText,
+              mjesecni_iznos: 0,
+              godisnji_iznos: 0
+            }
+
+          case 'ostali_troskovi':
+            // Parse "Marketing - 3000 - 1 - 3000" (naziv - godisnji - period - iznos)
+            if (cleanText.includes(' - ')) {
+              const parts = cleanText.split(' - ')
+              if (parts.length >= 4) {
+                // New format: "Marketing - 3000 - 1 - 3000"
+                const naziv = parts[0]
+                const godisnji = parseFloat(parts[1]) || 0
+                const mjesecni = Math.round(godisnji / 12)
+                return {
+                  naziv: naziv,
+                  mjesecni_iznos: mjesecni,
+                  godisnji_iznos: godisnji
+                }
+              } else {
+                // Old format: "HRK - Najam sportskog objekta - 36000"
+                const godisnji = parseFloat(parts[parts.length - 1]) || 0
+                const naziv = parts.length > 2 ? parts[1] : parts[0]
+                return {
+                  naziv: naziv || cleanText,
+                  mjesecni_iznos: Math.round(godisnji / 12),
+                  godisnji_iznos: godisnji
+                }
+              }
+            }
+            return {
+              naziv: cleanText,
+              mjesecni_iznos: 0,
+              godisnji_iznos: 0
+            }
+
+          case 'troskovnik':
+            // Parse "Kupnja opreme za vođenje tura - 5000 - 1 - 5000" (naziv - iznos - period - amount)
+            if (cleanText.includes(' - ')) {
+              const parts = cleanText.split(' - ')
+              if (parts.length >= 4) {
+                // New format: "Kupnja opreme za vođenje tura - 5000 - 1 - 5000"
+                const naziv = parts[0]
+                const iznos = parseFloat(parts[1]) || 0
+                return {
+                  vrsta_troska: naziv,
+                  iznos: iznos
+                }
+              }
+            }
+
+            // Fallback to regex for old format
+            const matches = cleanText.match(/(\d+)\s*-\s*(.+?)\s*-\s*(HRK|EUR)?\s*-?\s*(mjesečno|godisnje|jednokratno)?/)
+            if (matches) {
+              let iznos = parseFloat(matches[1]) || 0
+              const naziv = matches[2] || cleanText
+              const period = matches[4]
+
+              // Convert to annual amount
+              if (period === 'mjesečno') {
+                iznos = iznos * 12
+              }
+
+              return {
+                vrsta_troska: naziv,
+                iznos: iznos
+              }
+            }
+            return {
+              vrsta_troska: cleanText,
+              iznos: 0
+            }
+
+          default:
+            // Generic fallback
+            result = { naziv: cleanText }
+        }
+
+        console.log(`[AI Parser] Result for "${tableType}":`, result)
+        return result
+      }
+
+      // Normalize radio/select/checkbox fields: Convert label text to value keys
+      // AI often returns "Da" or "Ne" instead of "da"/"ne", causing form fields to appear empty
+      hzzStructure.sections.forEach((section) => {
+        if (section.key === '1') return // Skip section 1 (handled separately)
+
+        const sectionData = generatedContent[section.key]
+        if (!sectionData) return
+
+        section.fields.forEach((field) => {
+          const currentValue = sectionData[field.key]
+          if (!currentValue) return
+
+          // Handle text/textarea fields that got invalid simple responses
+          if ((field.type === 'text' || field.type === 'textarea') && typeof currentValue === 'string') {
+            const lowerValue = currentValue.toLowerCase().trim()
+
+            // If text field contains only simple yes/no responses, clear it
+            if (['da', 'ne', 'yes', 'no', 'y', 'n', '1', '0', 'true', 'false'].includes(lowerValue)) {
+              console.warn(`[AI Generate] Text field ${field.key} got simple response "${currentValue}", clearing for user to fill`)
+              sectionData[field.key] = ''
+              return
+            }
+          }
+
+          // Only process fields with options (radio, select, checkbox)
+          if (!field.options || field.options.length === 0) return
+
+          // Handle checkbox (array of values)
+          if (field.type === 'checkbox') {
+            if (Array.isArray(currentValue)) {
+              sectionData[field.key] = currentValue.map((val: string) => {
+                // Check if val matches a label instead of a value
+                const matchingOption = field.options?.find((opt: any) =>
+                  opt.label.toLowerCase() === val.toLowerCase()
+                )
+                return matchingOption ? matchingOption.value : val
+              })
+            }
+          }
+          // Handle radio and select (single value)
+          else if (field.type === 'radio' || field.type === 'select') {
+            if (typeof currentValue === 'string') {
+              // First check if currentValue is already a valid option value
+              const validValue = field.options?.find((opt: any) => opt.value === currentValue)
+              if (validValue) {
+                // Already correct, do nothing
+                return
+              }
+
+              // Check if currentValue matches a label instead of a value
+              const matchingOption = field.options?.find((opt: any) =>
+                opt.label.toLowerCase() === currentValue.toLowerCase()
+              )
+              if (matchingOption) {
+                sectionData[field.key] = matchingOption.value
+                return
+              }
+
+              // Handle common AI mistakes - map invalid values to reasonable defaults
+              const lowerValue = currentValue.toLowerCase().trim()
+
+              // For yes/no questions, map various responses to "da" or "ne"
+              if (field.options?.some((opt: any) => opt.value === 'da' || opt.value === 'ne')) {
+                if (['da', 'yes', 'y', '1', 'true', 'potvrdan'].includes(lowerValue)) {
+                  sectionData[field.key] = 'da'
+                } else if (['ne', 'no', 'n', '0', 'false', 'negativan'].includes(lowerValue)) {
+                  sectionData[field.key] = 'ne'
+                } else if (['ne_mogu_procijeniti', 'ne mogu procijeniti', 'unclear', 'unknown'].includes(lowerValue)) {
+                  // Check if this is a valid option for this field
+                  const cannotEstimate = field.options?.find((opt: any) => opt.value === 'ne_mogu_procijeniti')
+                  if (cannotEstimate) {
+                    sectionData[field.key] = 'ne_mogu_procijeniti'
+                  }
+                }
+              }
+
+              // If still no match found, clear the field (better than invalid value)
+              if (!field.options?.find((opt: any) => opt.value === sectionData[field.key])) {
+                console.warn(`[AI Generate] Invalid value "${currentValue}" for field ${field.key}, clearing field`)
+                sectionData[field.key] = ''
               }
             }
           }
@@ -341,6 +660,7 @@ Generate the complete application now.`,
         ),
       }
 
+      console.log('[AI Parser] Final complete data:', JSON.stringify(completeData, null, 2))
       console.log(`[AI Generate Intake] Successfully generated application (sections 3-5) + pre-populated Sections 1-2`)
 
       // Return successful response with Section 1 + generated sections
