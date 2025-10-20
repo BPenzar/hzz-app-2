@@ -12,7 +12,7 @@ function getFriendlyLabel(field: any, value: string): string {
   // Find the field definition in hzz-structure to get options
   for (const section of hzzStructure.sections) {
     const fieldDef = section.fields.find(f => f.key === field.key)
-    if (fieldDef && fieldDef.options) {
+    if (fieldDef && 'options' in fieldDef && fieldDef.options) {
       const option = fieldDef.options.find((opt: any) => opt.value === value)
       if (option) return option.label
     }
