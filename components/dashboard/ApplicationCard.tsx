@@ -154,13 +154,13 @@ export function ApplicationCard({ application }: ApplicationCardProps) {
           <StatusBadge status={application.status} />
         </div>
       </CardHeader>
-      <CardFooter className="flex justify-between">
-        <Link href={`/applications/${application.id}`}>
-          <Button variant="default">Uredi</Button>
+      <CardFooter className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0">
+        <Link href={`/applications/${application.id}`} className="w-full sm:w-auto">
+          <Button variant="default" className="w-full sm:w-auto">Uredi</Button>
         </Link>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" disabled={isDeleting}>
+            <Button variant="ghost" size="icon" disabled={isDeleting} className="self-end sm:self-auto">
               <MoreVertical className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>

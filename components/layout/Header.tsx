@@ -30,22 +30,22 @@ export function Header({ user, showAuth = true }: HeaderProps) {
           <div className="text-2xl font-bold text-primary cursor-pointer">HZZ Zahtjev</div>
         </Link>
         {showAuth && (
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             {user ? (
               <>
-                <span className="text-sm text-gray-600">{user.email}</span>
-                <Button variant="ghost" size="sm" onClick={handleSignOut}>
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Odjava
+                <span className="text-sm text-gray-600 hidden sm:inline">{user.email}</span>
+                <Button variant="ghost" size="sm" onClick={handleSignOut} className="text-sm">
+                  <LogOut className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Odjava</span>
                 </Button>
               </>
             ) : (
               <>
                 <Link href="/auth/login">
-                  <Button variant="ghost">Prijava</Button>
+                  <Button variant="ghost" size="sm" className="text-sm">Prijava</Button>
                 </Link>
                 <Link href="/auth/signup">
-                  <Button>Besplatna registracija</Button>
+                  <Button size="sm" className="text-sm">Registracija</Button>
                 </Link>
               </>
             )}
