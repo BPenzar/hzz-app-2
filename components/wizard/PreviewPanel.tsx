@@ -418,7 +418,7 @@ export function PreviewPanel({ data, sections }: PreviewPanelProps) {
                     <div key={field.key} className="space-y-0.5 break-inside-avoid">
                       {/* Field Label */}
                       <p className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
-                        {field.label}:
+                        {field.label}
                       </p>
                       {/* Field Value */}
                       {typeof formattedValue === 'string' ? (

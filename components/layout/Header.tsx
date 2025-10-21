@@ -25,9 +25,9 @@ export function Header({ user, showAuth = true }: HeaderProps) {
 
   return (
     <nav className="border-b bg-white/80 backdrop-blur-sm">
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <Link href={user ? '/dashboard' : '/'}>
-          <div className="text-2xl font-bold text-primary cursor-pointer">HZZ-App</div>
+          <div className="text-2xl font-bold text-primary cursor-pointer">HZZ Zahtjev</div>
         </Link>
         {showAuth && (
           <div className="flex items-center space-x-4">
@@ -45,7 +45,7 @@ export function Header({ user, showAuth = true }: HeaderProps) {
                   <Button variant="ghost">Prijava</Button>
                 </Link>
                 <Link href="/auth/signup">
-                  <Button>Započni besplatno</Button>
+                  <Button>Besplatna registracija</Button>
                 </Link>
               </>
             )}

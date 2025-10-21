@@ -437,7 +437,7 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
               new Paragraph({
                 children: [
                   new TextRun({
-                    text: `${field.label}: `,
+                    text: `${field.label} `,
                     bold: true,
                     size: 20
                   }),
