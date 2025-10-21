@@ -11,12 +11,14 @@ import type { Database, Json } from '@/types/supabase'
 
 interface ApplicationWorkflowProps {
   applicationId: string
+  applicationTitle?: string
   initialData?: Record<string, any>
   hasExistingData?: boolean
 }
 
 export function ApplicationWorkflow({
   applicationId,
+  applicationTitle,
   initialData = {},
   hasExistingData = false,
 }: ApplicationWorkflowProps) {
@@ -110,7 +112,11 @@ export function ApplicationWorkflow({
       {mode === 'intake' ? (
         <IntakeForm applicationId={applicationId} onGenerate={handleGenerate} />
       ) : (
-        <WizardForm applicationId={applicationId} initialData={formData} />
+        <WizardForm
+          applicationId={applicationId}
+          applicationTitle={applicationTitle}
+          initialData={formData}
+        />
       )}
       <Footer />
     </>

@@ -57,6 +57,7 @@ export default async function ApplicationPage(props: {
   return (
     <ApplicationWorkflow
       applicationId={params.id}
+      applicationTitle={application.title}
       initialData={initialData}
       hasExistingData={hasExistingData}
     />
