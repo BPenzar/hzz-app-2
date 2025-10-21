@@ -587,26 +587,31 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
                           Pregledajte sve unesene podatke prije preuzimanja PDF-a ili DOCX-a
                         </SheetDescription>
                       </SheetHeader>
-                      <div className="flex items-center gap-3">
-                        <Button
-                          onClick={handleExportPDF}
-                          disabled={isGeneratingPDF || isGeneratingDocx}
-                          variant="default"
-                        >
-                          <FileDown className="h-4 w-4 mr-2" />
-                          {isGeneratingPDF ? 'Generiram PDF...' : 'Preuzmi PDF'}
-                        </Button>
-                        <Button
-                          onClick={handleExportDocx}
-                          disabled={isGeneratingPDF || isGeneratingDocx}
-                          variant="outline"
-                        >
-                          <FileText className="h-4 w-4 mr-2" />
-                          {isGeneratingDocx ? 'Generiram DOCX...' : 'Preuzmi DOCX'}
-                        </Button>
+                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+                        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                          <Button
+                            onClick={handleExportPDF}
+                            disabled={isGeneratingPDF || isGeneratingDocx}
+                            variant="default"
+                            className="w-full sm:w-auto"
+                          >
+                            <FileDown className="h-4 w-4 mr-2" />
+                            {isGeneratingPDF ? 'Generiram PDF...' : 'Preuzmi PDF'}
+                          </Button>
+                          <Button
+                            onClick={handleExportDocx}
+                            disabled={isGeneratingPDF || isGeneratingDocx}
+                            variant="outline"
+                            className="w-full sm:w-auto"
+                          >
+                            <FileText className="h-4 w-4 mr-2" />
+                            {isGeneratingDocx ? 'Generiram DOCX...' : 'Preuzmi DOCX'}
+                          </Button>
+                        </div>
                         <Button
                           variant="outline"
                           onClick={() => setIsPreviewOpen(false)}
+                          className="w-full sm:w-auto mt-2 sm:mt-0"
                         >
                           Natrag
                         </Button>
@@ -629,7 +634,7 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
       {/* Sticky Navigation */}
       <div className="bg-white border-b sticky top-[73px] z-10 shadow-sm">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-center gap-2 py-3 overflow-x-auto">
+          <div className="flex items-center justify-center gap-2 py-3 overflow-x-auto px-2 sm:px-0">
             {sectionHierarchy.map((item, idx) => {
               if ('subsections' in item) {
                 // This is a parent with subsections
@@ -646,7 +651,7 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
                             variant={currentSection === subsection.key ? 'default' : 'outline'}
                             size="sm"
                             onClick={() => setCurrentSection(subsection.key)}
-                            className="min-w-[50px] h-9 font-semibold rounded-md text-sm"
+                            className="min-w-[50px] h-9 sm:h-9 font-semibold rounded-md text-sm touch-manipulation"
                           >
                             {subsection.id}
                           </Button>
@@ -663,7 +668,7 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
                             setCurrentSection(item.subsections[0].key)
                           }
                         }}
-                        className="min-w-[50px] h-9 font-semibold rounded-md text-sm"
+                        className="min-w-[50px] h-9 sm:h-9 font-semibold rounded-md text-sm touch-manipulation"
                       >
                         {item.parentKey}
                       </Button>
@@ -682,7 +687,7 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
                       variant={currentSection === section.key ? 'default' : 'outline'}
                       size="sm"
                       onClick={() => setCurrentSection(section.key)}
-                      className="min-w-[50px] h-9 font-semibold rounded-md text-sm"
+                      className="min-w-[50px] h-9 sm:h-9 font-semibold rounded-md text-sm touch-manipulation"
                     >
                       {section.id}
                     </Button>
@@ -711,11 +716,12 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
             )}
 
             {/* Navigation Buttons */}
-            <div className="flex justify-between mt-6 pt-6 border-t">
+            <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0 mt-6 pt-6 border-t">
               <Button
                 onClick={handlePrevious}
                 disabled={currentIndex === 0}
                 variant="outline"
+                className="w-full sm:w-auto order-2 sm:order-1"
               >
                 <ChevronLeft className="h-4 w-4 mr-2" />
                 Prethodno
@@ -723,6 +729,7 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
               <Button
                 onClick={handleNext}
                 disabled={currentIndex === sections.length - 1}
+                className="w-full sm:w-auto order-1 sm:order-2"
               >
                 Sljedeće
                 <ChevronRight className="h-4 w-4 ml-2" />
