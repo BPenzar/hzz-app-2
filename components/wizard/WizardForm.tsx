@@ -550,9 +550,9 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
       {/* Header */}
       <div className="bg-white border-b sticky top-0 z-20">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-xl font-bold">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-lg sm:text-xl font-bold truncate">
                 {currentSectionData?.id}. {currentSectionData?.title}
               </h1>
               {parentInfo && (
@@ -561,19 +561,20 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
                 </p>
               )}
             </div>
-            <div className="flex items-center space-x-4">
-              {isSaving && <span className="text-sm text-gray-600">Spremanje...</span>}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
+              {isSaving && <span className="text-sm text-gray-600 order-first">Spremanje...</span>}
               <Button
                 onClick={handleSave}
                 disabled={isSaving}
                 variant="outline"
                 size="sm"
+                className="w-full sm:w-auto text-sm"
               >
                 {isSaving ? 'Spremanje...' : 'Spremi izmjene'}
               </Button>
               <Sheet open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="default">
+                  <Button variant="default" size="sm" className="w-full sm:w-auto text-sm">
                     <PanelRightOpen className="h-4 w-4 mr-2" />
                     Pregled i preuzimanje
                   </Button>
@@ -623,7 +624,7 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
                   </div>
                 </SheetContent>
               </Sheet>
-              <Button onClick={() => router.push('/dashboard')} variant="outline">
+              <Button onClick={() => router.push('/dashboard')} variant="outline" size="sm" className="w-full sm:w-auto text-sm">
                 Natrag
               </Button>
             </div>
