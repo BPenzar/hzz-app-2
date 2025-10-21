@@ -10,7 +10,7 @@ import { PreviewPanel } from './PreviewPanel'
 import { useToast } from '@/hooks/use-toast'
 import hzzStructure from '@/data/hzz-structure.json'
 import type { Database, Json } from '@/types/supabase'
-import { ChevronLeft, ChevronRight, FileDown, PanelRightOpen, Printer, X, AlertTriangle, CheckCircle } from 'lucide-react'
+import { ChevronLeft, ChevronRight, FileDown, FileText, PanelRightOpen } from 'lucide-react'
 import {
   Sheet,
   SheetContent,
@@ -22,6 +22,7 @@ import {
 
 interface WizardFormProps {
   applicationId: string
+  applicationTitle?: string
   initialData?: Record<string, any>
 }
 
@@ -38,7 +39,7 @@ interface SectionHierarchy {
   subsections: Section[]
 }
 
-export function WizardForm({ applicationId, initialData = {} }: WizardFormProps) {
+export function WizardForm({ applicationId, applicationTitle, initialData = {} }: WizardFormProps) {
   const router = useRouter()
   const { toast } = useToast()
   const [currentSection, setCurrentSection] = useState('1')
@@ -46,6 +47,7 @@ export function WizardForm({ applicationId, initialData = {} }: WizardFormProps)
   const [isSaving, setIsSaving] = useState(false)
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false)
+  const [isGeneratingDocx, setIsGeneratingDocx] = useState(false)
 
   const sections = hzzStructure.sections
 
@@ -210,9 +212,34 @@ export function WizardForm({ applicationId, initialData = {} }: WizardFormProps)
     }
   }
 
-  const handleExportPDF = async () => {
-    setIsGeneratingPDF(true)
+  const sanitizeFileName = (value: string) => {
+    let normalized = value
+    try {
+      normalized = value.normalize('NFKD')
+    } catch {
+      normalized = value
+    }
 
+    return normalized
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9\s_-]+/g, '')
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .toLowerCase()
+  }
+
+  const getFileBaseName = () => {
+    const fallback = 'hzz-zahtjev'
+    if (!applicationTitle) return fallback
+
+    const cleaned = sanitizeFileName(applicationTitle)
+    if (!cleaned) return fallback
+
+    return cleaned
+  }
+
+  const ensurePreviewContent = () => {
     const previewElement = document.getElementById('pdf-preview-content')
 
     if (!previewElement) {
@@ -221,46 +248,42 @@ export function WizardForm({ applicationId, initialData = {} }: WizardFormProps)
         description: 'Molimo prvo otvorite pregled.',
         variant: 'destructive',
       })
+      return null
+    }
+
+    return previewElement
+  }
+
+  const handleExportPDF = async () => {
+    setIsGeneratingPDF(true)
+
+    const previewElement = ensurePreviewContent()
+    if (!previewElement) {
       setIsGeneratingPDF(false)
       return
     }
 
     try {
-      const printWindow = window.open('', '_blank', 'width=900,height=600')
+      const [{ default: html2pdf }] = await Promise.all([
+        import('html2pdf.js'),
+      ])
 
-      if (!printWindow) {
-        throw new Error('Blokiran je skočni prozor. Dopustite otvaranje prozora i pokušajte ponovno.')
+      const options = {
+        margin: 0.5,
+        filename: `${getFileBaseName()}.pdf`,
+        image: { type: 'jpeg' as const, quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+        },
+        jsPDF: {
+          unit: 'in' as const,
+          format: 'a4' as const,
+          orientation: 'portrait' as const,
+        },
       }
 
-      const html = `
-        <html>
-          <head>
-            ${document.head.innerHTML}
-            <style>
-              body {
-                margin: 0;
-                font-family: Inter, sans-serif;
-              }
-              #print-root {
-                padding: 32px;
-              }
-            </style>
-          </head>
-          <body>
-            <div id="print-root">${previewElement.outerHTML}</div>
-          </body>
-        </html>
-      `
-
-      printWindow.document.open()
-      printWindow.document.write(html)
-      printWindow.document.close()
-
-      printWindow.onload = () => {
-        printWindow.focus()
-        printWindow.print()
-        printWindow.close()
-      }
+      await html2pdf().set(options).from(previewElement).save()
     } catch (error) {
       console.error('PDF generation error:', error)
       toast({
@@ -271,6 +294,212 @@ export function WizardForm({ applicationId, initialData = {} }: WizardFormProps)
       })
     } finally {
       setIsGeneratingPDF(false)
+    }
+  }
+
+  const handleExportDocx = async () => {
+    setIsGeneratingDocx(true)
+
+    try {
+      // Import the docx library
+      const [{ Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell }] = await Promise.all([
+        import('docx'),
+      ])
+
+      // Create document sections
+      const docSections: any[] = []
+
+      // Document title
+      docSections.push(
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: applicationTitle || 'HZZ Zahtjev za dodjelu poticaja',
+              bold: true,
+              size: 32, // 16pt in half-points
+              font: 'Arial'
+            })
+          ],
+          spacing: { after: 300 }
+        })
+      )
+
+      // Process each section with data
+      sections.forEach(section => {
+        const sectionData = formData[section.key]
+        if (!sectionData || Object.keys(sectionData).length === 0) return
+
+        // Section header
+        docSections.push(
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: `${section.id}. ${section.title}`,
+                bold: true,
+                size: 24, // 12pt
+                font: 'Arial'
+              })
+            ],
+            spacing: { before: 240, after: 120 }
+          })
+        )
+
+        // Process fields in this section
+        section.fields?.forEach((field: any) => {
+          const fieldValue = sectionData[field.key]
+          if (!fieldValue && fieldValue !== 0 && fieldValue !== false) return
+
+          // Skip helper text and section labels
+          if (field.type === 'helper_text' || field.type === 'section_label') return
+
+          // Handle different field types
+          if (field.type === 'table') {
+            // Create table
+            const tableData = Array.isArray(fieldValue) ? fieldValue : []
+            if (tableData.length > 0) {
+              // Add table title
+              docSections.push(
+                new Paragraph({
+                  children: [
+                    new TextRun({
+                      text: field.label || field.key,
+                      bold: true,
+                      size: 22
+                    })
+                  ],
+                  spacing: { before: 120, after: 60 }
+                })
+              )
+
+              // Create table headers
+              const headers = Object.keys(tableData[0] || {})
+              const tableRows = [
+                new TableRow({
+                  children: headers.map(header =>
+                    new TableCell({
+                      children: [
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: header.replace(/_/g, ' ').toUpperCase(),
+                              bold: true,
+                              size: 18
+                            })
+                          ]
+                        })
+                      ]
+                    })
+                  )
+                })
+              ]
+
+              // Add data rows
+              tableData.forEach((row: any) => {
+                tableRows.push(
+                  new TableRow({
+                    children: headers.map(header =>
+                      new TableCell({
+                        children: [
+                          new Paragraph({
+                            children: [
+                              new TextRun({
+                                text: String(row[header] || ''),
+                                size: 18
+                              })
+                            ]
+                          })
+                        ]
+                      })
+                    )
+                  })
+                )
+              })
+
+              docSections.push(
+                new Table({
+                  rows: tableRows,
+                  width: { size: 100, type: 'pct' }
+                })
+              )
+            }
+          } else {
+            // Regular field
+            let displayValue = fieldValue
+            if (field.type === 'radio' || field.type === 'select') {
+              // Get friendly label for radio/select
+              const option = field.options?.find((opt: any) => opt.value === fieldValue)
+              displayValue = option?.label || fieldValue
+            } else if (Array.isArray(fieldValue)) {
+              displayValue = fieldValue.join(', ')
+            }
+
+            docSections.push(
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: `${field.label}: `,
+                    bold: true,
+                    size: 20
+                  }),
+                  new TextRun({
+                    text: String(displayValue),
+                    size: 20
+                  })
+                ],
+                spacing: { after: 60 }
+              })
+            )
+          }
+        })
+      })
+
+      // Create the document
+      const doc = new Document({
+        sections: [{
+          children: docSections,
+          properties: {
+            page: {
+              margin: {
+                top: 1440, // 1 inch in twips
+                right: 1440,
+                bottom: 1440,
+                left: 1440
+              }
+            }
+          }
+        }]
+      })
+
+      // Generate and download
+      const blob = await Packer.toBlob(doc)
+
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `${getFileBaseName()}.docx`
+      document.body.appendChild(link)
+      link.click()
+
+      setTimeout(() => {
+        document.body.removeChild(link)
+        URL.revokeObjectURL(url)
+      }, 200)
+
+      toast({
+        title: 'Uspješno',
+        description: 'DOCX dokument je uspješno stvoren s LibreOffice kompatibilnošću.',
+        variant: 'default',
+      })
+    } catch (error) {
+      console.error('DOCX generation error:', error)
+      toast({
+        title: 'Greška',
+        description:
+          error instanceof Error ? error.message : 'Nije moguće kreirati DOCX.',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsGeneratingDocx(false)
     }
   }
 
@@ -346,7 +575,7 @@ export function WizardForm({ applicationId, initialData = {} }: WizardFormProps)
                 <SheetTrigger asChild>
                   <Button variant="default">
                     <PanelRightOpen className="h-4 w-4 mr-2" />
-                    Pregled i PDF
+                    Pregled i preuzimanje
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="w-full sm:max-w-full p-0 overflow-y-auto">
@@ -355,17 +584,25 @@ export function WizardForm({ applicationId, initialData = {} }: WizardFormProps)
                       <SheetHeader>
                         <SheetTitle>Pregled zahtjeva</SheetTitle>
                         <SheetDescription>
-                          Pregledajte sve unesene podatke prije preuzimanja PDF-a
+                          Pregledajte sve unesene podatke prije preuzimanja PDF-a ili DOCX-a
                         </SheetDescription>
                       </SheetHeader>
                       <div className="flex items-center gap-3">
                         <Button
                           onClick={handleExportPDF}
-                          disabled={isGeneratingPDF}
+                          disabled={isGeneratingPDF || isGeneratingDocx}
                           variant="default"
                         >
                           <FileDown className="h-4 w-4 mr-2" />
                           {isGeneratingPDF ? 'Generiram PDF...' : 'Preuzmi PDF'}
+                        </Button>
+                        <Button
+                          onClick={handleExportDocx}
+                          disabled={isGeneratingPDF || isGeneratingDocx}
+                          variant="outline"
+                        >
+                          <FileText className="h-4 w-4 mr-2" />
+                          {isGeneratingDocx ? 'Generiram DOCX...' : 'Preuzmi DOCX'}
                         </Button>
                         <Button
                           variant="outline"
