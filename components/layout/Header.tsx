@@ -53,7 +53,7 @@ export function Header({ user, showAuth = true }: HeaderProps) {
               className="hidden flex-col sm:flex hover:text-primary transition-colors"
             >
               <span className="text-sm font-medium text-gray-900">HZZ Zahtjev Creator</span>
-              <span className="text-xs text-gray-500">AI asistent za HZZ samozapošljavanje</span>
+              <span className="text-xs text-gray-500">AI asistent "zahtjev za samozapošljavanje" HZZ-a</span>
             </Link>
             <span className="flex flex-col sm:hidden text-sm font-medium text-gray-900">
               HZZ Zahtjev Creator
