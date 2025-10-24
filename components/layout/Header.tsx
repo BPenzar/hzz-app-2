@@ -55,9 +55,6 @@ export function Header({ user, showAuth = true }: HeaderProps) {
               <span className="text-sm font-medium text-gray-900">HZZ Zahtjev Creator</span>
               <span className="text-xs text-gray-500">AI asistent "zahtjev za samozapošljavanje" HZZ-a</span>
             </Link>
-            <span className="flex flex-col sm:hidden text-sm font-medium text-gray-900">
-              HZZ Zahtjev Creator
-            </span>
           </div>
           {showAuth && (
             <div className="flex items-center gap-2 sm:gap-4">
