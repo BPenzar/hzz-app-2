@@ -11,8 +11,8 @@ export function Footer() {
   return (
     <footer className="border-t bg-gray-50 py-4 mt-auto">
       <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-2">
-          <p className="text-sm text-gray-600">
+        <div className="flex flex-col md:grid md:grid-cols-3 items-center gap-2 md:gap-4">
+          <p className="text-sm text-gray-600 md:justify-self-start">
             © 2025 {" "}
             <a
               href="https://www.bsp-lab.dev/"
@@ -23,7 +23,19 @@ export function Footer() {
               BSP Lab
             </a>
           </p>
-          <div className="flex gap-3">
+
+          <div className="md:justify-self-center">
+            <a
+              href="https://qr.bsp-lab.dev/f/Cz2VJ5Pe"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 text-sm font-medium rounded-lg transition-colors bg-gray-200 text-gray-700 hover:bg-gray-300 active:bg-gray-400"
+            >
+              Feedback
+            </a>
+          </div>
+
+          <div className="flex gap-3 md:justify-self-end">
             {socialLinks.map((social) => (
               <a
                 key={social.label}
