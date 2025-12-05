@@ -3,13 +3,6 @@ declare module 'html2pdf.js' {
   export default html2pdf
 }
 
-declare module 'html-docx-js/dist/html-docx' {
-  const htmlDocx: {
-    asBlob(html: string, options?: any): Blob
-  }
-  export default htmlDocx
-}
-
 declare module 'docx' {
   export interface ParagraphChild {
     text?: string

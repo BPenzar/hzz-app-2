@@ -1,0 +1,30 @@
+diff --git a/node_modules/@supabase/ssr/dist/main/index.js b/node_modules/@supabase/ssr/dist/main/index.js
+index 24465b6..4dd6a87 100644
+--- a/node_modules/@supabase/ssr/dist/main/index.js
++++ b/node_modules/@supabase/ssr/dist/main/index.js
+@@ -15,8 +15,9 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
+ };
+ Object.defineProperty(exports, "__esModule", { value: true });
+ // Check if this package is being used as one of the deprecated auth-helpers packages
+-if (typeof process !== "undefined" && process.env?.npm_package_name) {
+-    const packageName = process.env.npm_package_name;
++const processEnv = typeof globalThis !== "undefined" ? globalThis["process"]?.env : undefined;
++if (processEnv?.npm_package_name) {
++    const packageName = processEnv.npm_package_name;
+     const deprecatedPackages = [
+         "@supabase/auth-helpers-nextjs",
+         "@supabase/auth-helpers-react",
+diff --git a/node_modules/@supabase/ssr/dist/module/index.js b/node_modules/@supabase/ssr/dist/module/index.js
+index d9a70b1..b00b2f8 100644
+--- a/node_modules/@supabase/ssr/dist/module/index.js
++++ b/node_modules/@supabase/ssr/dist/module/index.js
+@@ -1,6 +1,7 @@
+ // Check if this package is being used as one of the deprecated auth-helpers packages
+-if (typeof process !== "undefined" && process.env?.npm_package_name) {
+-    const packageName = process.env.npm_package_name;
++const processEnv = typeof globalThis !== "undefined" ? globalThis["process"]?.env : undefined;
++if (processEnv?.npm_package_name) {
++    const packageName = processEnv.npm_package_name;
+     const deprecatedPackages = [
+         "@supabase/auth-helpers-nextjs",
+         "@supabase/auth-helpers-react",
