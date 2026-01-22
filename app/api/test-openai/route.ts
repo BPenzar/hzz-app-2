@@ -34,7 +34,7 @@ export async function GET() {
 
     // Simple test call
     const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
+      model: 'gpt-5.2',
       messages: [
         {
           role: 'user',

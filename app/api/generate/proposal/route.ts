@@ -2,6 +2,46 @@ import { OpenAI } from 'openai';
 import { NextRequest, NextResponse } from 'next/server';
 import hzzExamples from '@/data/hzz-examples.json';
 
+const buildSchemaFromTemplate = (value: unknown): Record<string, any> => {
+  if (Array.isArray(value)) {
+    const itemSchema =
+      value.length > 0
+        ? buildSchemaFromTemplate(value[0])
+        : { type: 'object', additionalProperties: true };
+    return {
+      type: 'array',
+      items: itemSchema,
+    };
+  }
+
+  if (value && typeof value === 'object') {
+    const properties: Record<string, any> = {};
+    const required: string[] = [];
+
+    Object.entries(value as Record<string, unknown>).forEach(([key, child]) => {
+      properties[key] = buildSchemaFromTemplate(child);
+      required.push(key);
+    });
+
+    return {
+      type: 'object',
+      properties,
+      required,
+      additionalProperties: false,
+    };
+  }
+
+  if (typeof value === 'number') {
+    return { type: 'number' };
+  }
+
+  if (typeof value === 'boolean') {
+    return { type: 'boolean' };
+  }
+
+  return { type: 'string' };
+};
+
 // Initialize OpenAI client
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -85,7 +125,7 @@ export async function POST(request: NextRequest) {
       const startTime = Date.now();
 
       const completion = await openai.chat.completions.create({
-        model: 'gpt-4o-mini',
+        model: 'gpt-5.2',
         messages: [
           {
             role: 'system',
@@ -96,7 +136,14 @@ export async function POST(request: NextRequest) {
             content: `Business Idea: ${body.idea}\n\nBase Template (DO NOT change keys, only values):\n${JSON.stringify(template, null, 2)}\n\nGenerate a complete HZZ application for this business idea. Rewrite all string values to match the business concept while keeping the exact JSON structure.`
           }
         ],
-        response_format: { type: 'json_object' },
+        response_format: {
+          type: 'json_schema',
+          json_schema: {
+            name: body.section ? 'hzz_section_template' : 'hzz_application_template',
+            strict: true,
+            schema: buildSchemaFromTemplate(template),
+          },
+        },
         temperature: 0.3,
         max_tokens: 4000,
         top_p: 1,

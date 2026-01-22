@@ -15,10 +15,15 @@
 - `data/hzz-examples.json` is the AI base template; do not modify it.
 - Primary AI generation: `app/api/generate/from-intake/route.ts` (intake → sections 3–5 + validation).
 - Full-template AI generation: `app/api/generate/proposal/route.ts`.
+- AI generation uses Structured Outputs (json_schema, strict); intake schema is derived from `data/hzz-structure.json` and table definitions from `lib/hzz/tableSchema.ts`.
 - Validation/sanitization lives in `lib/validation/hzz.ts` — keep AI outputs aligned with structure.
 - Table column/label logic for preview lives in `lib/hzz/tableSchema.ts`.
 - Intake autosave persists to `sections` with `code='intake'`.
 - Generated exports are stored in Supabase Storage bucket `generated-documents` with metadata in `generated_documents`.
+
+## Workflow
+- Intake flow: Intake form → `/api/generate/from-intake` → OpenAI Structured Outputs → `validateGeneratedSections` → merge Sections 1–2 with generated Sections 3–5 → persist sections + generated document metadata.
+- Full-template flow: `/api/generate/proposal` → OpenAI Structured Outputs → JSON response → persisted/used for exports.
 
 ## Supabase
 - Migrations live in `supabase/migrations/`.

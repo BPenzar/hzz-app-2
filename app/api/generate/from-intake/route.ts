@@ -2,6 +2,7 @@ import { OpenAI } from 'openai'
 import { NextRequest, NextResponse } from 'next/server'
 import hzzStructure from '@/data/hzz-structure.json'
 import { validateGeneratedSections } from '@/lib/validation/hzz'
+import { TABLE_COLUMN_ORDER } from '@/lib/hzz/tableSchema'
 
 // Types
 interface IntakeData {
@@ -41,6 +42,89 @@ interface GenerateResponse {
   data?: Record<string, any>
   error?: string
   issues?: string[]
+}
+
+const buildTableRowSchema = (tableType: string) => {
+  const columns = TABLE_COLUMN_ORDER[tableType] || []
+  if (columns.length === 0) {
+    return {
+      type: 'object',
+      additionalProperties: true,
+    }
+  }
+
+  const properties: Record<string, any> = {}
+  const required: string[] = []
+
+  columns.forEach((column) => {
+    properties[column] = { type: 'string' }
+    required.push(column)
+  })
+
+  return {
+    type: 'object',
+    properties,
+    required,
+    additionalProperties: false,
+  }
+}
+
+const buildSectionsSchema = () => {
+  const properties: Record<string, any> = {}
+  const required: string[] = []
+
+  hzzStructure.sections.forEach((section) => {
+    if (section.key === '1') return
+
+    const sectionProperties: Record<string, any> = {}
+    const sectionRequired: string[] = []
+
+    section.fields.forEach((field) => {
+      sectionRequired.push(field.key)
+
+      if (field.type === 'table') {
+        const tableType = (field as any).tableType || ''
+        sectionProperties[field.key] = {
+          type: 'array',
+          items: buildTableRowSchema(tableType),
+        }
+        return
+      }
+
+      if (field.type === 'checkbox') {
+        sectionProperties[field.key] = {
+          type: 'array',
+          items: { type: 'string' },
+        }
+        return
+      }
+
+      if (field.type === 'profit_summary') {
+        sectionProperties[field.key] = {
+          type: 'object',
+          additionalProperties: true,
+        }
+        return
+      }
+
+      sectionProperties[field.key] = { type: 'string' }
+    })
+
+    properties[section.key] = {
+      type: 'object',
+      properties: sectionProperties,
+      required: sectionRequired,
+      additionalProperties: false,
+    }
+    required.push(section.key)
+  })
+
+  return {
+    type: 'object',
+    properties,
+    required,
+    additionalProperties: false,
+  }
 }
 
 // Enhanced system prompt for intake-based generation
@@ -278,6 +362,9 @@ INTAKE QUESTIONNAIRE DATA:
 Work Experience & Competencies:
 ${intakeData.radno_iskustvo || 'Not provided'}
 
+CV Text:
+${intakeData.cv_text || 'Not provided'}
+
 Business Idea:
 ${intakeData.poslovna_ideja}
 
@@ -364,7 +451,7 @@ Infer and expand on all business details that would be necessary for a comprehen
       const startTime = Date.now()
 
       const completion = await openai.chat.completions.create({
-        model: 'gpt-4o',
+        model: 'gpt-5.2',
         messages: [
           {
             role: 'system',
@@ -380,7 +467,14 @@ ${JSON.stringify(sectionTemplate, null, 2)}
 Generate the complete application now.`,
           },
         ],
-        response_format: { type: 'json_object' },
+        response_format: {
+          type: 'json_schema',
+          json_schema: {
+            name: 'hzz_sections_2_5',
+            strict: true,
+            schema: buildSectionsSchema(),
+          },
+        },
         temperature: 0.5,
         max_tokens: 16000,
       })
