@@ -33,8 +33,8 @@
     "vrsta_subjekta": "Označite vrstu poslovnog subjekta koji planirate registrirati.",
     "struktura_vlasnistva": "Struktura vlasništva budućeg poslovnog subjekta\n(  )Jedan vlasnik; (  )Suvlasništvo",
     "sjediste": "Sjedište budućeg poslovnog subjekta (mjesto/grad)",
-    "nkd": "Unos djelatnosti prema Nacionalnoj klasifikaciji djelatnosti (dalje u tekstu NKD).<br><br>Službeni popis svih djelatnosti možete vidjeti na poveznici: <a href='https://narodne-novine.nn.hr/clanci/sluzbeni/2024_04_47_800.html' target='_blank' rel='noopener noreferrer' class='text-blue-600 hover:underline'>Narodne novine - NKD 2024</a>",
-    "iznos_trazene_potpore": "Upisati točan iznos tražene potpore."
+    "nkd": "Unos djelatnosti prema Nacionalnoj klasifikaciji djelatnosti (NKD 2025).<br><br>Službeni popis svih djelatnosti: <a href='https://narodne-novine.nn.hr/clanci/sluzbeni/2024_04_47_800.html' target='_blank' rel='noopener noreferrer' class='text-blue-600 hover:underline'>Narodne novine - NKD (službeni popis)</a>",
+    "iznos_trazene_potpore": "Upisati točan iznos tražene potpore (mora biti u skladu s maksimalnim iznosima potpore prema djelatnosti i obliku poslovnog subjekta)."
   },
   "3.1": {
     "radno_iskustvo_ugovorom_o_radu": "Navedite kronološki dosadašnje radno iskustvo ostvareno temeljem ugovora o radu.",
@@ -53,8 +53,8 @@
     "razlog_procjena_zaposljavanja_u_prvoj_godini": "Molimo da obrazložite odgovor."
   },
   "3.3": {
-    "ulaganja_varijabilni_hzz": "To mogu biti osnovna sredstva i oprema (navesti koja).",
-    "ulaganja_iz_drugih_izvora": "To mogu biti osnovna sredstva i oprema (navesti koja), materijal i sirovina potrebni za rad, vozilo, oprema za uređenje prostora, edukacije i sl.",
+    "ulaganja_varijabilni_hzz": "Varijabilni dio potpore smije sadržavati samo prihvatljive troškove: kupnju nove opreme neophodne za obavljanje djelatnosti (trajnost > 1 godina) i nužne usluge instalacije/montaže, kupnju ili zakup licenciranih IT programa te kupnju franšiza. Iznosi se navode bez PDV-a.<br><br>Ako tražite zeleno/digitalno, najmanje 3.000 € varijabilnog dijela mora biti za troškove koji doprinose zelenoj/digitalnoj tranziciji.",
+    "ulaganja_iz_drugih_izvora": "Navesti ulaganja iz vlastitih ili drugih izvora (npr. učešće, kredit). Ovdje možete pokriti troškove koji nisu prihvatljivi kroz varijabilni dio potpore (npr. najamnina, režije, marketing, radni materijal/sirovine, vozilo, edukacije i sl.).",
     "prostor_i_dozvole": "",
     "grad_i_prostor_detalji": "Navedite u kojem gradu/mjestu planirate registrirati sjedište budućeg poslovnog subjekta te na kojem području planirate obavljati djelatnost. Ukoliko vam je potreban poslovni prostor, navedite detalje o tome imate li osiguran prostor u svom vlasništvu, vlasništvu obitelji ili ga planirate zakupiti.",
     "potrebne_dozvole": "",
@@ -96,12 +96,12 @@
     "ocekivana_neto_dobit_druga_godina": "Očekivananeto dobit (zarada) u drugoj godini poslovanja iznosi u €"
   },
   "4": {
-    "troskovnik": "Iznos potpore za samozapošljavanje određuje se prema djelatnosti koju podnositelji zahtjeva namjeravaju registrirati, a sukladno propisanim kriterijima mjere, pri čemu sve djelatnosti nisu prihvatljive za financiranje.<br><br>U navedenoj tablici navedite fiksni dio potpore u iznosu 5.000 €. <br><br>Ukoliko je traženi iznos potpore veći od fiksnog iznosa, ostatak tablice popunite troškovima koji su vam potrebni za početak poslovanja, a prema popisu prihvatljivih troškova za 2025. godinu. <br><br>Zbroj troškova u troškovniku ne smije biti manji od iznosa tražene potpore te se u njemu ne smiju nalaziti troškovi koje će podnositelji zahtjeva sami financirati. Svi troškovi navode se bez PDV-a. <br><br>Potpora ne mora biti dodijeljena u traženom iznosu."
+    "troskovnik": "Iznos potpore za samozapošljavanje određuje se prema djelatnosti koju podnositelji zahtjeva namjeravaju registrirati, a sukladno propisanim kriterijima mjere (NKD 2025). Nisu sve djelatnosti prihvatljive za financiranje.<br><br>U tablici obavezno navedite fiksni dio potpore u iznosu 5.000 €. Ako je traženi iznos veći od fiksnog, ostatak popunite isključivo prihvatljivim varijabilnim troškovima: kupnja nove opreme neophodne za obavljanje djelatnosti (trajnost > 1 godina) i nužne usluge instalacije/montaže, kupnja ili zakup licenciranih IT programa, kupnja franšiza. PDV nije prihvatljiv trošak.<br><br>Zbroj troškova u troškovniku mora biti jednak iznosu tražene potpore. Svi troškovi navode se bez PDV-a. Naknadne izmjene troškovnika nakon potpisa ugovora nisu prihvatljive.<br><br>Ako tražite zeleno/digitalno, najmanje 3.000 € varijabilnog iznosa treba biti usmjereno na troškove koji doprinose zelenoj/digitalnoj tranziciji.<br><br>Više informacija: <a href='https://mjere.hzz.hr/mjere/potpore-za-samozaposljavanje-2026/' target='_blank' rel='noopener noreferrer' class='text-blue-600 hover:underline'>Potpore za samozapošljavanje</a>, <a href='https://mjere.hzz.hr/korisnicki-centar/' target='_blank' rel='noopener noreferrer' class='text-blue-600 hover:underline'>Korisnički centar</a>, <a href='https://mjere.hzz.hr/katalog-mjera/opci-uvjeti-koristenja-mjera-aktivne-politike-zaposljavanja-u-2026-godini/' target='_blank' rel='noopener noreferrer' class='text-blue-600 hover:underline'>Opći uvjeti</a>."
   },
   "5": {
     "potvrda_fina": "Potvrda o blokadi računa i novčanih sredstava ovršenika na osobno ime podnositelja zahtjeva, ne starija od 7 dana (potvrdu izdaje FINA na zahtjev osobe i bez naplate)",
     "izjava_nepodmirene": "Izjava o nepodmirenim obvezama (obvezno)",
-    "ponude_predracuni": "Ponude/predračuni po stavkama troškovnika\nNavedeni prilog nije dio obvezne dokumentacije, no prilaganjem ponuda/predračuna ostvaruju se dodatni bodovi.\nPonuda na ime i OIB korisnika u iznosu variabilnih sredstava (iznos se racuna bez PDV-a).\nPriznaju se isključivo troškovi koji su navedeni kao prihvatljivi Uvjetima i načinima korištenja sredstava za provođenje mjera u 2025. godini, bez obzira na sadržaj ponude",
+    "ponude_predracuni": "Ponude/predračuni po stavkama troškovnika\nNavedeni prilog nije dio obvezne dokumentacije, no prilaganjem ponuda/predračuna ostvaruju se dodatni bodovi.\nPonuda mora glasiti na ime i OIB korisnika u iznosu varijabilnih sredstava (iznos se računa bez PDV-a).\nPriznaju se isključivo troškovi koji su navedeni kao prihvatljivi Uvjetima i načinima korištenja sredstava za provođenje mjera u 2026. godini, bez obzira na sadržaj ponude.",
     "ostali_prilozi": "Ostali prilozi (dokazi o formalnom/neformalnom radnom iskustvu, obrazovanju, pismo namjere,...)\nUkoliko posjedujete dodatnu dokumentaciju relevantnu za ocjenu poslovnog plana istu možete priložiti ovdje."
   }
 }

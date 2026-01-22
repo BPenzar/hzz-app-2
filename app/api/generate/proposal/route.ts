@@ -189,7 +189,13 @@ Important:
 - If a field is about legal structure, use Croatian business entity types (obrt, j.d.o.o., etc.)
 - Keep the tone professional but approachable
 - Preserve table formatting (use | separators for tables)
-- Keep numerical data realistic for Croatian market`;
+- Keep numerical data realistic for Croatian market
+- HZZ 2026 compliance:
+  * Use NKD 2025 and avoid ineligible activities (A, B, F/43.6, G, H, I, L, M, N/69.1, O/77-79, P, S/93.19, T/94/95.4/96.4, U, V)
+  * Troškovnik: fixed amount 5.000 €; variable part only for equipment (>1 year) + necessary installation, licensed IT programs, and franchise; VAT not eligible
+  * Troškovnik total must match iznos_trazene_potpore (Section 2)
+  * If the idea clearly qualifies as green/digital, allocate at least 3.000 € of variable funds to green/digital transition and justify it
+  * Only label green/digital when justified (green products/services or green transformation; or advanced ICT roles / ICT-sector revenue)`;
 
 export async function POST(request: NextRequest) {
   try {

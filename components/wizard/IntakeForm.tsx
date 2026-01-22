@@ -280,7 +280,7 @@ export function IntakeForm({ applicationId, onGenerate }: IntakeFormProps) {
             <div>
               <h1 className="text-2xl font-bold">Brzi upitnik za HZZ zahtjev</h1>
               <p className="text-gray-600 mt-1">
-                Odgovorite na nekoliko osnovnih pitanja i AI će generirati potpuni zahtjev
+                Odgovorite na nekoliko osnovnih pitanja, a AI će prema HZZ pravilima iz 2026. izraditi nacrt sekcija 2–5. Prije izvoza obavezno pregledajte i uredite sadržaj.
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -461,14 +461,14 @@ export function IntakeForm({ applicationId, onGenerate }: IntakeFormProps) {
                 <Label htmlFor="dodatne_informacije">
                   Sve ostale informacije koje smatrate važnima
                 </Label>
-                <Textarea
-                  id="dodatne_informacije"
-                  value={formData.dodatne_informacije || ''}
-                  onChange={(e) => handleChange('dodatne_informacije', e.target.value)}
-                  placeholder="Bilo koje dodatne informacije koje mogu pomoći AI-u da bolje generira vaš zahtjev..."
-                  rows={4}
-                />
-              </div>
+                  <Textarea
+                    id="dodatne_informacije"
+                    value={formData.dodatne_informacije || ''}
+                    onChange={(e) => handleChange('dodatne_informacije', e.target.value)}
+                    placeholder="Npr. ciljna tržišta, planirana oprema, zeleni/digitalni elementi, postojeći kontakti ili predračuni..."
+                    rows={4}
+                  />
+                </div>
             </div>
           </div>
 
@@ -495,7 +495,7 @@ export function IntakeForm({ applicationId, onGenerate }: IntakeFormProps) {
             </p>
           ) : (
             <p className="text-sm text-gray-500 text-center">
-              Nakon generiranja moći ćete pregledati i urediti sve sekcije prije izvoza u PDF
+              Nakon generiranja pregledajte i uredite sve sekcije prije izvoza u PDF/DOCX
             </p>
           )}
         </div>

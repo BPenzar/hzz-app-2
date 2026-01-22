@@ -147,10 +147,19 @@ Your task:
 Guidelines for Section 2:
 - ONLY fill the 'nkd' field with appropriate NKD codes and activity names
 - Format: Array of objects like [{"nkd_djelatnost": "73.11 - Reklamne agencije"}]
-- Use official Croatian NKD 2024 classification
+- Use official Croatian NKD 2025 classification
 - Include both NKD code AND full activity name in the nkd_djelatnost field
 - Leave other Section 2 fields EMPTY (vrsta_subjekta, struktura_vlasnistva_radio, sjediste, iznos_trazene_potpore)
 - The user will fill these fields manually as only they know this information
+
+HZZ 2026 COMPLIANCE (self-employment support):
+- Ensure the activity is eligible. Avoid ineligible NKD areas: A, B, F/43.6, G, H, I, L, M, N/69.1, O/77-79, P, S/93.19, T/94/95.4/96.4, U, V
+- Fixed amount is 5,000 EUR (covers registration + initial operating costs)
+- Variable part may include ONLY: (1) new equipment essential for the activity (useful life > 1 year) + necessary installation/mounting services, (2) purchase/lease of licensed IT programs, (3) franchise purchase. VAT is NOT eligible
+- If the business clearly qualifies as green/digital, allocate at least 3,000 EUR of the variable amount to green/digital transition costs and explain them
+- Only claim green/digital if clearly justified:
+  * GREEN: >90% revenue from green products/services OR role directly tied to green products/services or green transformation (energy efficiency, renewables, pollution reduction, circular economy, sustainable resource use, environmental compliance/education)
+  * DIGITAL: >90% revenue from ICT products/services OR role requires advanced specialized ICT skills even if the company is not primarily ICT
 
 DETAILED SECTION-BY-SECTION GUIDELINES:
 
@@ -180,6 +189,7 @@ Section 3.3 - Investment Structure:
   * Clear justification for why each item is essential for the business
   * Technical specifications relevant to the business operations
   * Expected ROI or productivity gains from each investment
+- Align varijabilni dio HZZ ulaganja ONLY with eligible categories (equipment >1 year, licensed IT programs, franchise); exclude rent, salaries, marketing, and VAT
 - Include realistic investment sources (personal savings, loans, family support)
 - Consider business location needs realistically - for digital businesses use "nije_potreban", for retail/services use "zakup" or "vlasnistvo"
 - Provide detailed city/region operational descriptions (200+ words) including:
@@ -309,6 +319,7 @@ CRITICAL - HZZ COMPLIANCE REQUIREMENT:
 - The sum of all "iznos" values in the troskovnik table MUST EQUAL the "iznos_trazene_potpore" amount
 - Use the fixed troskovnik categories and distribute the total amount across them logically
 - Ensure "Fiksni iznos potpore" is always 5000€, distribute remaining amount across other categories
+- Variable amounts must stay within eligible categories only (equipment/IT programs/franchise); exclude VAT, rent, salaries, marketing, and ineligible costs
 - Example: If requested amount is 25000€, troskovnik should total exactly 25000€ (5000€ fixed + 20000€ distributed)
 
 JSON Structure:
@@ -390,6 +401,7 @@ ${intakeData.dodatne_informacije || 'None provided'}
 Based on this intake information, generate ONLY sections 2-5 of the HZZ application (business plan sections).
 DO NOT generate Section 1 (personal data) as it will be filled separately by the user.
 Infer and expand on all business details that would be necessary for a comprehensive business plan. Be creative but realistic.
+Ensure the output follows HZZ 2026 self-employment rules for eligible activities and costs.
 `
 
     // Create the section template structure (EXCLUDE Section 1)
