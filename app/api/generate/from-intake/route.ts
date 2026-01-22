@@ -49,7 +49,7 @@ const buildTableRowSchema = (tableType: string) => {
   if (columns.length === 0) {
     return {
       type: 'object',
-      additionalProperties: true,
+      additionalProperties: false,
     }
   }
 
@@ -99,13 +99,13 @@ const buildSectionsSchema = () => {
         return
       }
 
-      if (field.type === 'profit_summary') {
-        sectionProperties[field.key] = {
-          type: 'object',
-          additionalProperties: true,
-        }
-        return
-      }
+  if (field.type === 'profit_summary') {
+    sectionProperties[field.key] = {
+      type: 'object',
+      additionalProperties: false,
+    }
+    return
+  }
 
       sectionProperties[field.key] = { type: 'string' }
     })
