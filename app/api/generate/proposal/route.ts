@@ -1,45 +1,146 @@
 import { OpenAI } from 'openai';
 import { NextRequest, NextResponse } from 'next/server';
 import hzzExamples from '@/data/hzz-examples.json';
+import hzzStructure from '@/data/hzz-structure.json';
+import { TABLE_COLUMN_ORDER } from '@/lib/hzz/tableSchema';
 
-const buildSchemaFromTemplate = (value: unknown): Record<string, any> => {
-  if (Array.isArray(value)) {
-    const itemSchema =
-      value.length > 0
-        ? buildSchemaFromTemplate(value[0])
-        : { type: 'object', additionalProperties: true };
-    return {
-      type: 'array',
-      items: itemSchema,
-    };
-  }
+type FieldDefinition = {
+  key: string;
+  type: string;
+  tableType?: string;
+};
 
-  if (value && typeof value === 'object') {
-    const properties: Record<string, any> = {};
-    const required: string[] = [];
+type SectionDefinition = {
+  key: string;
+  fields: FieldDefinition[];
+};
 
-    Object.entries(value as Record<string, unknown>).forEach(([key, child]) => {
-      properties[key] = buildSchemaFromTemplate(child);
-      required.push(key);
-    });
-
+const buildTableRowSchema = (tableType: string) => {
+  const columns = TABLE_COLUMN_ORDER[tableType] || [];
+  if (columns.length === 0) {
     return {
       type: 'object',
-      properties,
-      required,
-      additionalProperties: false,
+      additionalProperties: true,
     };
   }
 
-  if (typeof value === 'number') {
-    return { type: 'number' };
+  const properties: Record<string, any> = {};
+  const required: string[] = [];
+
+  columns.forEach((column) => {
+    properties[column] = { type: 'string' };
+    required.push(column);
+  });
+
+  return {
+    type: 'object',
+    properties,
+    required,
+    additionalProperties: false,
+  };
+};
+
+const buildFieldSchema = (field: FieldDefinition) => {
+  if (field.type === 'table') {
+    return {
+      type: 'array',
+      items: buildTableRowSchema(field.tableType || ''),
+    };
   }
 
-  if (typeof value === 'boolean') {
-    return { type: 'boolean' };
+  if (field.type === 'checkbox') {
+    return {
+      type: 'array',
+      items: { type: 'string' },
+    };
+  }
+
+  if (field.type === 'profit_summary') {
+    return {
+      type: 'object',
+      additionalProperties: true,
+    };
   }
 
   return { type: 'string' };
+};
+
+const buildSectionSchema = (section: SectionDefinition) => {
+  const properties: Record<string, any> = {};
+  const required: string[] = [];
+
+  section.fields.forEach((field) => {
+    properties[field.key] = buildFieldSchema(field);
+    required.push(field.key);
+  });
+
+  return {
+    type: 'object',
+    properties,
+    required,
+    additionalProperties: false,
+  };
+};
+
+const buildSectionsSchema = () => {
+  const properties: Record<string, any> = {};
+  const required: string[] = [];
+
+  (hzzStructure.sections as SectionDefinition[]).forEach((section) => {
+    properties[section.key] = buildSectionSchema(section);
+    required.push(section.key);
+  });
+
+  return {
+    type: 'object',
+    properties,
+    required,
+    additionalProperties: false,
+  };
+};
+
+const buildSectionTemplate = (
+  section: SectionDefinition,
+  exampleSection?: Record<string, unknown>
+) => {
+  const template: Record<string, any> = {};
+
+  section.fields.forEach((field) => {
+    if (field.type === 'table' || field.type === 'checkbox') {
+      template[field.key] = [];
+      return;
+    }
+
+    if (field.type === 'profit_summary') {
+      template[field.key] = {};
+      return;
+    }
+
+    if (field.type === 'helper_text' || field.type === 'section_label') {
+      template[field.key] = '';
+      return;
+    }
+
+    const exampleValue = exampleSection?.[field.key];
+    if (exampleValue === undefined || exampleValue === null) {
+      template[field.key] = '';
+      return;
+    }
+
+    if (typeof exampleValue === 'string') {
+      template[field.key] = exampleValue;
+      return;
+    }
+
+    if (typeof exampleValue === 'number' || typeof exampleValue === 'boolean') {
+      template[field.key] = String(exampleValue);
+      return;
+    }
+
+    template[field.key] = '';
+  });
+
+  return template;
 };
 
 // Initialize OpenAI client
@@ -108,17 +209,27 @@ export async function POST(request: NextRequest) {
 
     console.log(`[AI Generate] Starting generation for app_id: ${body.app_id}`);
 
-    // Use hzz-examples.json as the base template
-    const template = body.section 
-      ? (hzzExamples as any)[body.section]  // Generate single section
-      : hzzExamples;                        // Generate full application
+    const sections = hzzStructure.sections as SectionDefinition[];
+    const selectedSection = body.section
+      ? sections.find((section) => section.key === body.section)
+      : null;
 
-    if (!template) {
+    if (body.section && !selectedSection) {
       return NextResponse.json(
         { success: false, error: `Invalid section: ${body.section}` },
         { status: 400 }
       );
     }
+
+    const template = body.section
+      ? buildSectionTemplate(selectedSection as SectionDefinition, (hzzExamples as any)[body.section])
+      : sections.reduce<Record<string, any>>((acc, section) => {
+          acc[section.key] = buildSectionTemplate(
+            section,
+            (hzzExamples as any)[section.key]
+          );
+          return acc;
+        }, {});
 
     // PRIMARY: Direct OpenAI API call
     try {
@@ -141,11 +252,13 @@ export async function POST(request: NextRequest) {
           json_schema: {
             name: body.section ? 'hzz_section_template' : 'hzz_application_template',
             strict: true,
-            schema: buildSchemaFromTemplate(template),
+            schema: body.section
+              ? buildSectionSchema(selectedSection as SectionDefinition)
+              : buildSectionsSchema(),
           },
         },
         temperature: 0.3,
-        max_tokens: 4000,
+        max_completion_tokens: 4000,
         top_p: 1,
         frequency_penalty: 0,
         presence_penalty: 0,

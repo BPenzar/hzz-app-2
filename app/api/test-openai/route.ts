@@ -41,7 +41,7 @@ export async function GET() {
           content: 'Say "Hello, API key works!"',
         },
       ],
-      max_tokens: 20,
+      max_completion_tokens: 20,
     })
 
     return NextResponse.json({

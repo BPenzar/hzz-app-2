@@ -476,7 +476,7 @@ Generate the complete application now.`,
           },
         },
         temperature: 0.5,
-        max_tokens: 16000,
+        max_completion_tokens: 16000,
       })
 
       const latency = Date.now() - startTime
