@@ -22,6 +22,7 @@
 - Generated exports are stored in Supabase Storage bucket `generated-documents` with metadata in `generated_documents`.
 
 ## Workflow
+- Dev workflow: Scan → Plan → Act → Verify.
 - Intake flow: Intake form → `/api/generate/from-intake` → OpenAI Structured Outputs → `validateGeneratedSections` → merge Sections 1–2 with generated Sections 3–5 → persist sections + generated document metadata.
 - Full-template flow: `/api/generate/proposal` → OpenAI Structured Outputs → JSON response → persisted/used for exports.
 
