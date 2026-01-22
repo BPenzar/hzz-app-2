@@ -31,7 +31,9 @@ describe('validateGeneratedSections', () => {
   it('fails when input is not an object', () => {
     const result = validateGeneratedSections('invalid')
     expect(result.success).toBe(false)
-    expect(result.issues?.length).toBeGreaterThan(0)
+    if (!result.success) {
+      expect(result.issues.length).toBeGreaterThan(0)
+    }
   })
 
   it('passes with empty section objects', () => {
@@ -71,6 +73,8 @@ describe('validateGeneratedSections', () => {
 
     const result = validateGeneratedSections(input)
     expect(result.success).toBe(false)
-    expect(result.issues?.some((issue) => issue.includes(tableField.field.key))).toBe(true)
+    if (!result.success) {
+      expect(result.issues.some((issue: string) => issue.includes(tableField.field.key))).toBe(true)
+    }
   })
 })
