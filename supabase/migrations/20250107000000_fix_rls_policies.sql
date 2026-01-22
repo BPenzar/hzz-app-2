@@ -22,6 +22,9 @@ DROP POLICY IF EXISTS "Admins can view all audit logs" ON audits;
 -- Simplified USER_PROFILES Policies (no recursion)
 -- =====================================================
 
+DROP POLICY IF EXISTS "Users can view own profile" ON user_profiles;
+DROP POLICY IF EXISTS "Users can update own profile" ON user_profiles;
+
 -- Users can view their own profile
 CREATE POLICY "Users can view own profile"
   ON user_profiles
@@ -37,6 +40,11 @@ CREATE POLICY "Users can update own profile"
 -- =====================================================
 -- Simplified APPLICATIONS Policies
 -- =====================================================
+
+DROP POLICY IF EXISTS "Users can view own applications" ON applications;
+DROP POLICY IF EXISTS "Users can create own applications" ON applications;
+DROP POLICY IF EXISTS "Users can update own applications" ON applications;
+DROP POLICY IF EXISTS "Users can delete own applications" ON applications;
 
 -- Users can view their own applications
 CREATE POLICY "Users can view own applications"

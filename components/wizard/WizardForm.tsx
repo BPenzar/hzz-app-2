@@ -239,6 +239,62 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
     return cleaned
   }
 
+  const buildStorageFileName = (extension: 'pdf' | 'docx') => {
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+    return `${timestamp}-${getFileBaseName()}.${extension}`
+  }
+
+  const persistGeneratedDocument = async ({
+    blob,
+    filename,
+    type,
+    contentType,
+  }: {
+    blob: Blob
+    filename: string
+    type: 'pdf' | 'docx'
+    contentType: string
+  }) => {
+    const supabase = createClient()
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser()
+
+    if (userError || !user) {
+      throw new Error('Prijava je istekla. Molimo ponovno se prijavite.')
+    }
+
+    const storagePath = `${user.id}/${applicationId}/${filename}`
+
+    const { error: uploadError } = await supabase.storage
+      .from('generated-documents')
+      .upload(storagePath, blob, {
+        contentType,
+        upsert: false,
+      })
+
+    if (uploadError) {
+      throw new Error(uploadError.message)
+    }
+
+    const fileSizeKb = Math.round(blob.size / 1024)
+    const validationStatus =
+      bothAmountsExist ? (totalsMatch ? 'complete' : 'incomplete') : null
+
+    const { error: insertError } = await supabase.from('generated_documents').insert({
+      app_id: applicationId,
+      type,
+      storage_url: storagePath,
+      file_size_kb: fileSizeKb,
+      validation_status: validationStatus ?? undefined,
+    })
+
+    if (insertError) {
+      throw new Error(insertError.message)
+    }
+  }
+
   const ensurePreviewContent = () => {
     const previewElement = document.getElementById('pdf-preview-content')
 
@@ -264,13 +320,13 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
     }
 
     try {
-      const [{ default: html2pdf }] = await Promise.all([
+      const [{ default: html2pdf }, { saveAs }] = await Promise.all([
         import('html2pdf.js'),
+        import('file-saver'),
       ])
 
       const options = {
         margin: 0.5,
-        filename: `${getFileBaseName()}.pdf`,
         image: { type: 'jpeg' as const, quality: 0.98 },
         html2canvas: {
           scale: 2,
@@ -283,7 +339,25 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
         },
       }
 
-      await html2pdf().set(options).from(previewElement).save()
+      const worker = html2pdf().set(options).from(previewElement)
+      const pdfBlob = await worker.outputPdf('blob')
+      saveAs(pdfBlob, `${getFileBaseName()}.pdf`)
+
+      try {
+        await persistGeneratedDocument({
+          blob: pdfBlob,
+          filename: buildStorageFileName('pdf'),
+          type: 'pdf',
+          contentType: 'application/pdf',
+        })
+      } catch (persistError) {
+        console.error('PDF storage error:', persistError)
+        toast({
+          title: 'Upozorenje',
+          description: 'PDF je preuzet, ali spremanje na server nije uspjelo.',
+          variant: 'destructive',
+        })
+      }
     } catch (error) {
       console.error('PDF generation error:', error)
       toast({
@@ -302,9 +376,8 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
 
     try {
       // Import the docx library
-      const [{ Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell }] = await Promise.all([
-        import('docx'),
-      ])
+      const [{ Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell }, { saveAs }] =
+        await Promise.all([import('docx'), import('file-saver')])
 
       // Create document sections
       const docSections: any[] = []
@@ -472,18 +545,24 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
 
       // Generate and download
       const blob = await Packer.toBlob(doc)
+      saveAs(blob, `${getFileBaseName()}.docx`)
 
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = `${getFileBaseName()}.docx`
-      document.body.appendChild(link)
-      link.click()
-
-      setTimeout(() => {
-        document.body.removeChild(link)
-        URL.revokeObjectURL(url)
-      }, 200)
+      try {
+        await persistGeneratedDocument({
+          blob,
+          filename: buildStorageFileName('docx'),
+          type: 'docx',
+          contentType:
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        })
+      } catch (persistError) {
+        console.error('DOCX storage error:', persistError)
+        toast({
+          title: 'Upozorenje',
+          description: 'DOCX je preuzet, ali spremanje na server nije uspjelo.',
+          variant: 'destructive',
+        })
+      }
 
       toast({
         title: 'Uspješno',

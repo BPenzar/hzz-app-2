@@ -7,13 +7,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "vitest",
     "type-check": "tsc --noEmit",
     "postinstall": "patch-package",
-    "supabase:start": "supabase start",
-    "supabase:stop": "supabase stop",
-    "supabase:reset": "supabase db reset",
-    "supabase:push": "supabase db push",
-    "supabase:types": "supabase gen types typescript --project-id <your-project-id> > types/supabase.ts"
+    "supabase:start": "npx supabase@latest start",
+    "supabase:stop": "npx supabase@latest stop",
+    "supabase:reset": "npx supabase@latest db reset",
+    "supabase:push": "npx supabase@latest db push",
+    "supabase:types": "npx supabase@latest gen types typescript --project-id <your-project-id> > types/supabase.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
@@ -39,8 +40,8 @@
     "date-fns": "^3.6.0",
     "docx": "^9.5.1",
     "file-saver": "^2.0.5",
-    "html2pdf.js": "^0.12.1",
-    "jspdf": "^3.0.3",
+    "html2pdf.js": "^0.14.0",
+    "jspdf": "^4.0.0",
     "lodash": "^4.17.21",
     "lucide-react": "^0.303.0",
     "next": "^15.5.9",
@@ -61,10 +62,13 @@
     "autoprefixer": "^10.0.1",
     "eslint": "^9",
     "eslint-config-next": "15.5.9",
-    "postcss": "^8",
     "patch-package": "^8.0.0",
-    "supabase": "^1.226.4",
+    "postcss": "^8",
     "tailwindcss": "^3.3.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.0.17"
+  },
+  "overrides": {
+    "tar": "7.5.6"
   }
 }

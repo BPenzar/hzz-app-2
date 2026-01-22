@@ -2,6 +2,13 @@
 -- HZZ-App Clean Schema (No Infinite Recursion)
 -- =====================================================
 
+DO $do$
+BEGIN
+IF NOT EXISTS (
+  SELECT 1 FROM pg_tables
+  WHERE schemaname = 'public' AND tablename = 'user_profiles'
+) THEN
+
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -326,3 +333,6 @@ INSERT INTO hzz_rules (version, rules_json, source_url) VALUES (
 INSERT INTO deadlines (label, date, category) VALUES
   ('Rok za podnošenje - Proljeće 2025', '2025-05-31', 'submission'),
   ('Očekivane odluke', '2025-07-15', 'decision');
+
+END IF;
+END $do$;

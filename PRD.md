@@ -4,7 +4,7 @@
 
 **Product Name:** HZZ-App  
 **Purpose:** Automated preparation of HZZ self-employment applications for Croatian users  
-**Tech Stack:** Next.js 14+ (App Router), Supabase (PostgreSQL + Auth + Storage), n8n (automation fallback), OpenAI API  
+**Tech Stack:** Next.js 14+ (App Router), Supabase (PostgreSQL + Auth + Storage), OpenAI API  
 **Target Users:** Self-employed individuals, micro-businesses, startup consultants in Croatia  
 **Launch Goal:** MVP in 4-6 weeks
 
@@ -45,14 +45,8 @@ The official HZZ self-employment application process is complex, changes annuall
 ```
 Frontend: Next.js 14+ (App Router) + Shadcn UI + Tailwind CSS
 Backend: Supabase (PostgreSQL + Auth + Storage)
-AI: OpenAI API (GPT-4o-mini) with n8n fallback
+AI: OpenAI API (GPT-4o-mini)
 Hosting: Vercel (frontend) + Supabase Cloud (EU)
-```
-
-### Feature Flags
-```bash
-USE_N8N_GENERATE=false  # Primary: Next.js direct, Fallback: n8n
-USE_N8N_RULES=false     # Manual HZZ rules updates in MVP
 ```
 
 ---
@@ -113,7 +107,7 @@ Body: {
 Response: {
   success: boolean,
   data: GeneratedContent,
-  source: 'openai' | 'n8n',
+  source: 'openai',
   usage?: TokenUsage
 }
 ```
@@ -170,19 +164,6 @@ export async function POST(request: NextRequest) {
     data: JSON.parse(completion.choices[0].message.content),
     source: 'openai'
   });
-}
-```
-
-### Fallback: n8n Webhook
-
-```typescript
-// Fallback if OpenAI fails
-if (USE_N8N_FALLBACK) {
-  const response = await fetch(N8N_WEBHOOK_URL, {
-    method: 'POST',
-    body: JSON.stringify({ idea, template })
-  });
-  return response.json();
 }
 ```
 
@@ -377,7 +358,6 @@ body: 16px/400
 ### Phase 2: Enhanced (3-4 weeks)
 - OAuth providers
 - Consultant role
-- n8n fallback
 - HZZ rules validation
 - Admin dashboard
 - Audit log
@@ -417,7 +397,7 @@ body: 16px/400
 ## Risk Mitigation
 
 ### Risk 1: OpenAI API Downtime
-**Mitigation:** n8n fallback, clear error messages
+**Mitigation:** Clear error messages, retry guidance
 
 ### Risk 2: HZZ Rules Change
 **Mitigation:** Version control, manual update process
@@ -440,14 +420,6 @@ SUPABASE_SERVICE_ROLE_KEY=
 
 # OpenAI
 OPENAI_API_KEY=
-
-# n8n (optional)
-N8N_WEBHOOK_URL=
-N8N_API_KEY=
-
-# Feature Flags
-USE_N8N_GENERATE=false
-USE_N8N_RULES=false
 
 # App
 NEXT_PUBLIC_APP_URL=http://localhost:3000
@@ -474,7 +446,7 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 ---
 
-## Next Steps for Claude Code
+## Next Steps
 
 1. Initialize Next.js 14 project with App Router
 2. Install dependencies: `@supabase/supabase-js`, `openai`, `shadcn-ui`

@@ -59,9 +59,6 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
 # OpenAI
 OPENAI_API_KEY=your-openai-api-key-here
 
-# Feature Flags
-USE_N8N_GENERATE=false
-USE_N8N_RULES=false
 ```
 
 ### 4. OpenAI API Key
@@ -186,4 +183,4 @@ npx supabase db push
 
 ---
 
-**Potrebna pomoć?** Pogledaj `README.md` ili `CLAUDE_CODE_PROMPT.md`
+**Potrebna pomoć?** Pogledaj `README.md` ili `IMPLEMENTATION_GUIDE.md`

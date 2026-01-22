@@ -7,10 +7,6 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Feature flags
-const USE_N8N_FALLBACK = process.env.USE_N8N_GENERATE === 'true';
-const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL;
-
 // Types
 interface GenerateRequest {
   app_id: string;
@@ -21,7 +17,7 @@ interface GenerateRequest {
 interface GenerateResponse {
   success: boolean;
   data?: any;
-  source?: 'openai' | 'n8n';
+  source?: 'openai';
   usage?: {
     prompt_tokens: number;
     completion_tokens: number;
@@ -145,43 +141,6 @@ export async function POST(request: NextRequest) {
     } catch (openaiError) {
       console.error('[AI Generate] OpenAI API error:', openaiError);
 
-      // FALLBACK: n8n webhook (if enabled)
-      if (USE_N8N_FALLBACK && N8N_WEBHOOK_URL) {
-        console.log('[AI Generate] Falling back to n8n webhook...');
-        
-        try {
-          const n8nResponse = await fetch(N8N_WEBHOOK_URL, {
-            method: 'POST',
-            headers: { 
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              idea: body.idea,
-              template: template,
-            }),
-          });
-
-          if (!n8nResponse.ok) {
-            throw new Error(`n8n webhook failed with status ${n8nResponse.status}`);
-          }
-
-          const n8nData = await n8nResponse.json();
-          
-          console.log('[AI Generate] n8n fallback successful');
-
-          return NextResponse.json({
-            success: true,
-            data: n8nData,
-            source: 'n8n',
-          } as GenerateResponse);
-
-        } catch (n8nError) {
-          console.error('[AI Generate] n8n fallback error:', n8nError);
-          throw new Error('Both OpenAI and n8n fallback failed');
-        }
-      }
-
-      // No fallback available, throw original error
       throw openaiError;
     }
 
@@ -204,7 +163,6 @@ export async function GET() {
     service: 'HZZ-App AI Generation',
     status: 'operational',
     primary: 'OpenAI API',
-    fallback: USE_N8N_FALLBACK ? 'n8n enabled' : 'n8n disabled',
     template_source: 'data/hzz-examples.json',
   });
 }

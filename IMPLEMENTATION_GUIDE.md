@@ -1,4 +1,4 @@
-# HZZ-App - Implementation Instructions for Claude Code
+# HZZ-App - Implementation Instructions
 
 ## Project Overview
 
@@ -13,7 +13,7 @@ Build a Next.js 14+ web application for automated HZZ (Croatian Employment Servi
 - **Frontend:** Next.js 14+ (App Router), React 18, TypeScript
 - **UI:** Shadcn UI, Tailwind CSS, Lucide React icons
 - **Backend:** Supabase (PostgreSQL, Auth, Storage)
-- **AI:** OpenAI API (GPT-4o-mini) with n8n fallback
+- **AI:** OpenAI API (GPT-4o-mini)
 - **PDF:** @react-pdf/renderer or puppeteer
 - **Hosting:** Vercel (frontend), Supabase Cloud EU (backend)
 
@@ -171,7 +171,6 @@ Features:
 
 Copy the provided implementation. Key features:
 - Primary: Direct OpenAI API call
-- Fallback: n8n webhook (if enabled)
 - Error handling
 - Token usage tracking
 
@@ -654,7 +653,6 @@ The implementation is complete when:
 
 - **PRD:** See `PRD.md` for complete product requirements
 - **Database Schema:** See `supabase/migrations/initial_schema.sql`
-- **n8n Fallback:** See `n8n/workflows/hzz_generate_optimized.json`
 - **Prototype:** https://github.com/BPenzar/hzz-app/tree/test
 
 ---

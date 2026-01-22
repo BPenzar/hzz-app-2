@@ -16,8 +16,12 @@
 -- Note: This table may not exist or may require superuser access
 -- It's recommended to enable this via Supabase Dashboard instead.
 
--- Alternative: Add a comment for documentation
-COMMENT ON TABLE auth.users IS 'User authentication table. Password protection should be enabled via Supabase Dashboard: Authentication > Policies > Enable "Check against HaveIBeenPwned database"';
+-- Note: Supabase auth tables are owned by the platform; avoid schema changes here.
+-- Leave a NOTICE instead so the migration stays non-blocking on hosted projects.
+DO $$
+BEGIN
+  RAISE NOTICE 'Enable leaked password protection in Supabase Dashboard: Authentication > Policies > Password Requirements.';
+END $$;
 
 -- =====================================================
 -- Password Strength Best Practices

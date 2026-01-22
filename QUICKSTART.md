@@ -1,21 +1,21 @@
 # HZZ-App - Quick Start Guide
 
-## 🚀 For Claude Code
+## 🚀 Quick Start
 
-**Give Claude Code these files:**
+**Share these files:**
 1. `PRD.md` - Complete product requirements
-2. `CLAUDE_CODE_PROMPT.md` - Implementation instructions
+2. `IMPLEMENTATION_GUIDE.md` - Implementation instructions
 3. `supabase/migrations/20250101000000_initial_schema.sql` - Database schema
 4. `app/api/generate/proposal/route.ts` - AI generation endpoint
 5. `.env.example` - Environment variables template
 6. `package.json.template` - Dependencies list
 
 **Then say:**
-> "Implementiraj HZZ-App prema PRD-u i CLAUDE_CODE_PROMPT.md instrukcijama. Koristi Next.js 14 App Router, Supabase, OpenAI API i Shadcn UI. Započni s Fazom 1 (Setup)."
+> "Implementiraj HZZ-App prema PRD-u i IMPLEMENTATION_GUIDE.md instrukcijama. Koristi Next.js 14 App Router, Supabase, OpenAI API i Shadcn UI. Započni s Fazom 1 (Setup)."
 
 ---
 
-## 📋 Manual Setup (Without Claude Code)
+## 📋 Manual Setup
 
 ### Step 1: Prerequisites
 
@@ -184,14 +184,6 @@ npm run supabase:types
 npm run type-check
 ```
 
-### Issue: n8n fallback not working
-
-**Solution:**
-1. Set `USE_N8N_GENERATE=true` in `.env.local`
-2. Import `n8n/workflows/hzz_generate_optimized.json` to n8n
-3. Get webhook URL from n8n
-4. Set `N8N_WEBHOOK_URL` in `.env.local`
-
 ### Issue: PDF generation fails
 
 **Solution:**
@@ -290,7 +282,6 @@ npx @sentry/wizard@latest -i nextjs
 ### Phase 2 Features
 - [ ] Google OAuth
 - [ ] Consultant role
-- [ ] n8n cron jobs (HZZ rules updates)
 - [ ] Cost validation against rules
 - [ ] Admin dashboard
 
@@ -317,7 +308,7 @@ npx @sentry/wizard@latest -i nextjs
 
 If stuck, check:
 1. PRD.md for business logic
-2. CLAUDE_CODE_PROMPT.md for technical guidance
+2. IMPLEMENTATION_GUIDE.md for technical guidance
 3. Existing prototype code for patterns
 4. Supabase logs for database errors
 5. Browser console for frontend errors
