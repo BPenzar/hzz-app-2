@@ -49,6 +49,8 @@ const buildTableRowSchema = (tableType: string) => {
   if (columns.length === 0) {
     return {
       type: 'object',
+      properties: {},
+      required: [],
       additionalProperties: false,
     }
   }
@@ -102,6 +104,8 @@ const buildSectionsSchema = () => {
   if (field.type === 'profit_summary') {
     sectionProperties[field.key] = {
       type: 'object',
+      properties: {},
+      required: [],
       additionalProperties: false,
     }
     return

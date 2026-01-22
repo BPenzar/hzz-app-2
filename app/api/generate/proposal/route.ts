@@ -20,6 +20,8 @@ const buildTableRowSchema = (tableType: string) => {
   if (columns.length === 0) {
     return {
       type: 'object',
+      properties: {},
+      required: [],
       additionalProperties: false,
     };
   }
@@ -58,6 +60,8 @@ const buildFieldSchema = (field: FieldDefinition) => {
   if (field.type === 'profit_summary') {
     return {
       type: 'object',
+      properties: {},
+      required: [],
       additionalProperties: false,
     };
   }
