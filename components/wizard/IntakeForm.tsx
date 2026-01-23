@@ -99,30 +99,6 @@ export function IntakeForm({ applicationId, onGenerate }: IntakeFormProps) {
       if (sectionData?.data_json && !sectionError && isIntakeData(sectionData.data_json)) {
         console.log('Loading saved intake data:', sectionData.data_json)
         setFormData(sectionData.data_json)
-      } else {
-        // Only if NO saved intake exists, pre-fill basic info from user profile
-        console.log('No saved intake, loading from user_profiles')
-        const { data: { user } } = await supabase.auth.getUser()
-
-        if (user) {
-          const { data: profileData } = await supabase
-            .from('user_profiles')
-            .select('ime, prezime, oib, kontakt_email, kontakt_tel')
-            .eq('id', user.id)
-            .single()
-
-          if (profileData) {
-            console.log('Pre-filling from user_profiles:', profileData)
-            setFormData((prev) => ({
-              ...prev,
-              ime: profileData.ime ?? '',
-              prezime: profileData.prezime ?? '',
-              oib: profileData.oib ?? '',
-              kontakt_email: profileData.kontakt_email ?? '',
-              kontakt_tel: profileData.kontakt_tel ?? '',
-            }))
-          }
-        }
       }
     }
 
@@ -218,15 +194,6 @@ export function IntakeForm({ applicationId, onGenerate }: IntakeFormProps) {
 
   const handleSubmit = async () => {
     // Validation
-    if (!formData.ime || !formData.prezime) {
-      toast({
-        title: 'Nedostaju osnovni podaci',
-        description: 'Molimo unesite ime i prezime',
-        variant: 'destructive',
-      })
-      return
-    }
-
     if (!formData.poslovna_ideja) {
       toast({
         title: 'Nedostaje poslovna ideja',
@@ -238,23 +205,6 @@ export function IntakeForm({ applicationId, onGenerate }: IntakeFormProps) {
 
     setIsGenerating(true)
     try {
-      // Save basic user info to user_profiles for future use
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-
-      if (user) {
-        await supabase
-          .from('user_profiles')
-          .update({
-            ime: formData.ime,
-            prezime: formData.prezime,
-            oib: formData.oib,
-            kontakt_email: formData.kontakt_email,
-            kontakt_tel: formData.kontakt_tel,
-          })
-          .eq('id', user.id)
-      }
-
       // Generate the application
       await onGenerate(formData)
     } catch (error) {
@@ -311,62 +261,9 @@ export function IntakeForm({ applicationId, onGenerate }: IntakeFormProps) {
         <Card className="p-8 overflow-y-auto flex-1 mb-6" style={{ maxHeight: 'calc(100vh - 380px)' }}>
 
           <div className="space-y-6">
-            {/* Basic Personal Info */}
-            <div className="border-b pb-6">
-              <h2 className="text-lg font-semibold mb-4">1. Osnovni podaci *</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="ime">Ime *</Label>
-                  <Input
-                    id="ime"
-                    value={formData.ime}
-                    onChange={(e) => handleChange('ime', e.target.value)}
-                    placeholder="Vaše ime"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="prezime">Prezime *</Label>
-                  <Input
-                    id="prezime"
-                    value={formData.prezime}
-                    onChange={(e) => handleChange('prezime', e.target.value)}
-                    placeholder="Vaše prezime"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="oib">OIB</Label>
-                  <Input
-                    id="oib"
-                    value={formData.oib}
-                    onChange={(e) => handleChange('oib', e.target.value)}
-                    placeholder="12345678901"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="kontakt_email">Email</Label>
-                  <Input
-                    id="kontakt_email"
-                    type="email"
-                    value={formData.kontakt_email}
-                    onChange={(e) => handleChange('kontakt_email', e.target.value)}
-                    placeholder="vas@email.com"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="kontakt_tel">Telefon</Label>
-                  <Input
-                    id="kontakt_tel"
-                    value={formData.kontakt_tel}
-                    onChange={(e) => handleChange('kontakt_tel', e.target.value)}
-                    placeholder="+385 91 234 5678"
-                  />
-                </div>
-              </div>
-            </div>
-
             {/* Business Idea */}
             <div className="border-b pb-6">
-              <h2 className="text-lg font-semibold mb-4">2. Vaša poslovna ideja *</h2>
+              <h2 className="text-lg font-semibold mb-4">1. Vaša poslovna ideja *</h2>
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="poslovna_ideja">Opišite vašu poslovnu ideju</Label>
@@ -392,7 +289,7 @@ export function IntakeForm({ applicationId, onGenerate }: IntakeFormProps) {
 
             {/* CV / Experience */}
             <div className="border-b pb-6">
-              <h2 className="text-lg font-semibold mb-4">3. Radno iskustvo i kompetencije</h2>
+              <h2 className="text-lg font-semibold mb-4">2. Radno iskustvo i kompetencije</h2>
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="radno_iskustvo">Opišite vaše radno iskustvo i obrazovanje</Label>
@@ -409,7 +306,7 @@ export function IntakeForm({ applicationId, onGenerate }: IntakeFormProps) {
 
             {/* Business Structure */}
             <div className="border-b pb-6">
-              <h2 className="text-lg font-semibold mb-4">4. Osnovni podaci o poslovanju</h2>
+              <h2 className="text-lg font-semibold mb-4">3. Osnovni podaci o poslovanju</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="vrsta_subjekta">Vrsta poslovnog subjekta</Label>
@@ -441,7 +338,7 @@ export function IntakeForm({ applicationId, onGenerate }: IntakeFormProps) {
 
             {/* Financial */}
             <div className="border-b pb-6">
-              <h2 className="text-lg font-semibold mb-4">5. Financijska potpora</h2>
+              <h2 className="text-lg font-semibold mb-4">4. Financijska potpora</h2>
               <div>
                 <Label htmlFor="iznos_trazene_potpore">Iznos tražene potpore (EUR)</Label>
                 <Input
@@ -456,7 +353,7 @@ export function IntakeForm({ applicationId, onGenerate }: IntakeFormProps) {
 
             {/* Additional Info */}
             <div>
-              <h2 className="text-lg font-semibold mb-4">6. Dodatne informacije (opcionalno)</h2>
+              <h2 className="text-lg font-semibold mb-4">5. Dodatne informacije (opcionalno)</h2>
               <div>
                 <Label htmlFor="dodatne_informacije">
                   Sve ostale informacije koje smatrate važnima

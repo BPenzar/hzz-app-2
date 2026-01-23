@@ -42,14 +42,15 @@ interface SectionHierarchy {
 export function WizardForm({ applicationId, applicationTitle, initialData = {} }: WizardFormProps) {
   const router = useRouter()
   const { toast } = useToast()
-  const [currentSection, setCurrentSection] = useState('1')
+  const [currentSection, setCurrentSection] = useState('2')
   const [formData, setFormData] = useState<Record<string, any>>(initialData)
   const [isSaving, setIsSaving] = useState(false)
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false)
   const [isGeneratingDocx, setIsGeneratingDocx] = useState(false)
 
-  const sections = hzzStructure.sections
+  const allSections = hzzStructure.sections
+  const sections = allSections.filter((section) => section.key !== '1')
 
   // Build hierarchical structure
   const sectionHierarchy: (Section | SectionHierarchy)[] = []
@@ -97,7 +98,7 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
 
     try {
       // Save to sections table
-      for (const section of sections) {
+      for (const section of allSections) {
         const sectionData = (formData[section.key] ?? {}) as Json
         const payload: Database['public']['Tables']['sections']['Insert'] = {
           app_id: applicationId,
@@ -123,7 +124,7 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
     } finally {
       setIsSaving(false)
     }
-  }, [applicationId, formData, sections])
+  }, [applicationId, formData, allSections])
 
   // Autosave debounced
   useEffect(() => {
@@ -151,7 +152,7 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
 
     try {
       // Save to sections table
-      for (const section of sections) {
+      for (const section of allSections) {
         const sectionData = (formData[section.key] ?? {}) as Json
         const payload: Database['public']['Tables']['sections']['Insert'] = {
           app_id: applicationId,

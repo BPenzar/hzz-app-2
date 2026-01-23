@@ -120,15 +120,6 @@ export function GuestLanding() {
   }
 
   const handleSubmit = async () => {
-    if (!formData.ime || !formData.prezime) {
-      toast({
-        title: 'Nedostaju osnovni podaci',
-        description: 'Molimo unesite ime i prezime.',
-        variant: 'destructive',
-      })
-      return
-    }
-
     if (!formData.poslovna_ideja) {
       toast({
         title: 'Nedostaje poslovna ideja',
@@ -297,59 +288,7 @@ export function GuestLanding() {
               >
                 <div className="space-y-6 overflow-y-auto pr-2 flex-1 min-h-0">
                   <div className="border-b pb-6">
-                    <h2 className="text-base font-semibold mb-4">1. Osnovni podaci *</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="ime">Ime *</Label>
-                        <Input
-                          id="ime"
-                          value={formData.ime}
-                          onChange={(e) => handleChange('ime', e.target.value)}
-                          placeholder="Vaše ime"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="prezime">Prezime *</Label>
-                        <Input
-                          id="prezime"
-                          value={formData.prezime}
-                          onChange={(e) => handleChange('prezime', e.target.value)}
-                          placeholder="Vaše prezime"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="oib">OIB</Label>
-                        <Input
-                          id="oib"
-                          value={formData.oib}
-                          onChange={(e) => handleChange('oib', e.target.value)}
-                          placeholder="12345678901"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="kontakt_email">Email</Label>
-                        <Input
-                          id="kontakt_email"
-                          type="email"
-                          value={formData.kontakt_email}
-                          onChange={(e) => handleChange('kontakt_email', e.target.value)}
-                          placeholder="vas@email.com"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="kontakt_tel">Telefon</Label>
-                        <Input
-                          id="kontakt_tel"
-                          value={formData.kontakt_tel}
-                          onChange={(e) => handleChange('kontakt_tel', e.target.value)}
-                          placeholder="+385 91 234 5678"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="border-b pb-6">
-                    <h2 className="text-base font-semibold mb-4">2. Vaša poslovna ideja *</h2>
+                    <h2 className="text-base font-semibold mb-4">1. Vaša poslovna ideja *</h2>
                     <div className="space-y-4">
                       <div>
                         <Label htmlFor="poslovna_ideja">Opišite vašu poslovnu ideju</Label>
@@ -374,7 +313,7 @@ export function GuestLanding() {
                   </div>
 
                   <div className="border-b pb-6">
-                    <h2 className="text-base font-semibold mb-4">3. Radno iskustvo i kompetencije</h2>
+                    <h2 className="text-base font-semibold mb-4">2. Radno iskustvo i kompetencije</h2>
                     <div>
                       <Label htmlFor="radno_iskustvo">Opišite vaše radno iskustvo i obrazovanje</Label>
                       <Textarea
@@ -388,7 +327,7 @@ export function GuestLanding() {
                   </div>
 
                   <div className="border-b pb-6">
-                    <h2 className="text-base font-semibold mb-4">4. Osnovni podaci o poslovanju</h2>
+                    <h2 className="text-base font-semibold mb-4">3. Osnovni podaci o poslovanju</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="vrsta_subjekta">Vrsta poslovnog subjekta</Label>
@@ -419,7 +358,7 @@ export function GuestLanding() {
                   </div>
 
                   <div className="border-b pb-6">
-                    <h2 className="text-base font-semibold mb-4">5. Financijska potpora</h2>
+                    <h2 className="text-base font-semibold mb-4">4. Financijska potpora</h2>
                     <div>
                       <Label htmlFor="iznos_trazene_potpore">Iznos tražene potpore (EUR)</Label>
                       <Input
@@ -433,7 +372,7 @@ export function GuestLanding() {
                   </div>
 
                   <div>
-                    <h2 className="text-base font-semibold mb-4">6. Dodatne informacije (opcionalno)</h2>
+                    <h2 className="text-base font-semibold mb-4">5. Dodatne informacije (opcionalno)</h2>
                     <div>
                       <Label htmlFor="dodatne_informacije">
                         Sve ostale informacije koje smatrate važnima

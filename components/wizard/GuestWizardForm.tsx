@@ -55,7 +55,7 @@ export function GuestWizardForm({
   onClearDraft,
 }: GuestWizardFormProps) {
   const { toast } = useToast()
-  const [currentSection, setCurrentSection] = useState('1')
+  const [currentSection, setCurrentSection] = useState('2')
   const [formData, setFormData] = useState<Record<string, any>>(initialData)
   const [isSaving, setIsSaving] = useState(false)
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
@@ -63,7 +63,8 @@ export function GuestWizardForm({
   const [isGeneratingDocx, setIsGeneratingDocx] = useState(false)
   const [isHydrated, setIsHydrated] = useState(false)
 
-  const sections = hzzStructure.sections
+  const allSections = hzzStructure.sections
+  const sections = allSections.filter((section) => section.key !== '1')
 
   const formattedGeneratedAt = useMemo(() => {
     if (!generatedAt) return null

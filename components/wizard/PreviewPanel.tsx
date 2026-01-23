@@ -356,8 +356,8 @@ export function PreviewPanel({ data, sections }: PreviewPanelProps) {
 
         {/* Sections */}
         {sections.map((section) => {
-          // Skip section 5 (Prilozi) - these are attachments, not content for PDF
-          if (section.key === '5') return null
+          // Skip section 1 (personal data) and section 5 (attachments)
+          if (section.key === '1' || section.key === '5') return null
 
           const sectionData = data[section.key]
 
