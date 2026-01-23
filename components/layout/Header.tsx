@@ -59,7 +59,7 @@ export function Header({ user, showAuth = true, showAuthButtons = true }: Header
                 href={user ? '/dashboard' : '/'}
                 className="flex-col flex hover:text-primary transition-colors"
               >
-                <span className="text-sm font-medium text-gray-900">HZZ Zahtjev Creator</span>
+                <span className="text-sm font-medium text-gray-900">HZZ Zahtjev</span>
                 <span className="text-xs text-gray-500">AI asistent &quot;zahtjev za samozapošljavanje&quot; HZZ-a</span>
               </Link>
             </div>
@@ -83,7 +83,7 @@ export function Header({ user, showAuth = true, showAuthButtons = true }: Header
                       )}
                       {showPrimjer && (
                         <DropdownMenuItem asChild>
-                          <Link href="/primjer" className="w-full">Primjer</Link>
+                          <Link href="/primjer" className="w-full">Kreiraj Primjer Zahtjeva</Link>
                         </DropdownMenuItem>
                       )}
                       <DropdownMenuSeparator />
@@ -115,8 +115,8 @@ export function Header({ user, showAuth = true, showAuthButtons = true }: Header
 
               {showPrimjer && (
                 <Link href="/primjer" className="sm:hidden">
-                  <Button size="sm" className="text-sm shadow-sm">
-                    Primjer
+                  <Button size="sm" className="text-sm shadow-sm bg-amber-500 text-white hover:bg-amber-600 whitespace-nowrap">
+                    Kreiraj Primjer Zahtjeva
                   </Button>
                 </Link>
               )}
@@ -129,8 +129,8 @@ export function Header({ user, showAuth = true, showAuthButtons = true }: Header
                 )}
                 {showPrimjer && (
                   <Link href="/primjer">
-                    <Button size="sm" className="text-sm shadow-sm">
-                      Primjer
+                    <Button size="sm" className="text-sm shadow-sm bg-amber-500 text-white hover:bg-amber-600 whitespace-nowrap">
+                      Kreiraj Primjer Zahtjeva
                     </Button>
                   </Link>
                 )}

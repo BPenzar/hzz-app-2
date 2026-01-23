@@ -214,7 +214,7 @@ export function GuestLanding() {
           <div className="max-w-5xl mx-auto">
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
               <div>
-                <p className="text-xs uppercase tracking-widest text-muted-foreground">HZZ Zahtjev Creator</p>
+                <p className="text-xs uppercase tracking-widest text-muted-foreground">HZZ Zahtjev</p>
                 <h1 className="text-2xl md:text-3xl font-bold text-foreground mt-2">
                   Primjer: Brza izrada HZZ zahtjeva uz AI
                 </h1>

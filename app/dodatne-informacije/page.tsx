@@ -35,22 +35,25 @@ export default async function AdditionalInfoPage() {
       <Header user={user} showAuth={true} />
 
       <main className="flex-1">
-        <section className="container mx-auto px-4 py-14 md:py-20">
+        <section className="container mx-auto px-4 py-16 md:py-24">
           <div className="max-w-3xl mx-auto text-center">
-            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">HZZ zahtjev</p>
+            <p className="text-xs uppercase tracking-[0.35em] text-muted-foreground">HZZ zahtjev</p>
             <h1 className="mt-4 text-3xl md:text-5xl font-semibold text-foreground">
-              Automatska priprema HZZ zahtjeva uz AI
+              Najjednostavniji način za izradu HZZ zahtjeva
             </h1>
             <p className="mt-4 text-base md:text-lg text-muted-foreground leading-relaxed">
-              U par minuta dobijte jasan nacrt poslovnog plana i troškovnika.
+              Odgovorite na par pitanja, a AI sastavlja nacrt poslovnog plana i troškovnika.
               <br />
-              Pokrenite primjer i odmah krenite s izradom zahtjeva.
+              Kliknite i odmah kreirajte primjer zahtjeva.
             </p>
 
             <div className="mt-8 flex flex-col items-center gap-3">
               <Link href="/primjer" className="w-full sm:w-auto">
-                <Button size="lg" className="w-full sm:w-auto px-10 py-6 text-base md:text-lg shadow-lg">
-                  Primjer zahtjev
+                <Button
+                  size="lg"
+                  className="w-full sm:w-auto px-10 py-6 text-base md:text-lg shadow-lg bg-amber-500 text-white hover:bg-amber-600"
+                >
+                  Kreiraj Primjer Zahtjeva
                 </Button>
               </Link>
               <Link href="/auth/signup" className="text-sm text-muted-foreground hover:text-foreground">
@@ -58,14 +61,15 @@ export default async function AdditionalInfoPage() {
               </Link>
             </div>
 
-            <div className="mt-10 grid gap-4 sm:grid-cols-3 text-sm text-muted-foreground">
-              <div className="rounded-xl border bg-white px-4 py-3">Brzi nacrt bez registracije</div>
-              <div className="rounded-xl border bg-white px-4 py-3">Sekcije 2–5 + troškovnik</div>
-              <div className="rounded-xl border bg-white px-4 py-3">Uredi i izvezi PDF/DOCX</div>
+            <div className="mt-8 text-xs uppercase tracking-[0.25em] text-muted-foreground">
+              Bez registracije • Sekcije 2–5 + troškovnik • PDF/DOCX uz račun
             </div>
+            <p className="mt-4 text-sm text-muted-foreground">
+              Preuzimanje PDF/DOCX i trajno spremanje dostupni su samo uz registraciju, uz bolji AI model i rezultate.
+            </p>
           </div>
 
-          <div className="max-w-3xl mx-auto mt-12">
+          <div className="max-w-3xl mx-auto mt-14">
             <h2 className="text-sm font-semibold text-foreground uppercase tracking-wide">
               Korisne poveznice
             </h2>
