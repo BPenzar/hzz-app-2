@@ -22,9 +22,17 @@ export default async function AdditionalInfoPage() {
               Pripremite HZZ zahtjev uz AI
             </h1>
             <p className="mt-4 text-base md:text-lg text-muted-foreground leading-relaxed">
-              Odgovorite na nekoliko pitanja, a AI priprema nacrt poslovnog plana i troškovnika za HZZ potporu.
+              Odgovorite na nekoliko kratkih pitanja, a AI priprema nacrt poslovnog plana i troškovnika za Vaš
+              zahtjev za sredstva za samozapošljavanje HZZ-a.
               <br />
-              Isprobajte odmah – primjer zahtjeva bez registracije.
+              <Link
+                href="https://mjere.hzz.hr/mjere/potpore-za-samozaposljavanje-2026/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-1 text-blue-600 underline"
+              >
+                https://mjere.hzz.hr/mjere/potpore-za-samozaposljavanje-2026/
+              </Link>
             </p>
 
             <div className="mt-8 flex flex-col items-center gap-3">
