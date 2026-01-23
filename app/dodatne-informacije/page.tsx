@@ -15,8 +15,8 @@ export default async function AdditionalInfoPage() {
       <Header user={user} showAuth={true} />
 
       <main className="flex-1">
-        <section className="container mx-auto px-4 py-16 md:py-24">
-          <div className="max-w-3xl mx-auto text-center">
+        <section className="container mx-auto px-4 py-16 md:py-24 flex flex-col justify-center min-h-[70vh] md:min-h-[calc(100vh-8rem)]">
+          <div className="max-w-2xl mx-auto text-center">
             <p className="text-xs uppercase tracking-[0.35em] text-muted-foreground">HZZ zahtjev</p>
             <h1 className="mt-4 text-3xl md:text-5xl font-semibold text-foreground">
               Najjednostavniji način za izradu HZZ zahtjeva
@@ -30,8 +30,8 @@ export default async function AdditionalInfoPage() {
             <div className="mt-8 flex flex-col items-center gap-3">
               <Link href="/primjer" className="w-full sm:w-auto">
                 <Button
-                  size="lg"
-                  className="w-full sm:w-auto px-10 py-6 text-base md:text-lg shadow-lg bg-amber-100 text-amber-700 border border-amber-200 hover:bg-amber-200"
+                  size="default"
+                  className="w-full sm:w-auto h-11 px-8 text-base shadow-lg bg-amber-100 text-amber-700 border border-amber-200 hover:bg-amber-200"
                 >
                   Kreiraj Primjer Zahtjeva
                 </Button>

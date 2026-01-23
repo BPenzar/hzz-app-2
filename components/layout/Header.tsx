@@ -21,7 +21,7 @@ export function Header({ user, showAuth = true, showAuthButtons = true }: Header
   const pathname = usePathname()
   const showInfo = !user && pathname !== '/'
   const showPrimjer = !user && pathname !== '/primjer'
-  const showLinksSection = showInfo || showPrimjer
+  const showLinksSection = showInfo
 
   const handleSignOut = async () => {
     const supabase = createClient()
@@ -83,7 +83,7 @@ export function Header({ user, showAuth = true, showAuthButtons = true }: Header
                       )}
                       {showPrimjer && (
                         <DropdownMenuItem asChild>
-                          <Link href="/primjer" className="w-full">Kreiraj Primjer Zahtjeva</Link>
+                          <Link href="/primjer" className="w-full">Primjer</Link>
                         </DropdownMenuItem>
                       )}
                       <DropdownMenuSeparator />
@@ -113,25 +113,10 @@ export function Header({ user, showAuth = true, showAuthButtons = true }: Header
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {showPrimjer && (
-                <Link href="/primjer" className="sm:hidden">
-                  <Button size="sm" className="text-sm shadow-sm bg-amber-100 text-amber-700 border border-amber-200 hover:bg-amber-200 whitespace-nowrap">
-                    Kreiraj Primjer Zahtjeva
-                  </Button>
-                </Link>
-              )}
-
               <div className="hidden sm:flex items-center gap-2 sm:gap-4">
                 {showInfo && (
                   <Link href="/">
                     <Button variant="ghost" size="sm" className="text-sm">Informacije</Button>
-                  </Link>
-                )}
-                {showPrimjer && (
-                  <Link href="/primjer">
-                    <Button size="sm" className="text-sm shadow-sm bg-amber-100 text-amber-700 border border-amber-200 hover:bg-amber-200 whitespace-nowrap">
-                      Kreiraj Primjer Zahtjeva
-                    </Button>
                   </Link>
                 )}
                 {showAuthButtons && showLinksSection && (
@@ -149,11 +134,15 @@ export function Header({ user, showAuth = true, showAuthButtons = true }: Header
                   ) : (
                     <>
                       <Link href="/auth/login">
-                        <Button variant="ghost" size="sm" className="text-sm">Prijava</Button>
-                      </Link>
-                      <Link href="/auth/signup">
-                        <Button size="sm" className="text-sm">Registracija</Button>
-                      </Link>
+                      <Button variant="ghost" size="sm" className="text-sm">
+                        Prijava
+                      </Button>
+                    </Link>
+                    <Link href="/auth/signup">
+                      <Button size="sm" className="text-sm bg-blue-600 text-white hover:bg-blue-700">
+                        Registracija
+                      </Button>
+                    </Link>
                     </>
                   ))}
               </div>
