@@ -69,10 +69,17 @@ export function Header({ user, showAuth = true }: HeaderProps) {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem asChild>
-                    <Link href="/dodatne-informacije" className="w-full">Informacije</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
+                  {!user && (
+                    <>
+                      <DropdownMenuItem asChild>
+                        <Link href="/" className="w-full">Informacije</Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/primjer" className="w-full">Primjer</Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                    </>
+                  )}
                   {user ? (
                     <>
                       {user.email && (
@@ -96,10 +103,27 @@ export function Header({ user, showAuth = true }: HeaderProps) {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <div className="hidden sm:flex items-center gap-2 sm:gap-4">
-                <Link href="/dodatne-informacije">
-                  <Button variant="ghost" size="sm" className="text-sm">Informacije</Button>
+              {!user && (
+                <Link href="/primjer" className="sm:hidden">
+                  <Button size="sm" className="text-sm shadow-sm">
+                    Primjer
+                  </Button>
                 </Link>
+              )}
+
+              <div className="hidden sm:flex items-center gap-2 sm:gap-4">
+                {!user && (
+                  <Link href="/">
+                    <Button variant="ghost" size="sm" className="text-sm">Informacije</Button>
+                  </Link>
+                )}
+                {!user && (
+                  <Link href="/primjer">
+                    <Button size="sm" className="text-sm shadow-sm">
+                      Primjer
+                    </Button>
+                  </Link>
+                )}
                 <div className="h-6 w-px bg-gray-300" />
                 {user ? (
                   <>

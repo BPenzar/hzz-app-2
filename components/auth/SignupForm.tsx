@@ -1,17 +1,28 @@
 'use client'
 
 import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useToast } from '@/hooks/use-toast'
+import { GoogleButton } from '@/components/auth/GoogleButton'
 
 export function SignupForm() {
   const { toast } = useToast()
+  const searchParams = useSearchParams()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const redirectTo = (() => {
+    const value = searchParams.get('redirectTo')
+    if (!value || !value.startsWith('/') || value.startsWith('//')) {
+      return null
+    }
+    return value
+  })()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -61,6 +72,29 @@ export function SignupForm() {
     setIsLoading(false)
   }
 
+  const handleGoogleSignUp = async () => {
+    setIsLoading(true)
+    setError(null)
+
+    const supabase = createClient()
+    const redirectUrl = new URL('/auth/callback', window.location.origin)
+    if (redirectTo) {
+      redirectUrl.searchParams.set('redirectTo', redirectTo)
+    }
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: redirectUrl.toString(),
+      },
+    })
+
+    if (error) {
+      setError(error.message ?? 'Neuspješna Google registracija.')
+      setIsLoading(false)
+    }
+  }
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
@@ -68,6 +102,18 @@ export function SignupForm() {
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
+
+      <GoogleButton
+        label="Registriraj se s Googleom"
+        disabled={isLoading}
+        onClick={handleGoogleSignUp}
+      />
+
+      <div className="flex items-center gap-3 text-xs uppercase tracking-wide text-muted-foreground">
+        <span className="h-px flex-1 bg-border" />
+        <span>ili s emailom</span>
+        <span className="h-px flex-1 bg-border" />
+      </div>
 
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>

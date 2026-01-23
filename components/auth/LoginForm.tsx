@@ -1,19 +1,48 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useToast } from '@/hooks/use-toast'
+import { GoogleButton } from '@/components/auth/GoogleButton'
 
 export function LoginForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const redirectTo = (() => {
+    const value = searchParams.get('redirectTo')
+    if (!value || !value.startsWith('/') || value.startsWith('//')) {
+      return null
+    }
+    return value
+  })()
+
+  useEffect(() => {
+    const oauthError = searchParams.get('error')
+    if (!oauthError) return
+
+    const errorDescription = searchParams.get('error_description')
+    if (errorDescription) {
+      setError(errorDescription)
+      return
+    }
+
+    const errorMap: Record<string, string> = {
+      oauth_missing_code: 'Google prijava nije dovršena. Pokušajte ponovno.',
+      oauth_exchange_failed: 'Ne možemo dovršiti Google prijavu. Pokušajte ponovno.',
+      access_denied: 'Google prijava je otkazana. Pokušajte ponovno.',
+    }
+
+    setError(errorMap[oauthError] ?? 'Ne možemo se prijaviti putem Googlea.')
+  }, [searchParams])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -42,8 +71,31 @@ export function LoginForm() {
       description: 'Preusmjeravanje na dashboard...',
     })
 
-    router.push('/dashboard')
+    router.push(redirectTo ?? '/dashboard')
     router.refresh()
+  }
+
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true)
+    setError(null)
+
+    const supabase = createClient()
+    const redirectUrl = new URL('/auth/callback', window.location.origin)
+    if (redirectTo) {
+      redirectUrl.searchParams.set('redirectTo', redirectTo)
+    }
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: redirectUrl.toString(),
+      },
+    })
+
+    if (error) {
+      setError(error.message ?? 'Neuspješna Google prijava.')
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -53,6 +105,14 @@ export function LoginForm() {
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
+
+      <GoogleButton disabled={isLoading} onClick={handleGoogleSignIn} />
+
+      <div className="flex items-center gap-3 text-xs uppercase tracking-wide text-muted-foreground">
+        <span className="h-px flex-1 bg-border" />
+        <span>ili s emailom</span>
+        <span className="h-px flex-1 bg-border" />
+      </div>
 
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>

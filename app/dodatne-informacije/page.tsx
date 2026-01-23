@@ -36,66 +36,84 @@ export default async function AdditionalInfoPage() {
 
       <main className="flex-1">
         <section className="container mx-auto px-4 py-12 md:py-16">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-5xl mx-auto">
             <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Informacije</p>
-            <h1 className="text-3xl md:text-4xl font-bold text-foreground mt-3">
-              Što je HZZ Zahtjev Creator i kako pomaže?
-            </h1>
-            <p className="text-base text-muted-foreground mt-4 leading-relaxed">
-              Ovo je AI alat za brzu izradu HZZ zahtjeva. Ispunite kratki upitnik, a AI generira poslovni plan
-              u skladu s HZZ pravilima. Vi zatim pregledate i doradite sadržaj prije predaje.
-            </p>
 
-            <div className="mt-10 space-y-6 text-sm text-muted-foreground leading-relaxed">
+            <div className="mt-4 grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
               <div>
-                <h2 className="text-base font-semibold text-foreground">Kako aplikacija radi</h2>
+                <h1 className="text-3xl md:text-4xl font-bold text-foreground">
+                  Najbrži put do HZZ zahtjeva uz AI
+                </h1>
+                <p className="text-base text-muted-foreground mt-4 leading-relaxed">
+                  Ispunite kratki upitnik i dobijte strukturirani nacrt zahtjeva koji možete odmah pregledati,
+                  doraditi i pripremiti za predaju.
+                </p>
+
+                <div className="mt-6 flex flex-col sm:flex-row gap-3">
+                  <Link href="/primjer">
+                    <Button size="lg" className="w-full sm:w-auto shadow-lg">
+                      Primjer zahtjev
+                    </Button>
+                  </Link>
+                  <Link href="/auth/signup">
+                    <Button variant="outline" size="lg" className="w-full sm:w-auto">
+                      Kreiraj račun
+                    </Button>
+                  </Link>
+                </div>
+                <p className="text-xs text-muted-foreground mt-3">
+                  Primjer radi lokalno u pregledniku i ne sprema podatke. Za trajno spremanje potreban je račun.
+                </p>
+              </div>
+
+              <div className="rounded-2xl border bg-slate-50 p-6">
+                <h2 className="text-sm font-semibold text-foreground uppercase tracking-wide">
+                  Što dobivate
+                </h2>
+                <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
+                  <li>AI izrađuje sekcije 2–5 i troškovnik u skladu s HZZ pravilima.</li>
+                  <li>Možete uređivati, spremati i izvoziti PDF/DOCX.</li>
+                  <li>Brzi lokalni nacrt bez registracije.</li>
+                </ul>
+                <div className="mt-5 flex flex-col sm:flex-row gap-2">
+                  <Link href="/auth/login">
+                    <Button variant="secondary" size="sm" className="w-full sm:w-auto">
+                      Prijavi se
+                    </Button>
+                  </Link>
+                  <Link href="/auth/signup">
+                    <Button size="sm" className="w-full sm:w-auto">
+                      Registriraj se
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-12 grid gap-6 md:grid-cols-3 text-sm text-muted-foreground leading-relaxed">
+              <div className="rounded-xl border bg-white p-5">
+                <h2 className="text-base font-semibold text-foreground">Kako radi</h2>
                 <ol className="mt-3 list-decimal pl-4 space-y-2">
-                  <li>Ispunite upitnik s ključnim informacijama o ideji i potpori.</li>
-                  <li>AI generira sekcije 2–5 uz troškovnik i opis poslovanja.</li>
-                  <li>Po potrebi uredite i izvezite PDF/DOCX.</li>
+                  <li>Unesite osnovne informacije o ideji i potpori.</li>
+                  <li>AI generira poslovni plan i troškovnik.</li>
+                  <li>Pregledajte i doradite prije predaje.</li>
                 </ol>
               </div>
-
-              <div>
+              <div className="rounded-xl border bg-white p-5">
                 <h2 className="text-base font-semibold text-foreground">Lokalni nacrt</h2>
                 <p className="mt-2">
-                  Bez registracije možete napraviti brzi nacrt koji se sprema samo u vašem pregledniku.
+                  Brzi primjer radi bez registracije i sprema se samo u vaš preglednik.
                 </p>
                 <p className="mt-2">
-                  Preuzimanje PDF/DOCX dostupno je samo uz račun.
+                  PDF/DOCX izvoz dostupan je nakon registracije.
                 </p>
               </div>
-
-              <div>
+              <div className="rounded-xl border bg-white p-5">
                 <h2 className="text-base font-semibold text-foreground">Uz račun</h2>
                 <p className="mt-2">
-                  Registrirani korisnici imaju detaljniji AI, trajno spremanje i potpuni pregled dokumenata.
+                  Detaljniji AI, trajno spremanje, nadzor dokumentacije i spremni izvozi.
                 </p>
               </div>
-            </div>
-
-            <div className="mt-10 flex flex-col sm:flex-row gap-3">
-              <Link href="/auth/signup">
-                <Button size="lg" className="w-full sm:w-auto">
-                  Kreiraj račun i kreni
-                </Button>
-              </Link>
-              <Link href="/auth/login">
-                <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                  Prijavi se
-                </Button>
-              </Link>
-            </div>
-
-            <div className="mt-8 border-t pt-6">
-              <Link href="/">
-                <Button variant="secondary" size="lg" className="w-full sm:w-auto">
-                  Generiraj lokalni test zahtjev
-                </Button>
-              </Link>
-              <p className="text-xs text-muted-foreground mt-3">
-                Lokalni test koristi slabiji AI i ne sprema zahtjev. Podaci ostaju samo u vašem pregledniku.
-              </p>
             </div>
 
             <div className="mt-12">
