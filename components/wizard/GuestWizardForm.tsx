@@ -203,7 +203,10 @@ export function GuestWizardForm({
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
               <Sheet open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="default" size="sm" className="w-full sm:w-auto text-sm">
+                  <Button
+                    size="sm"
+                    className="w-full sm:w-auto text-sm bg-black text-white hover:bg-black/90"
+                  >
                     <PanelRightOpen className="h-4 w-4 mr-2" />
                     Pregled
                   </Button>
@@ -217,13 +220,20 @@ export function GuestWizardForm({
                           Pregledajte sve unesene podatke. Preuzimanje PDF/DOCX moguće je uz registraciju.
                         </SheetDescription>
                       </SheetHeader>
-                      <Button
-                        variant="outline"
-                        onClick={() => setIsPreviewOpen(false)}
-                        className="w-full sm:w-auto mt-2 sm:mt-0"
-                      >
-                        Natrag
-                      </Button>
+                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+                        <Link href="/auth/signup" className="w-full sm:w-auto">
+                          <Button size="sm" className="w-full sm:w-auto">
+                            Registracija (za preuzimanje PDF/DOCX)
+                          </Button>
+                        </Link>
+                        <Button
+                          variant="outline"
+                          onClick={() => setIsPreviewOpen(false)}
+                          className="w-full sm:w-auto mt-2 sm:mt-0"
+                        >
+                          Natrag
+                        </Button>
+                      </div>
                     </div>
                   </div>
                   <div className="p-8">
@@ -231,11 +241,6 @@ export function GuestWizardForm({
                   </div>
                 </SheetContent>
               </Sheet>
-              <Link href="/auth/signup" className="w-full sm:w-auto">
-                <Button variant="outline" size="sm" className="w-full sm:w-auto text-sm">
-                  Registracija (za kreiranje i preuzimanje zahtjeva)
-                </Button>
-              </Link>
               {onExit && (
                 <Button
                   onClick={onExit}
