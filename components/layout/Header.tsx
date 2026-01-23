@@ -100,6 +100,7 @@ export function Header({ user, showAuth = true }: HeaderProps) {
                 <Link href="/dodatne-informacije">
                   <Button variant="ghost" size="sm" className="text-sm">Informacije</Button>
                 </Link>
+                <div className="h-6 w-px bg-gray-300" />
                 {user ? (
                   <>
                     <span className="text-sm text-gray-600 hidden sm:inline">{user.email}</span>
