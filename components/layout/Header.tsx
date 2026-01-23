@@ -13,13 +13,15 @@ interface HeaderProps {
     email?: string | null
   } | null
   showAuth?: boolean
+  showAuthButtons?: boolean
 }
 
-export function Header({ user, showAuth = true }: HeaderProps) {
+export function Header({ user, showAuth = true, showAuthButtons = true }: HeaderProps) {
   const router = useRouter()
   const pathname = usePathname()
   const showInfo = !user && pathname !== '/'
   const showPrimjer = !user && pathname !== '/primjer'
+  const showLinksSection = showInfo || showPrimjer
 
   const handleSignOut = async () => {
     const supabase = createClient()
@@ -87,26 +89,27 @@ export function Header({ user, showAuth = true }: HeaderProps) {
                       <DropdownMenuSeparator />
                     </>
                   )}
-                  {user ? (
-                    <>
-                      {user.email && (
-                        <DropdownMenuLabel className="text-xs text-gray-500">{user.email}</DropdownMenuLabel>
-                      )}
-                      <DropdownMenuItem onClick={handleSignOut}>
-                        <LogOut className="h-4 w-4" />
-                        Odjava
-                      </DropdownMenuItem>
-                    </>
-                  ) : (
-                    <>
-                      <DropdownMenuItem asChild>
-                        <Link href="/auth/login" className="w-full">Prijava</Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href="/auth/signup" className="w-full">Registracija</Link>
-                      </DropdownMenuItem>
-                    </>
-                  )}
+                  {showAuthButtons &&
+                    (user ? (
+                      <>
+                        {user.email && (
+                          <DropdownMenuLabel className="text-xs text-gray-500">{user.email}</DropdownMenuLabel>
+                        )}
+                        <DropdownMenuItem onClick={handleSignOut}>
+                          <LogOut className="h-4 w-4" />
+                          Odjava
+                        </DropdownMenuItem>
+                      </>
+                    ) : (
+                      <>
+                        <DropdownMenuItem asChild>
+                          <Link href="/auth/login" className="w-full">Prijava</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href="/auth/signup" className="w-full">Registracija</Link>
+                        </DropdownMenuItem>
+                      </>
+                    ))}
                 </DropdownMenuContent>
               </DropdownMenu>
 
@@ -131,25 +134,28 @@ export function Header({ user, showAuth = true }: HeaderProps) {
                     </Button>
                   </Link>
                 )}
-                <div className="h-6 w-px bg-gray-300" />
-                {user ? (
-                  <>
-                    <span className="text-sm text-gray-600 hidden sm:inline">{user.email}</span>
-                    <Button variant="ghost" size="sm" onClick={handleSignOut} className="text-sm">
-                      <LogOut className="h-4 w-4 sm:mr-2" />
-                      <span className="hidden sm:inline">Odjava</span>
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Link href="/auth/login">
-                      <Button variant="ghost" size="sm" className="text-sm">Prijava</Button>
-                    </Link>
-                    <Link href="/auth/signup">
-                      <Button size="sm" className="text-sm">Registracija</Button>
-                    </Link>
-                  </>
+                {showAuthButtons && showLinksSection && (
+                  <div className="h-6 w-px bg-gray-300" />
                 )}
+                {showAuthButtons &&
+                  (user ? (
+                    <>
+                      <span className="text-sm text-gray-600 hidden sm:inline">{user.email}</span>
+                      <Button variant="ghost" size="sm" onClick={handleSignOut} className="text-sm">
+                        <LogOut className="h-4 w-4 sm:mr-2" />
+                        <span className="hidden sm:inline">Odjava</span>
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Link href="/auth/login">
+                        <Button variant="ghost" size="sm" className="text-sm">Prijava</Button>
+                      </Link>
+                      <Link href="/auth/signup">
+                        <Button size="sm" className="text-sm">Registracija</Button>
+                      </Link>
+                    </>
+                  ))}
               </div>
             </div>
           )}
