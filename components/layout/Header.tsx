@@ -57,14 +57,6 @@ export function Header({ user, showAuth = true }: HeaderProps) {
                 <span className="text-sm font-medium text-gray-900">HZZ Zahtjev Creator</span>
                 <span className="text-xs text-gray-500">AI asistent &quot;zahtjev za samozapošljavanje&quot; HZZ-a</span>
               </Link>
-              <div className="flex items-center gap-2">
-                <Link href="/">
-                  <Button variant="ghost" size="sm" className="text-sm">Main</Button>
-                </Link>
-                <Link href="/dodatne-informacije">
-                  <Button variant="ghost" size="sm" className="text-sm">Informacije</Button>
-                </Link>
-              </div>
             </div>
           </div>
           {showAuth && (
@@ -77,9 +69,6 @@ export function Header({ user, showAuth = true }: HeaderProps) {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem asChild>
-                    <Link href="/" className="w-full">Main</Link>
-                  </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/dodatne-informacije" className="w-full">Informacije</Link>
                   </DropdownMenuItem>
@@ -108,6 +97,9 @@ export function Header({ user, showAuth = true }: HeaderProps) {
               </DropdownMenu>
 
               <div className="hidden sm:flex items-center gap-2 sm:gap-4">
+                <Link href="/dodatne-informacije">
+                  <Button variant="ghost" size="sm" className="text-sm">Informacije</Button>
+                </Link>
                 {user ? (
                   <>
                     <span className="text-sm text-gray-600 hidden sm:inline">{user.email}</span>

@@ -34,100 +34,76 @@ export default async function AdditionalInfoPage() {
     <div className="min-h-screen bg-white flex flex-col">
       <Header user={user} showAuth={true} />
 
-      <main className="flex-1 bg-gradient-to-b from-slate-50 via-white to-white">
+      <main className="flex-1">
         <section className="container mx-auto px-4 py-12 md:py-16">
           <div className="max-w-4xl mx-auto">
-            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Dodatne informacije</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Informacije</p>
             <h1 className="text-3xl md:text-4xl font-bold text-foreground mt-3">
-              Sažet pregled kako aplikacija pomaže
+              Što je HZZ Zahtjev Creator i kako pomaže?
             </h1>
-            <p className="text-sm text-muted-foreground mt-4 leading-relaxed">
-              Ovdje su kratke informacije o načinu rada, razlikama između lokalnog nacrta i računa,
-              te službene poveznice.
+            <p className="text-base text-muted-foreground mt-4 leading-relaxed">
+              Ovo je AI alat za brzu izradu HZZ zahtjeva. Ispunite kratki upitnik, a AI generira poslovni plan
+              u skladu s HZZ pravilima. Vi zatim pregledate i doradite sadržaj prije predaje.
             </p>
 
-            <div className="mt-8 rounded-3xl border bg-white p-6 shadow-sm">
-              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">HZZ Zahtjev Creator</p>
-              <h2 className="text-2xl md:text-3xl font-semibold mt-3 text-foreground leading-tight">
-                Izradite potpuni HZZ zahtjev, spremite ga i izvezite u PDF/DOCX uz napredni AI
-              </h2>
-              <p className="text-sm text-muted-foreground mt-4 leading-relaxed">
-                Registracijom dobivate sigurnu pohranu, detaljniji model i mogućnost uređivanja svih sekcija prije
-                predaje.
-              </p>
-              <div className="flex flex-col gap-3 mt-6">
-                <Link href="/auth/signup">
-                  <Button size="lg" className="w-full justify-center text-base">
-                    Kreiraj račun i izradi puni zahtjev
-                  </Button>
-                </Link>
-                <Link href="/auth/login" className="text-sm font-medium text-foreground hover:underline">
-                  Već imate račun? Prijavite se
-                </Link>
-              </div>
-            </div>
-
-            <div className="mt-10 grid md:grid-cols-2 gap-6">
-              <div className="rounded-2xl border bg-white p-6 shadow-sm">
-                <h2 className="text-base font-semibold text-foreground">Što dobivate s računom</h2>
-                <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
-                  <li className="flex items-start gap-2">
-                    <span className="mt-1 h-1.5 w-1.5 rounded-full bg-foreground" />
-                    Spremanje i povratak na sve verzije zahtjeva
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="mt-1 h-1.5 w-1.5 rounded-full bg-foreground" />
-                    Detaljniji AI nacrt poslovnog plana
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="mt-1 h-1.5 w-1.5 rounded-full bg-foreground" />
-                    Uređivanje svih sekcija i izvoz u PDF/DOCX
-                  </li>
-                </ul>
-              </div>
-
-              <div className="rounded-2xl border bg-slate-900 text-white p-6 shadow-sm">
-                <h2 className="text-base font-semibold">Lokalni nacrt</h2>
-                <p className="text-sm text-slate-200 mt-3 leading-relaxed">
-                  Možete izraditi brzi nacrt bez registracije. Podaci ostaju samo u vašem pregledniku.
-                </p>
-                <p className="text-xs text-slate-300 mt-3">
-                  Registracijom ga možete spremiti i dodatno urediti.
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-10 grid lg:grid-cols-[minmax(0,1fr)_minmax(0,0.7fr)] gap-6 items-start">
-              <div className="rounded-2xl border bg-white p-6 shadow-sm">
+            <div className="mt-10 space-y-6 text-sm text-muted-foreground leading-relaxed">
+              <div>
                 <h2 className="text-base font-semibold text-foreground">Kako aplikacija radi</h2>
-                <ol className="mt-4 space-y-3 text-sm text-muted-foreground list-decimal pl-4">
-                  <li>Ispunite upitnik s ključnim podacima.</li>
-                  <li>AI generira nacrt sekcija 2–5 prema HZZ pravilima.</li>
-                  <li>Uredite i preuzmite PDF/DOCX (uz račun).</li>
+                <ol className="mt-3 list-decimal pl-4 space-y-2">
+                  <li>Ispunite upitnik s ključnim informacijama o ideji i potpori.</li>
+                  <li>AI generira sekcije 2–5 uz troškovnik i opis poslovanja.</li>
+                  <li>Po potrebi uredite i izvezite PDF/DOCX.</li>
                 </ol>
               </div>
 
-              <div className="rounded-2xl border bg-slate-50 p-6 shadow-sm">
-                <h2 className="text-base font-semibold text-foreground">Korisne poveznice</h2>
-                <ul className="mt-4 space-y-3 text-sm">
-                  {helpfulLinks.length > 0 ? (
-                    helpfulLinks.map((link) => (
-                      <li key={link}>
-                        <a
-                          href={link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-foreground hover:underline break-all"
-                        >
-                          {link}
-                        </a>
-                      </li>
-                    ))
-                  ) : (
-                    <li className="text-muted-foreground">Trenutno nema dostupnih poveznica.</li>
-                  )}
-                </ul>
+              <div>
+                <h2 className="text-base font-semibold text-foreground">Lokalni nacrt</h2>
+                <p className="mt-2">
+                  Bez registracije možete napraviti brzi nacrt koji se sprema samo u vašem pregledniku.
+                </p>
               </div>
+
+              <div>
+                <h2 className="text-base font-semibold text-foreground">Uz račun</h2>
+                <p className="mt-2">
+                  Registrirani korisnici imaju detaljniji AI, trajno spremanje i potpuni pregled dokumenata.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-10 flex flex-col sm:flex-row gap-3">
+              <Link href="/auth/signup">
+                <Button size="lg" className="w-full sm:w-auto">
+                  Kreiraj račun i kreni
+                </Button>
+              </Link>
+              <Link href="/auth/login">
+                <Button variant="outline" size="lg" className="w-full sm:w-auto">
+                  Prijavi se
+                </Button>
+              </Link>
+            </div>
+
+            <div className="mt-12">
+              <h2 className="text-base font-semibold text-foreground">Korisne poveznice</h2>
+              <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
+                {helpfulLinks.length > 0 ? (
+                  helpfulLinks.map((link) => (
+                    <li key={link}>
+                      <a
+                        href={link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-foreground hover:underline break-all"
+                      >
+                        {link}
+                      </a>
+                    </li>
+                  ))
+                ) : (
+                  <li>Trenutno nema dostupnih poveznica.</li>
+                )}
+              </ul>
             </div>
           </div>
         </section>
