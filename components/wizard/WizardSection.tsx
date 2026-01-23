@@ -185,7 +185,6 @@ export function WizardSection({ section, data, onChange, allData = {} }: WizardS
             <LabelWithTooltip
               htmlFor={field.key}
               label={field.label}
-              required={field.required}
               helpText={helpText}
             />
             <Textarea
@@ -292,7 +291,6 @@ export function WizardSection({ section, data, onChange, allData = {} }: WizardS
               <LabelWithTooltip
                 htmlFor={field.key}
                 label={field.label}
-                required={field.required}
                 helpText={helpText}
               />
               <Input
@@ -312,7 +310,6 @@ export function WizardSection({ section, data, onChange, allData = {} }: WizardS
             <LabelWithTooltip
               htmlFor={field.key}
               label={field.label}
-              required={field.required}
               helpText={helpText}
             />
             <Input
