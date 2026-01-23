@@ -4,9 +4,18 @@ import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet'
 import { WizardSection } from './WizardSection'
+import { PreviewPanel } from './PreviewPanel'
 import hzzStructure from '@/data/hzz-structure.json'
-import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowLeft, ChevronLeft, ChevronRight, PanelRightOpen } from 'lucide-react'
 
 interface GuestWizardFormProps {
   initialData?: Record<string, any>
@@ -48,6 +57,7 @@ export function GuestWizardForm({
   const [currentSection, setCurrentSection] = useState('2')
   const [formData, setFormData] = useState<Record<string, any>>(initialData)
   const [isHydrated, setIsHydrated] = useState(false)
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false)
 
   const allSections = hzzStructure.sections
   const sections = allSections.filter((section) => section.key !== '1')
@@ -191,6 +201,36 @@ export function GuestWizardForm({
               </p>
             </div>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
+              <Sheet open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="default" size="sm" className="w-full sm:w-auto text-sm">
+                    <PanelRightOpen className="h-4 w-4 mr-2" />
+                    Pregled
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-full sm:max-w-full p-0 overflow-y-auto">
+                  <div className="sticky top-0 bg-white border-b z-10 px-8 py-4">
+                    <div className="flex items-center justify-between">
+                      <SheetHeader>
+                        <SheetTitle>Pregled zahtjeva</SheetTitle>
+                        <SheetDescription>
+                          Pregledajte sve unesene podatke. Preuzimanje PDF/DOCX moguće je uz registraciju.
+                        </SheetDescription>
+                      </SheetHeader>
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsPreviewOpen(false)}
+                        className="w-full sm:w-auto mt-2 sm:mt-0"
+                      >
+                        Natrag
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="p-8">
+                    <PreviewPanel data={formData} sections={sections} />
+                  </div>
+                </SheetContent>
+              </Sheet>
               <Link href="/auth/signup" className="w-full sm:w-auto">
                 <Button variant="outline" size="sm" className="w-full sm:w-auto text-sm">
                   Registracija (za kreiranje i preuzimanje zahtjeva)
