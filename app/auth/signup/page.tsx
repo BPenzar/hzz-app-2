@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Suspense } from 'react'
 import { SignupForm } from '@/components/auth/SignupForm'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Header } from '@/components/layout/Header'
@@ -25,7 +26,9 @@ export default function SignupPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <SignupForm />
+              <Suspense fallback={null}>
+                <SignupForm />
+              </Suspense>
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
               <div className="text-sm text-center text-gray-600">
