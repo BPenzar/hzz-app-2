@@ -216,11 +216,11 @@ export function GuestLanding() {
               <div>
                 <p className="text-xs uppercase tracking-widest text-muted-foreground">HZZ Zahtjev Creator</p>
                 <h1 className="text-2xl md:text-3xl font-bold text-foreground mt-2">
-                  Izradite HZZ zahtjev i preuzmite ga u PDF/DOCX uz AI
+                  Primjer: Brze izrade HZZ zahtjev-a uz AI
                 </h1>
                 <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
-                  Nacrt se sprema samo u vašem pregledniku. Za trajno spremanje i napredni model potrebna je
-                  registracija.
+                  Nacrt se pokazuje u vašem pregledniku. Za trajno spremanje, napredni model i skidanje podataka
+                  potrebna je registracija.
                 </p>
               </div>
               <div className="inline-flex items-center rounded-full bg-foreground text-background px-3 py-1 text-xs font-semibold">
