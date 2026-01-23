@@ -46,7 +46,7 @@ interface GenerateResponse {
 }
 
 const FULL_MODEL = 'gpt-5.2'
-const FAST_MODEL = 'gpt-4o-mini'
+const FAST_MODEL = 'gpt-4.1-mini'
 
 const buildTableRowSchema = (tableType: string) => {
   const columns = TABLE_COLUMN_ORDER[tableType] || []
