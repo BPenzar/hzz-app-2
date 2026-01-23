@@ -211,7 +211,7 @@ export function GuestLanding() {
 
       <section className="bg-white">
         <div className="container mx-auto px-4 py-10 md:py-14">
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-5xl mx-auto">
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
               <div>
                 <p className="text-xs uppercase tracking-widest text-muted-foreground">HZZ Zahtjev Creator</p>
@@ -229,7 +229,7 @@ export function GuestLanding() {
             </div>
 
             <form
-              className="mt-8 flex flex-col min-h-[70vh]"
+              className="mt-8 flex flex-col min-h-[70vh] w-full"
               onSubmit={(event) => {
                 event.preventDefault()
                 handleSubmit()
