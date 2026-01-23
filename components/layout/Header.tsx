@@ -58,6 +58,9 @@ export function Header({ user, showAuth = true }: HeaderProps) {
           </div>
           {showAuth && (
             <div className="flex items-center gap-2 sm:gap-4">
+              <Link href="/dodatne-informacije" className="hidden sm:inline text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                Dodatne informacije
+              </Link>
               {user ? (
                 <>
                   <span className="text-sm text-gray-600 hidden sm:inline">{user.email}</span>

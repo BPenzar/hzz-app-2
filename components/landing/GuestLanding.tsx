@@ -11,10 +11,6 @@ import { useToast } from '@/hooks/use-toast'
 import { ArrowRight, Loader2, Sparkles } from 'lucide-react'
 import { GuestWizardForm } from '@/components/wizard/GuestWizardForm'
 
-interface GuestLandingProps {
-  helpfulLinks: string[]
-}
-
 interface IntakeData {
   ime: string
   prezime: string
@@ -60,7 +56,7 @@ const safeParse = <T,>(value: string | null, fallback: T): T => {
   }
 }
 
-export function GuestLanding({ helpfulLinks }: GuestLandingProps) {
+export function GuestLanding() {
   const { toast } = useToast()
   const editorRef = useRef<HTMLDivElement | null>(null)
   const [formData, setFormData] = useState<IntakeData>(defaultIntakeData)
@@ -506,75 +502,6 @@ export function GuestLanding({ helpfulLinks }: GuestLandingProps) {
                 <span>Registracijom ga možete spremiti i dodatno urediti.</span>
               </div>
             </Card>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-white">
-        <div className="container mx-auto px-4 py-12 md:py-16">
-          <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,0.7fr)] gap-10 items-start">
-            <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Kako aplikacija radi</p>
-              <h2 className="text-2xl md:text-3xl font-bold mt-3 text-foreground">Kako aplikacija radi</h2>
-              <p className="text-sm text-muted-foreground mt-4 leading-relaxed">
-                HZZ Zahtjev Creator vodi vas kroz strukturiranu formu i koristi AI kako bi izradio nacrt poslovnog
-                plana prema HZZ pravilima. Vi dopunjavate osobne podatke i finalno uređujete sve dijelove prije
-                predaje.
-              </p>
-              <div className="mt-6 space-y-4 text-sm text-muted-foreground">
-                <div className="flex gap-3">
-                  <div className="h-8 w-8 rounded-full bg-foreground text-background flex items-center justify-center font-semibold">
-                    1
-                  </div>
-                  <div>
-                    <p className="font-semibold text-foreground">Upitnik</p>
-                    <p>Ispunite ključne podatke o ideji, iskustvu i potrebnoj potpori.</p>
-                  </div>
-                </div>
-                <div className="flex gap-3">
-                  <div className="h-8 w-8 rounded-full bg-foreground text-background flex items-center justify-center font-semibold">
-                    2
-                  </div>
-                  <div>
-                    <p className="font-semibold text-foreground">AI nacrt</p>
-                    <p>AI generira sekcije 2–5 uz usklađenost s HZZ pravilima i troškovnikom.</p>
-                  </div>
-                </div>
-                <div className="flex gap-3">
-                  <div className="h-8 w-8 rounded-full bg-foreground text-background flex items-center justify-center font-semibold">
-                    3
-                  </div>
-                  <div>
-                    <p className="font-semibold text-foreground">Uređivanje i izvoz</p>
-                    <p>Uz račun možete uređivati sve sekcije i preuzeti PDF/DOCX verziju.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="rounded-3xl border bg-slate-50 p-6 shadow-sm">
-              <h3 className="text-base font-semibold text-foreground">Korisne poveznice</h3>
-              <p className="text-sm text-muted-foreground mt-2">
-                Službene HZZ stranice i uvjeti korištenja mjera:
-              </p>
-              <ul className="mt-4 space-y-3 text-sm">
-                {helpfulLinks.length > 0 ? (
-                  helpfulLinks.map((link) => (
-                    <li key={link}>
-                      <a
-                        href={link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-foreground hover:underline break-all"
-                      >
-                        {link}
-                      </a>
-                    </li>
-                  ))
-                ) : (
-                  <li className="text-muted-foreground">Trenutno nema dostupnih poveznica.</li>
-                )}
-              </ul>
-            </div>
           </div>
         </div>
       </section>

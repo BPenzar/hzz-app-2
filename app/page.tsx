@@ -5,33 +5,12 @@ import { Button } from '@/components/ui/button'
 import { Sparkles, ArrowRight } from 'lucide-react'
 import { createServerClient } from '@/lib/supabase/server'
 import { GuestLanding } from '@/components/landing/GuestLanding'
-import fs from 'fs/promises'
-import path from 'path'
-
-const loadHelpfulLinks = async () => {
-  try {
-    const filePath = path.join(process.cwd(), 'public', 'useful_links.md')
-    const content = await fs.readFile(filePath, 'utf8')
-
-    return content
-      .split('\n')
-      .map((line) => line.trim())
-      .filter((line) => line.startsWith('- '))
-      .map((line) => line.replace(/^- /, '').trim())
-      .filter((line) => line.length > 0)
-  } catch (error) {
-    console.warn('[HomePage] Unable to load helpful links:', error)
-    return []
-  }
-}
 
 export default async function HomePage() {
   const supabase = await createServerClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
-  const helpfulLinks = await loadHelpfulLinks()
-
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Header user={user} showAuth={true} />
@@ -66,7 +45,7 @@ export default async function HomePage() {
           </div>
         </section>
       ) : (
-        <GuestLanding helpfulLinks={helpfulLinks} />
+        <GuestLanding />
       )}
       <Footer />
     </div>
