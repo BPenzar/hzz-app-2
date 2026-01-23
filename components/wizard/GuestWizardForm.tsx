@@ -542,9 +542,11 @@ export function GuestWizardForm({
 
       <div
         aria-hidden
-        className="fixed left-[-10000px] top-0 w-[210mm] pointer-events-none"
+        className="fixed inset-0 opacity-0 pointer-events-none -z-10"
       >
-        <PreviewPanel data={formData} sections={sections} rootId={exportPreviewId} />
+        <div className="w-[210mm]">
+          <PreviewPanel data={formData} sections={sections} rootId={exportPreviewId} />
+        </div>
       </div>
 
       <div className="bg-white border-b sticky top-[73px] z-10 shadow-sm">
