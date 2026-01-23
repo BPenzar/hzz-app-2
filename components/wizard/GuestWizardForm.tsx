@@ -1,10 +1,10 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { WizardSection } from './WizardSection'
-import { useToast } from '@/hooks/use-toast'
 import hzzStructure from '@/data/hzz-structure.json'
 import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react'
 
@@ -45,7 +45,6 @@ export function GuestWizardForm({
   storageKey = DEFAULT_STORAGE_KEY,
   onExit,
 }: GuestWizardFormProps) {
-  const { toast } = useToast()
   const [currentSection, setCurrentSection] = useState('2')
   const [formData, setFormData] = useState<Record<string, any>>(initialData)
   const [isHydrated, setIsHydrated] = useState(false)
@@ -153,13 +152,6 @@ export function GuestWizardForm({
     }
   }
 
-  const showExportNotice = () => {
-    toast({
-      title: 'Dostupno uz račun',
-      description: 'Preuzimanje PDF/DOCX omogućeno je samo registriranim korisnicima.',
-    })
-  }
-
   const currentSectionData = sections.find(s => s.key === currentSection)
   const currentIndex = sections.findIndex(s => s.key === currentSection)
 
@@ -199,14 +191,11 @@ export function GuestWizardForm({
               </p>
             </div>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full sm:w-auto text-sm"
-                onClick={showExportNotice}
-              >
-                Pregled
-              </Button>
+              <Link href="/auth/signup" className="w-full sm:w-auto">
+                <Button variant="outline" size="sm" className="w-full sm:w-auto text-sm">
+                  Registracija (za kreiranje i preuzimanje zahtjeva)
+                </Button>
+              </Link>
               {onExit && (
                 <Button
                   onClick={onExit}
