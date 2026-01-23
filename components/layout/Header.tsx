@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { LogOut, Menu } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 
 interface HeaderProps {
   user?: {
@@ -17,6 +17,9 @@ interface HeaderProps {
 
 export function Header({ user, showAuth = true }: HeaderProps) {
   const router = useRouter()
+  const pathname = usePathname()
+  const showInfo = !user && pathname !== '/'
+  const showPrimjer = !user && pathname !== '/primjer'
 
   const handleSignOut = async () => {
     const supabase = createClient()
@@ -69,14 +72,18 @@ export function Header({ user, showAuth = true }: HeaderProps) {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  {!user && (
+                  {(showInfo || showPrimjer) && (
                     <>
-                      <DropdownMenuItem asChild>
-                        <Link href="/" className="w-full">Informacije</Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href="/primjer" className="w-full">Primjer</Link>
-                      </DropdownMenuItem>
+                      {showInfo && (
+                        <DropdownMenuItem asChild>
+                          <Link href="/" className="w-full">Informacije</Link>
+                        </DropdownMenuItem>
+                      )}
+                      {showPrimjer && (
+                        <DropdownMenuItem asChild>
+                          <Link href="/primjer" className="w-full">Primjer</Link>
+                        </DropdownMenuItem>
+                      )}
                       <DropdownMenuSeparator />
                     </>
                   )}
@@ -103,7 +110,7 @@ export function Header({ user, showAuth = true }: HeaderProps) {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {!user && (
+              {showPrimjer && (
                 <Link href="/primjer" className="sm:hidden">
                   <Button size="sm" className="text-sm shadow-sm">
                     Primjer
@@ -112,12 +119,12 @@ export function Header({ user, showAuth = true }: HeaderProps) {
               )}
 
               <div className="hidden sm:flex items-center gap-2 sm:gap-4">
-                {!user && (
+                {showInfo && (
                   <Link href="/">
                     <Button variant="ghost" size="sm" className="text-sm">Informacije</Button>
                   </Link>
                 )}
-                {!user && (
+                {showPrimjer && (
                   <Link href="/primjer">
                     <Button size="sm" className="text-sm shadow-sm">
                       Primjer
