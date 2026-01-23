@@ -4,18 +4,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { WizardSection } from './WizardSection'
-import { PreviewPanel } from './PreviewPanel'
 import { useToast } from '@/hooks/use-toast'
 import hzzStructure from '@/data/hzz-structure.json'
-import { ArrowLeft, ChevronLeft, ChevronRight, FileDown, FileText, PanelRightOpen, Trash2 } from 'lucide-react'
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet'
+import { ArrowLeft, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react'
 
 interface GuestWizardFormProps {
   initialData?: Record<string, any>
@@ -57,9 +48,6 @@ export function GuestWizardForm({
   const { toast } = useToast()
   const [currentSection, setCurrentSection] = useState('2')
   const [formData, setFormData] = useState<Record<string, any>>(initialData)
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false)
-  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false)
-  const [isGeneratingDocx, setIsGeneratingDocx] = useState(false)
   const [isHydrated, setIsHydrated] = useState(false)
 
   const allSections = hzzStructure.sections
@@ -165,271 +153,11 @@ export function GuestWizardForm({
     }
   }
 
-  const sanitizeFileName = (value: string) => {
-    let normalized = value
-    try {
-      normalized = value.normalize('NFKD')
-    } catch {
-      normalized = value
-    }
-
-    return normalized
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-zA-Z0-9\s_-]+/g, '')
-      .trim()
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .toLowerCase()
-  }
-
-  const getFileBaseName = () => {
-    const fallback = 'hzz-zahtjev-lokalno'
-    const section1 = formData['1'] || {}
-    const parts = [section1.ime, section1.prezime].filter(Boolean)
-    const base = parts.length > 0 ? `hzz-zahtjev-${parts.join('-')}` : fallback
-    const cleaned = sanitizeFileName(base)
-    return cleaned || fallback
-  }
-
-  const exportPreviewId = 'pdf-preview-content'
-  const visiblePreviewId = 'pdf-preview-content-guest'
-
-  const ensurePreviewContent = () => {
-    const previewElement = document.getElementById(exportPreviewId)
-
-    if (!previewElement) {
-      toast({
-        title: 'Greška',
-        description: 'Molimo prvo otvorite pregled.',
-        variant: 'destructive',
-      })
-      return null
-    }
-
-    return previewElement
-  }
-
-  const handleExportPDF = async () => {
-    setIsGeneratingPDF(true)
-
-    const previewElement = ensurePreviewContent()
-    if (!previewElement) {
-      setIsGeneratingPDF(false)
-      return
-    }
-
-    try {
-      const [{ default: html2pdf }, { saveAs }] = await Promise.all([
-        import('html2pdf.js'),
-        import('file-saver'),
-      ])
-
-      const options = {
-        margin: 0.5,
-        image: { type: 'jpeg' as const, quality: 0.98 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-        },
-        jsPDF: {
-          unit: 'in' as const,
-          format: 'a4' as const,
-          orientation: 'portrait' as const,
-        },
-      }
-
-      const worker = html2pdf().set(options).from(previewElement)
-      const pdfBlob = await worker.outputPdf('blob')
-      saveAs(pdfBlob, `${getFileBaseName()}.pdf`)
-    } catch (error) {
-      console.error('PDF generation error:', error)
-      toast({
-        title: 'Greška',
-        description:
-          error instanceof Error ? error.message : 'Nije moguće kreirati PDF.',
-        variant: 'destructive',
-      })
-    } finally {
-      setIsGeneratingPDF(false)
-    }
-  }
-
-  const handleExportDocx = async () => {
-    setIsGeneratingDocx(true)
-
-    try {
-      const [{ Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell }, { saveAs }] =
-        await Promise.all([import('docx'), import('file-saver')])
-
-      const docSections: any[] = []
-
-      docSections.push(
-        new Paragraph({
-          children: [
-            new TextRun({
-              text: 'HZZ Zahtjev za dodjelu poticaja',
-              bold: true,
-              size: 32,
-              font: 'Arial'
-            })
-          ],
-          spacing: { after: 300 }
-        })
-      )
-
-      sections.forEach(section => {
-        const sectionData = formData[section.key]
-        if (!sectionData || Object.keys(sectionData).length === 0) return
-
-        docSections.push(
-          new Paragraph({
-            children: [
-              new TextRun({
-                text: `${section.id}. ${section.title}`,
-                bold: true,
-                size: 24,
-                font: 'Arial'
-              })
-            ],
-            spacing: { before: 240, after: 120 }
-          })
-        )
-
-        section.fields?.forEach((field: any) => {
-          const fieldValue = sectionData[field.key]
-          if (!fieldValue && fieldValue !== 0 && fieldValue !== false) return
-
-          if (field.type === 'helper_text' || field.type === 'section_label') return
-
-          if (field.type === 'table') {
-            const tableData = Array.isArray(fieldValue) ? fieldValue : []
-            if (tableData.length > 0) {
-              docSections.push(
-                new Paragraph({
-                  children: [
-                    new TextRun({
-                      text: field.label || field.key,
-                      bold: true,
-                      size: 22
-                    })
-                  ],
-                  spacing: { before: 120, after: 60 }
-                })
-              )
-
-              const headers = Object.keys(tableData[0] || {})
-              const tableRows = [
-                new TableRow({
-                  children: headers.map(header =>
-                    new TableCell({
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: header.replace(/_/g, ' ').toUpperCase(),
-                              bold: true,
-                              size: 18
-                            })
-                          ]
-                        })
-                      ]
-                    })
-                  )
-                })
-              ]
-
-              tableData.forEach((row: any) => {
-                tableRows.push(
-                  new TableRow({
-                    children: headers.map(header =>
-                      new TableCell({
-                        children: [
-                          new Paragraph({
-                            children: [
-                              new TextRun({
-                                text: String(row[header] || ''),
-                                size: 18
-                              })
-                            ]
-                          })
-                        ]
-                      })
-                    )
-                  })
-                )
-              })
-
-              docSections.push(
-                new Table({
-                  rows: tableRows,
-                  width: { size: 100, type: 'pct' }
-                })
-              )
-            }
-          } else {
-            let displayValue = fieldValue
-            if (field.type === 'radio' || field.type === 'select') {
-              const option = field.options?.find((opt: any) => opt.value === fieldValue)
-              displayValue = option?.label || fieldValue
-            } else if (Array.isArray(fieldValue)) {
-              displayValue = fieldValue.join(', ')
-            }
-
-            docSections.push(
-              new Paragraph({
-                children: [
-                  new TextRun({
-                    text: `${field.label} `,
-                    bold: true,
-                    size: 20
-                  }),
-                  new TextRun({
-                    text: String(displayValue),
-                    size: 20
-                  })
-                ],
-                spacing: { after: 60 }
-              })
-            )
-          }
-        })
-      })
-
-      const doc = new Document({
-        sections: [{
-          children: docSections,
-          properties: {
-            page: {
-              margin: {
-                top: 1440,
-                right: 1440,
-                bottom: 1440,
-                left: 1440
-              }
-            }
-          }
-        }]
-      })
-
-      const blob = await Packer.toBlob(doc)
-      saveAs(blob, `${getFileBaseName()}.docx`)
-
-      toast({
-        title: 'Uspješno',
-        description: 'DOCX dokument je uspješno stvoren.',
-        variant: 'default',
-      })
-    } catch (error) {
-      console.error('DOCX generation error:', error)
-      toast({
-        title: 'Greška',
-        description:
-          error instanceof Error ? error.message : 'Nije moguće kreirati DOCX.',
-        variant: 'destructive',
-      })
-    } finally {
-      setIsGeneratingDocx(false)
-    }
+  const showExportNotice = () => {
+    toast({
+      title: 'Dostupno uz račun',
+      description: 'Preuzimanje PDF/DOCX omogućeno je samo registriranim korisnicima.',
+    })
   }
 
   const currentSectionData = sections.find(s => s.key === currentSection)
@@ -471,58 +199,14 @@ export function GuestWizardForm({
               </p>
             </div>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
-              <Sheet open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-                <SheetTrigger asChild>
-                  <Button variant="default" size="sm" className="w-full sm:w-auto text-sm">
-                    <PanelRightOpen className="h-4 w-4 mr-2" />
-                    Pregled i preuzimanje
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="right" className="w-full sm:max-w-full p-0 overflow-y-auto">
-                  <div className="sticky top-0 bg-white border-b z-10 px-8 py-4">
-                    <div className="flex items-center justify-between">
-                      <SheetHeader>
-                        <SheetTitle>Pregled lokalnog zahtjeva</SheetTitle>
-                        <SheetDescription>
-                          Preuzmite PDF ili DOCX. Podaci se ne spremaju na server.
-                        </SheetDescription>
-                      </SheetHeader>
-                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
-                        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                          <Button
-                            onClick={handleExportPDF}
-                            disabled={isGeneratingPDF || isGeneratingDocx}
-                            variant="default"
-                            className="w-full sm:w-auto"
-                          >
-                            <FileDown className="h-4 w-4 mr-2" />
-                            {isGeneratingPDF ? 'Generiram PDF...' : 'Preuzmi PDF'}
-                          </Button>
-                          <Button
-                            onClick={handleExportDocx}
-                            disabled={isGeneratingPDF || isGeneratingDocx}
-                            variant="outline"
-                            className="w-full sm:w-auto"
-                          >
-                            <FileText className="h-4 w-4 mr-2" />
-                            {isGeneratingDocx ? 'Generiram DOCX...' : 'Preuzmi DOCX'}
-                          </Button>
-                        </div>
-                        <Button
-                          variant="outline"
-                          onClick={() => setIsPreviewOpen(false)}
-                          className="w-full sm:w-auto mt-2 sm:mt-0"
-                        >
-                          Natrag
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-8">
-                    <PreviewPanel data={formData} sections={sections} rootId={visiblePreviewId} />
-                  </div>
-                </SheetContent>
-              </Sheet>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full sm:w-auto text-sm"
+                onClick={showExportNotice}
+              >
+                Preuzimanje (uz račun)
+              </Button>
               {onExit && (
                 <Button
                   onClick={onExit}
@@ -537,15 +221,6 @@ export function GuestWizardForm({
               )}
             </div>
           </div>
-        </div>
-      </div>
-
-      <div
-        aria-hidden
-        className="fixed inset-0 opacity-0 pointer-events-none -z-10"
-      >
-        <div className="w-[210mm]">
-          <PreviewPanel data={formData} sections={sections} rootId={exportPreviewId} />
         </div>
       </div>
 

@@ -61,6 +61,9 @@ export default async function AdditionalInfoPage() {
                 <p className="mt-2">
                   Bez registracije možete napraviti brzi nacrt koji se sprema samo u vašem pregledniku.
                 </p>
+                <p className="mt-2">
+                  Preuzimanje PDF/DOCX dostupno je samo uz račun.
+                </p>
               </div>
 
               <div>

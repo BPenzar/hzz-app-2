@@ -352,11 +352,11 @@ export function GuestLanding() {
                       </>
                     )}
                   </Button>
-                  <p className="text-xs text-muted-foreground mt-3">
-                    Brzi model daje kraći nacrt i sprema ga lokalno u pregledniku. Za napredni AI i spremanje koristi
-                    registraciju.
-                  </p>
-                </div>
+                <p className="text-xs text-muted-foreground mt-3">
+                  Brzi model daje kraći nacrt i sprema ga lokalno u pregledniku. Preuzimanje PDF/DOCX i trajno
+                  spremanje dostupni su samo uz registraciju.
+                </p>
+              </div>
               </form>
             </div>
           </div>
