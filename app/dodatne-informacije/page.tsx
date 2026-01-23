@@ -84,6 +84,17 @@ export default async function AdditionalInfoPage() {
               </Link>
             </div>
 
+            <div className="mt-8 border-t pt-6">
+              <Link href="/">
+                <Button variant="secondary" size="lg" className="w-full sm:w-auto">
+                  Generiraj lokalni test zahtjev
+                </Button>
+              </Link>
+              <p className="text-xs text-muted-foreground mt-3">
+                Lokalni test koristi slabiji AI i ne sprema zahtjev. Podaci ostaju samo u vašem pregledniku.
+              </p>
+            </div>
+
             <div className="mt-12">
               <h2 className="text-base font-semibold text-foreground">Korisne poveznice</h2>
               <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
