@@ -332,26 +332,7 @@ JSON Structure:
 - Return ONLY valid JSON, no markdown, no explanations
 - DO NOT include section "1" in the output`
 
-const FAST_SYSTEM_PROMPT = `You are a Croatian business consultant helping draft HZZ self-employment applications.
-
-Your task:
-1. Use the intake questionnaire to draft ONLY sections 2-5 (business plan sections).
-2. Do NOT generate Section 1 (personal data).
-3. For Section 2, ONLY fill the 'nkd' field with NKD code + activity name. Leave other fields empty.
-4. Return ONLY valid JSON matching the provided schema.
-5. Write in Croatian.
-6. Keep responses concise and pragmatic (shorter paragraphs, no fluff).
-
-Key compliance reminders:
-- Avoid ineligible NKD areas: A, B, F/43.6, G, H, I, L, M, N/69.1, O/77-79, P, S/93.19, T/94/95.4/96.4, U, V
-- Fixed amount is 5,000 EUR; variable part only for equipment/IT programs/franchise. VAT is not eligible.
-- Be conservative with revenue and profit in year 1.
-
-IMPORTANT - Table Field Structure:
-- Always return arrays of objects for table fields, using exact column keys.
-- If unsure, return an empty array for that table.
-
-Return ONLY valid JSON, no markdown, no explanations.`
+const FAST_SYSTEM_PROMPT = SYSTEM_PROMPT
 
 export async function POST(request: NextRequest) {
   try {
@@ -369,8 +350,8 @@ export async function POST(request: NextRequest) {
     const isFastMode = body.mode === 'fast'
     const model = isFastMode ? FAST_MODEL : FULL_MODEL
     const systemPrompt = isFastMode ? FAST_SYSTEM_PROMPT : SYSTEM_PROMPT
-    const maxCompletionTokens = isFastMode ? 7000 : 16000
-    const temperature = isFastMode ? 0.3 : 0.5
+    const maxCompletionTokens = 16000
+    const temperature = 0.5
 
     console.log(`[AI Generate Intake] Starting generation for app_id: ${body.app_id}`)
     console.log(`[AI Generate Intake] Mode: ${isFastMode ? 'fast' : 'full'} | model: ${model}`)
@@ -433,7 +414,6 @@ Based on this intake information, generate ONLY sections 2-5 of the HZZ applicat
 DO NOT generate Section 1 (personal data) as it will be filled separately by the user.
 Infer and expand on all business details that would be necessary for a comprehensive business plan. Be creative but realistic.
 Ensure the output follows HZZ 2026 self-employment rules for eligible activities and costs.
-${isFastMode ? '\nKeep all outputs concise and avoid long essays.' : ''}
 `
 
     // Create the section template structure (EXCLUDE Section 1)
