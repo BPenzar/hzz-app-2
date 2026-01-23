@@ -17,14 +17,14 @@ export default async function AdditionalInfoPage() {
       <main className="flex-1">
         <section className="container mx-auto px-4 py-16 md:py-24 flex flex-col justify-center min-h-[70vh] md:min-h-[calc(100vh-8rem)]">
           <div className="max-w-2xl mx-auto text-center">
-            <p className="text-xs uppercase tracking-[0.35em] text-muted-foreground">HZZ zahtjev</p>
+            <p className="text-xs uppercase tracking-[0.35em] text-muted-foreground">HZZ potpora</p>
             <h1 className="mt-4 text-3xl md:text-5xl font-semibold text-foreground">
-              Najjednostavniji način za izradu HZZ zahtjeva
+              Zahtjev za sredstva za samozapošljavanje (HZZ) uz AI
             </h1>
             <p className="mt-4 text-base md:text-lg text-muted-foreground leading-relaxed">
-              Odgovorite na par pitanja, a AI sastavlja nacrt poslovnog plana i troškovnika.
+              Odgovorite na nekoliko pitanja, a AI priprema nacrt poslovnog plana i troškovnika za HZZ potporu.
               <br />
-              Kliknite i odmah kreirajte primjer zahtjeva.
+              Kliknite i odmah krenite s izradom primjera zahtjeva.
             </p>
 
             <div className="mt-8 flex flex-col items-center gap-3">
@@ -37,12 +37,12 @@ export default async function AdditionalInfoPage() {
                 </Button>
               </Link>
               <p className="text-sm text-muted-foreground">
-                Izrada primjera upitnika i gotovog zahtjeva za 3 minute, bez registracije.
+                Izrada primjera upitnika i gotovog zahtjeva u 3 minute, bez registracije.
               </p>
             </div>
 
             <p className="mt-4 text-sm text-muted-foreground">
-              Preuzimanje PDF/DOCX i trajno spremanje dostupni su samo uz registraciju, uz bolji AI model i rezultate.
+              Preuzimanje PDF/DOCX, trajno spremanje te napredniji AI model i rezultati dostupni su samo uz registraciju.
             </p>
           </div>
 
