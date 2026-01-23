@@ -48,6 +48,9 @@ interface GenerateResponse {
 const FULL_MODEL = 'gpt-5.2'
 const FAST_MODEL = 'gpt-4.1-mini'
 
+const MAX_REVENUE_YEAR1 = 35000
+const MAX_REVENUE_YEAR2 = 52500
+
 const buildTableRowSchema = (tableType: string) => {
   const columns = TABLE_COLUMN_ORDER[tableType] || []
   if (columns.length === 0) {
@@ -132,6 +135,88 @@ const buildSectionsSchema = () => {
     properties,
     required,
     additionalProperties: false,
+  }
+}
+
+const parseNumber = (value: unknown): number | null => {
+  if (typeof value === 'number' && Number.isFinite(value)) return value
+  if (typeof value === 'string') {
+    const normalized = value.replace(',', '.')
+    const parsed = parseFloat(normalized)
+    return Number.isFinite(parsed) ? parsed : null
+  }
+  return null
+}
+
+const round2 = (value: number) => Math.round(value * 100) / 100
+
+const scaleRevenueTable = (rows: any[], maxTotal: number) => {
+  const totals = rows.reduce((sum, row) => {
+    if (!row || typeof row !== 'object') return sum
+    const godisnji = parseNumber(row.godisnji_prihod)
+    const mjesecni = parseNumber(row.mjesecni_prihod)
+    const resolved = godisnji ?? (mjesecni !== null ? mjesecni * 12 : 0)
+    return sum + (Number.isFinite(resolved) ? resolved : 0)
+  }, 0)
+
+  if (!Number.isFinite(totals) || totals <= 0 || totals <= maxTotal) {
+    return rows
+  }
+
+  const factor = maxTotal / totals
+
+  return rows.map((row) => {
+    if (!row || typeof row !== 'object') return row
+
+    const cijena = parseNumber(row.cijena)
+    let godisnji = parseNumber(row.godisnji_prihod)
+    let mjesecni = parseNumber(row.mjesecni_prihod)
+
+    if (godisnji === null && mjesecni !== null) {
+      godisnji = mjesecni * 12
+    }
+    if (mjesecni === null && godisnji !== null) {
+      mjesecni = godisnji / 12
+    }
+
+    if (godisnji !== null) {
+      const scaledGodisnji = round2(godisnji * factor)
+      const scaledMjesecni = round2(scaledGodisnji / 12)
+      row.godisnji_prihod = scaledGodisnji
+      row.mjesecni_prihod = scaledMjesecni
+
+      if (cijena !== null && cijena > 0) {
+        row.broj_prodaja = round2(scaledMjesecni / cijena)
+      }
+    }
+
+    return row
+  })
+}
+
+const enforceRevenueCaps = (sections: Record<string, any>) => {
+  const section35 = sections['3.5']
+  if (!section35 || typeof section35 !== 'object') return sections
+
+  const updatedSection35 = { ...section35 }
+
+  if (Array.isArray(updatedSection35.tablica_prihodi_god1_T2_1)) {
+    updatedSection35.tablica_prihodi_god1_T2_1 = scaleRevenueTable(
+      updatedSection35.tablica_prihodi_god1_T2_1,
+      MAX_REVENUE_YEAR1
+    )
+  }
+
+  if (Array.isArray(updatedSection35.tablica_prihodi_god2_T2_2)) {
+    updatedSection35.tablica_prihodi_god2_T2_2 = scaleRevenueTable(
+      updatedSection35.tablica_prihodi_god2_T2_2,
+      MAX_REVENUE_YEAR2
+    )
+  }
+
+  return {
+    ...sections,
+    '3.5': updatedSection35,
   }
 }
 
@@ -919,7 +1004,9 @@ Generate the complete application now.`,
         )
       }
 
-      const sanitizedSections = validationResult.data
+      const sanitizedSections = isFastMode
+        ? enforceRevenueCaps(validationResult.data)
+        : validationResult.data
 
       // Merge Section 2: Use pre-populated data + AI-generated NKD
       const sanitizedSection2 = sanitizedSections['2'] || {}
