@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card'
 import { WizardSection } from './WizardSection'
 import { useToast } from '@/hooks/use-toast'
 import hzzStructure from '@/data/hzz-structure.json'
-import { ArrowLeft, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react'
+import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface GuestWizardFormProps {
   initialData?: Record<string, any>
@@ -205,18 +205,17 @@ export function GuestWizardForm({
                 className="w-full sm:w-auto text-sm"
                 onClick={showExportNotice}
               >
-                Preuzimanje (uz račun)
+                Pregled
               </Button>
               {onExit && (
                 <Button
                   onClick={onExit}
-                  variant="destructive"
+                  variant="outline"
                   size="sm"
                   className="w-full sm:w-auto text-sm"
                 >
-                  <ArrowLeft className="h-4 w-4 mr-1" />
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Izbriši i Natrag
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Natrag
                 </Button>
               )}
             </div>
