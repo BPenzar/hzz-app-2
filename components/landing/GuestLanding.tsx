@@ -273,12 +273,14 @@ export function GuestLanding({ helpfulLinks }: GuestLandingProps) {
             </div>
 
             <div className="order-1 lg:order-2 flex justify-center">
-              <Card className="w-full max-w-2xl p-6 md:p-8 shadow-xl">
+              <Card className="w-full max-w-2xl p-6 md:p-8 shadow-xl flex flex-col max-h-[85vh] md:max-h-[80vh]">
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                 <div>
-                  <p className="text-xs uppercase tracking-widest text-muted-foreground">Brzi lokalni nacrt</p>
+                  <p className="text-xs uppercase tracking-widest text-muted-foreground">
+                    Objašnjenje: HZZ Zahtjev Creator
+                  </p>
                   <h1 className="text-2xl md:text-3xl font-bold text-foreground mt-2">
-                    Ispunite upitnik i odmah generirajte HZZ zahtjev
+                    Izradite potpuni HZZ zahtjev, spremite ga i izvezite u PDF/DOCX uz napredni AI
                   </h1>
                   <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
                     Ovaj nacrt se sprema samo u vašem pregledniku. Za trajno spremanje, uređivanje i jači model
@@ -291,179 +293,181 @@ export function GuestLanding({ helpfulLinks }: GuestLandingProps) {
               </div>
 
               <form
-                className="mt-8 space-y-6"
+                className="mt-6 flex flex-col flex-1 min-h-0"
                 onSubmit={(event) => {
                   event.preventDefault()
                   handleSubmit()
                 }}
               >
-                <div className="border-b pb-6">
-                  <h2 className="text-base font-semibold mb-4">1. Osnovni podaci *</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="ime">Ime *</Label>
-                      <Input
-                        id="ime"
-                        value={formData.ime}
-                        onChange={(e) => handleChange('ime', e.target.value)}
-                        placeholder="Vaše ime"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="prezime">Prezime *</Label>
-                      <Input
-                        id="prezime"
-                        value={formData.prezime}
-                        onChange={(e) => handleChange('prezime', e.target.value)}
-                        placeholder="Vaše prezime"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="oib">OIB</Label>
-                      <Input
-                        id="oib"
-                        value={formData.oib}
-                        onChange={(e) => handleChange('oib', e.target.value)}
-                        placeholder="12345678901"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="kontakt_email">Email</Label>
-                      <Input
-                        id="kontakt_email"
-                        type="email"
-                        value={formData.kontakt_email}
-                        onChange={(e) => handleChange('kontakt_email', e.target.value)}
-                        placeholder="vas@email.com"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="kontakt_tel">Telefon</Label>
-                      <Input
-                        id="kontakt_tel"
-                        value={formData.kontakt_tel}
-                        onChange={(e) => handleChange('kontakt_tel', e.target.value)}
-                        placeholder="+385 91 234 5678"
-                      />
+                <div className="space-y-6 overflow-y-auto pr-2 flex-1 min-h-0">
+                  <div className="border-b pb-6">
+                    <h2 className="text-base font-semibold mb-4">1. Osnovni podaci *</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="ime">Ime *</Label>
+                        <Input
+                          id="ime"
+                          value={formData.ime}
+                          onChange={(e) => handleChange('ime', e.target.value)}
+                          placeholder="Vaše ime"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="prezime">Prezime *</Label>
+                        <Input
+                          id="prezime"
+                          value={formData.prezime}
+                          onChange={(e) => handleChange('prezime', e.target.value)}
+                          placeholder="Vaše prezime"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="oib">OIB</Label>
+                        <Input
+                          id="oib"
+                          value={formData.oib}
+                          onChange={(e) => handleChange('oib', e.target.value)}
+                          placeholder="12345678901"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="kontakt_email">Email</Label>
+                        <Input
+                          id="kontakt_email"
+                          type="email"
+                          value={formData.kontakt_email}
+                          onChange={(e) => handleChange('kontakt_email', e.target.value)}
+                          placeholder="vas@email.com"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="kontakt_tel">Telefon</Label>
+                        <Input
+                          id="kontakt_tel"
+                          value={formData.kontakt_tel}
+                          onChange={(e) => handleChange('kontakt_tel', e.target.value)}
+                          placeholder="+385 91 234 5678"
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="border-b pb-6">
-                  <h2 className="text-base font-semibold mb-4">2. Vaša poslovna ideja *</h2>
-                  <div className="space-y-4">
+                  <div className="border-b pb-6">
+                    <h2 className="text-base font-semibold mb-4">2. Vaša poslovna ideja *</h2>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="poslovna_ideja">Opišite vašu poslovnu ideju</Label>
+                        <Textarea
+                          id="poslovna_ideja"
+                          value={formData.poslovna_ideja}
+                          onChange={(e) => handleChange('poslovna_ideja', e.target.value)}
+                          placeholder="Opišite što želite raditi, koje proizvode/usluge nuditi, tko su vaši klijenti..."
+                          rows={5}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="vrsta_djelatnosti">Vrsta djelatnosti</Label>
+                        <Input
+                          id="vrsta_djelatnosti"
+                          value={formData.vrsta_djelatnosti}
+                          onChange={(e) => handleChange('vrsta_djelatnosti', e.target.value)}
+                          placeholder="Npr: IT usluge, vodoinstalater, frizerski salon..."
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-b pb-6">
+                    <h2 className="text-base font-semibold mb-4">3. Radno iskustvo i kompetencije</h2>
                     <div>
-                      <Label htmlFor="poslovna_ideja">Opišite vašu poslovnu ideju</Label>
+                      <Label htmlFor="radno_iskustvo">Opišite vaše radno iskustvo i obrazovanje</Label>
                       <Textarea
-                        id="poslovna_ideja"
-                        value={formData.poslovna_ideja}
-                        onChange={(e) => handleChange('poslovna_ideja', e.target.value)}
-                        placeholder="Opišite što želite raditi, koje proizvode/usluge nuditi, tko su vaši klijenti..."
-                        rows={5}
+                        id="radno_iskustvo"
+                        value={formData.radno_iskustvo || ''}
+                        onChange={(e) => handleChange('radno_iskustvo', e.target.value)}
+                        placeholder="Npr: 5 godina iskustva u IT industriji, diplomirani inženjer računarstva..."
+                        rows={4}
                       />
                     </div>
+                  </div>
+
+                  <div className="border-b pb-6">
+                    <h2 className="text-base font-semibold mb-4">4. Osnovni podaci o poslovanju</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="vrsta_subjekta">Vrsta poslovnog subjekta</Label>
+                        <select
+                          id="vrsta_subjekta"
+                          value={formData.vrsta_subjekta}
+                          onChange={(e) => handleChange('vrsta_subjekta', e.target.value)}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2"
+                        >
+                          <option value="">Odaberite...</option>
+                          <option value="doo">d.o.o./j.d.o.o.</option>
+                          <option value="obrt_pausalni">obrt s paušalnim oporezivanjem</option>
+                          <option value="obrt_knjige">obrt – poslovne knjige</option>
+                          <option value="samostalna">samostalna djelatnost</option>
+                          <option value="ostalo">ostalo</option>
+                        </select>
+                      </div>
+                      <div>
+                        <Label htmlFor="lokacija">Lokacija poslovanja</Label>
+                        <Input
+                          id="lokacija"
+                          value={formData.lokacija}
+                          onChange={(e) => handleChange('lokacija', e.target.value)}
+                          placeholder="Zagreb, Split, Rijeka..."
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-b pb-6">
+                    <h2 className="text-base font-semibold mb-4">5. Financijska potpora</h2>
                     <div>
-                      <Label htmlFor="vrsta_djelatnosti">Vrsta djelatnosti</Label>
+                      <Label htmlFor="iznos_trazene_potpore">Iznos tražene potpore (EUR)</Label>
                       <Input
-                        id="vrsta_djelatnosti"
-                        value={formData.vrsta_djelatnosti}
-                        onChange={(e) => handleChange('vrsta_djelatnosti', e.target.value)}
-                        placeholder="Npr: IT usluge, vodoinstalater, frizerski salon..."
+                        id="iznos_trazene_potpore"
+                        type="number"
+                        value={formData.iznos_trazene_potpore}
+                        onChange={(e) => handleChange('iznos_trazene_potpore', e.target.value)}
+                        placeholder="10000"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <h2 className="text-base font-semibold mb-4">6. Dodatne informacije (opcionalno)</h2>
+                    <div>
+                      <Label htmlFor="dodatne_informacije">
+                        Sve ostale informacije koje smatrate važnima
+                      </Label>
+                      <Textarea
+                        id="dodatne_informacije"
+                        value={formData.dodatne_informacije || ''}
+                        onChange={(e) => handleChange('dodatne_informacije', e.target.value)}
+                        placeholder="Npr. ciljna tržišta, planirana oprema, zeleni/digitalni elementi..."
+                        rows={4}
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="border-b pb-6">
-                  <h2 className="text-base font-semibold mb-4">3. Radno iskustvo i kompetencije</h2>
-                  <div>
-                    <Label htmlFor="radno_iskustvo">Opišite vaše radno iskustvo i obrazovanje</Label>
-                    <Textarea
-                      id="radno_iskustvo"
-                      value={formData.radno_iskustvo || ''}
-                      onChange={(e) => handleChange('radno_iskustvo', e.target.value)}
-                      placeholder="Npr: 5 godina iskustva u IT industriji, diplomirani inženjer računarstva..."
-                      rows={4}
-                    />
-                  </div>
-                </div>
-
-                <div className="border-b pb-6">
-                  <h2 className="text-base font-semibold mb-4">4. Osnovni podaci o poslovanju</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="vrsta_subjekta">Vrsta poslovnog subjekta</Label>
-                      <select
-                        id="vrsta_subjekta"
-                        value={formData.vrsta_subjekta}
-                        onChange={(e) => handleChange('vrsta_subjekta', e.target.value)}
-                        className="w-full border border-gray-300 rounded-md px-3 py-2"
-                      >
-                        <option value="">Odaberite...</option>
-                        <option value="doo">d.o.o./j.d.o.o.</option>
-                        <option value="obrt_pausalni">obrt s paušalnim oporezivanjem</option>
-                        <option value="obrt_knjige">obrt – poslovne knjige</option>
-                        <option value="samostalna">samostalna djelatnost</option>
-                        <option value="ostalo">ostalo</option>
-                      </select>
-                    </div>
-                    <div>
-                      <Label htmlFor="lokacija">Lokacija poslovanja</Label>
-                      <Input
-                        id="lokacija"
-                        value={formData.lokacija}
-                        onChange={(e) => handleChange('lokacija', e.target.value)}
-                        placeholder="Zagreb, Split, Rijeka..."
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="border-b pb-6">
-                  <h2 className="text-base font-semibold mb-4">5. Financijska potpora</h2>
-                  <div>
-                    <Label htmlFor="iznos_trazene_potpore">Iznos tražene potpore (EUR)</Label>
-                    <Input
-                      id="iznos_trazene_potpore"
-                      type="number"
-                      value={formData.iznos_trazene_potpore}
-                      onChange={(e) => handleChange('iznos_trazene_potpore', e.target.value)}
-                      placeholder="10000"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <h2 className="text-base font-semibold mb-4">6. Dodatne informacije (opcionalno)</h2>
-                  <div>
-                    <Label htmlFor="dodatne_informacije">
-                      Sve ostale informacije koje smatrate važnima
-                    </Label>
-                    <Textarea
-                      id="dodatne_informacije"
-                      value={formData.dodatne_informacije || ''}
-                      onChange={(e) => handleChange('dodatne_informacije', e.target.value)}
-                      placeholder="Npr. ciljna tržišta, planirana oprema, zeleni/digitalni elementi..."
-                      rows={4}
-                    />
-                  </div>
-                </div>
-
-                <div className="pt-2 space-y-3">
+                <div className="pt-4 border-t bg-white/95 backdrop-blur">
                   <Button type="submit" disabled={isGenerating} size="lg" className="w-full">
                     {isGenerating ? (
                       <>
                         <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                        Generiram lokalni nacrt...
+                        Generiram lokalni zahtjev...
                       </>
                     ) : (
                       <>
                         <Sparkles className="h-5 w-5 mr-2" />
-                        Generiraj brzi lokalni nacrt
+                        Generiraj lokalni Zahtjev
                       </>
                     )}
                   </Button>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-muted-foreground mt-3">
                     Brzi model daje kraći nacrt i sprema ga lokalno u pregledniku. Za napredni AI i spremanje koristi
                     registraciju.
                   </p>
