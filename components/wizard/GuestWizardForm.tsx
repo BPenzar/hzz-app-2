@@ -191,8 +191,11 @@ export function GuestWizardForm({
     return cleaned || fallback
   }
 
+  const exportPreviewId = 'pdf-preview-content'
+  const visiblePreviewId = 'pdf-preview-content-guest'
+
   const ensurePreviewContent = () => {
-    const previewElement = document.getElementById('pdf-preview-content')
+    const previewElement = document.getElementById(exportPreviewId)
 
     if (!previewElement) {
       toast({
@@ -516,7 +519,7 @@ export function GuestWizardForm({
                     </div>
                   </div>
                   <div className="p-8">
-                    <PreviewPanel data={formData} sections={sections} />
+                    <PreviewPanel data={formData} sections={sections} rootId={visiblePreviewId} />
                   </div>
                 </SheetContent>
               </Sheet>
@@ -535,6 +538,13 @@ export function GuestWizardForm({
             </div>
           </div>
         </div>
+      </div>
+
+      <div
+        aria-hidden
+        className="fixed left-[-10000px] top-0 w-[210mm] pointer-events-none"
+      >
+        <PreviewPanel data={formData} sections={sections} rootId={exportPreviewId} />
       </div>
 
       <div className="bg-white border-b sticky top-[73px] z-10 shadow-sm">

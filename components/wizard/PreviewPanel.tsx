@@ -7,6 +7,7 @@ import type { Json } from '@/types/supabase'
 interface PreviewPanelProps {
   data: Record<string, any>
   sections: any[]
+  rootId?: string
 }
 
 // Helper function to get friendly label for radio/select options
@@ -274,7 +275,7 @@ function formatFieldValue(field: any, value: any, allData?: Record<string, any>)
   return String(value)
 }
 
-export function PreviewPanel({ data, sections }: PreviewPanelProps) {
+export function PreviewPanel({ data, sections, rootId = 'pdf-preview-content' }: PreviewPanelProps) {
   const hasData = Object.keys(data).length > 0
 
   if (!hasData) {
@@ -286,7 +287,7 @@ export function PreviewPanel({ data, sections }: PreviewPanelProps) {
   }
 
   return (
-    <div id="pdf-preview-content" className="max-w-4xl mx-auto bg-white shadow-2xl min-h-screen">
+    <div id={rootId} className="max-w-4xl mx-auto bg-white shadow-2xl min-h-screen">
       <style>{`
         @media print {
           .break-inside-avoid-page {
