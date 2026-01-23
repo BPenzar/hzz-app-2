@@ -115,7 +115,7 @@ export function Header({ user, showAuth = true, showAuthButtons = true }: Header
 
               {showPrimjer && (
                 <Link href="/primjer" className="sm:hidden">
-                  <Button size="sm" className="text-sm shadow-sm bg-amber-500 text-white hover:bg-amber-600 whitespace-nowrap">
+                  <Button size="sm" className="text-sm shadow-sm bg-amber-100 text-amber-700 border border-amber-200 hover:bg-amber-200 whitespace-nowrap">
                     Kreiraj Primjer Zahtjeva
                   </Button>
                 </Link>
@@ -129,7 +129,7 @@ export function Header({ user, showAuth = true, showAuthButtons = true }: Header
                 )}
                 {showPrimjer && (
                   <Link href="/primjer">
-                    <Button size="sm" className="text-sm shadow-sm bg-amber-500 text-white hover:bg-amber-600 whitespace-nowrap">
+                    <Button size="sm" className="text-sm shadow-sm bg-amber-100 text-amber-700 border border-amber-200 hover:bg-amber-200 whitespace-nowrap">
                       Kreiraj Primjer Zahtjeva
                     </Button>
                   </Link>

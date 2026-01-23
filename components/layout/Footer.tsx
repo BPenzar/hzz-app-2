@@ -1,6 +1,7 @@
 import { Github, Linkedin, Mail } from "lucide-react"
 
 export function Footer() {
+  const currentYear = new Date().getFullYear()
   const socialLinks = [
     { icon: () => <span className="text-lg font-bold">X</span>, href: "https://x.com/Brunopenzar", label: "Twitter" },
     { icon: Github, href: "https://github.com/BPenzar", label: "GitHub" },
@@ -13,7 +14,7 @@ export function Footer() {
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:grid md:grid-cols-3 items-center gap-2 md:gap-4">
           <p className="text-sm text-gray-600 md:justify-self-start">
-            © 2025 {" "}
+            © {currentYear}{" "}
             <a
               href="https://www.bsp-lab.dev/"
               target="_blank"
