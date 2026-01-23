@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -66,6 +66,7 @@ export function GuestLanding({ helpfulLinks }: GuestLandingProps) {
   const [formData, setFormData] = useState<IntakeData>(defaultIntakeData)
   const [generatedData, setGeneratedData] = useState<Record<string, any> | null>(null)
   const [generatedAt, setGeneratedAt] = useState<string | null>(null)
+  const [showEditor, setShowEditor] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
   const [isHydrated, setIsHydrated] = useState(false)
 
@@ -80,6 +81,7 @@ export function GuestLanding({ helpfulLinks }: GuestLandingProps) {
     setFormData(storedIntake)
     setGeneratedData(storedGenerated)
     setGeneratedAt(storedGeneratedAt)
+    setShowEditor(Boolean(storedGenerated))
     setIsHydrated(true)
   }, [])
 
@@ -116,6 +118,7 @@ export function GuestLanding({ helpfulLinks }: GuestLandingProps) {
   const resetLocalDraft = () => {
     setGeneratedData(null)
     setGeneratedAt(null)
+    setShowEditor(false)
     localStorage.removeItem(LOCAL_DRAFT_KEY)
     localStorage.removeItem(LOCAL_GENERATED_AT_KEY)
   }
@@ -165,6 +168,7 @@ export function GuestLanding({ helpfulLinks }: GuestLandingProps) {
       setGeneratedData(result.data)
       const generatedTimestamp = new Date().toISOString()
       setGeneratedAt(generatedTimestamp)
+      setShowEditor(true)
 
       toast({
         title: 'Nacrt je spreman!',
@@ -189,25 +193,87 @@ export function GuestLanding({ helpfulLinks }: GuestLandingProps) {
     }
   }
 
-  const formattedGeneratedAt = useMemo(() => {
-    if (!generatedAt) return null
-    try {
-      return new Date(generatedAt).toLocaleString('hr-HR')
-    } catch {
-      return null
-    }
-  }, [generatedAt])
-
   return (
     <>
+      {generatedData && showEditor && (
+        <div className="fixed inset-0 z-50 bg-slate-950/40 backdrop-blur-sm">
+          <div className="absolute inset-0 overflow-y-auto">
+            <div className="min-h-screen bg-gray-50">
+              <div className="sticky top-0 z-30 border-b bg-white/90 backdrop-blur">
+                <div className="container mx-auto px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Lokalni nacrt</p>
+                    <h3 className="text-lg font-semibold text-foreground">
+                      Uređivanje lokalnog zahtjeva
+                    </h3>
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <Link href="/auth/signup">
+                      <Button size="sm">
+                        Spremi uz račun
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </Link>
+                    <Button variant="outline" size="sm" onClick={() => setShowEditor(false)}>
+                      Natrag na landing
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              <div ref={editorRef} className="container mx-auto px-4 py-6">
+                <GuestWizardForm
+                  key={generatedAt ?? 'draft'}
+                  initialData={generatedData}
+                  generatedAt={generatedAt}
+                  storageKey={LOCAL_DRAFT_KEY}
+                  onClearDraft={resetLocalDraft}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-100">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute -top-24 right-0 h-72 w-72 rounded-full bg-emerald-200/30 blur-3xl" />
           <div className="absolute bottom-0 left-0 h-72 w-72 rounded-full bg-sky-200/30 blur-3xl" />
         </div>
         <div className="container mx-auto px-4 py-12 md:py-16 relative">
-          <div className="grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] gap-10 items-start">
-            <Card className="p-6 md:p-8 shadow-xl">
+          <div className="grid lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] gap-10 items-start">
+            <div className="order-2 lg:order-1 space-y-6">
+              <div className="rounded-3xl border bg-white/70 p-6 shadow-md backdrop-blur">
+                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">HZZ Zahtjev Creator</p>
+                <h2 className="text-2xl md:text-3xl font-semibold mt-3 text-foreground leading-tight">
+                  Izradite potpuni HZZ zahtjev, spremite ga i izvezite u PDF/DOCX uz napredni AI
+                </h2>
+                <p className="text-sm text-muted-foreground mt-4 leading-relaxed">
+                  Registracijom dobivate sigurnu pohranu, detaljniji model i mogućnost uređivanja svih sekcija prije
+                  predaje.
+                </p>
+                <div className="flex flex-col gap-3 mt-6">
+                  <Link href="/auth/signup">
+                    <Button size="lg" className="w-full justify-center text-base">
+                      <Sparkles className="mr-2 h-5 w-5" />
+                      Kreiraj račun i izradi puni zahtjev
+                    </Button>
+                  </Link>
+                  <Link href="/auth/login" className="text-sm font-medium text-foreground hover:underline">
+                    Već imate račun? Prijavite se
+                  </Link>
+                </div>
+                {generatedData && !showEditor && (
+                  <div className="mt-4">
+                    <Button variant="outline" size="sm" className="w-full" onClick={() => setShowEditor(true)}>
+                      Nastavi lokalni nacrt
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="order-1 lg:order-2 flex justify-center">
+              <Card className="w-full max-w-2xl p-6 md:p-8 shadow-xl">
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                 <div>
                   <p className="text-xs uppercase tracking-widest text-muted-foreground">Brzi lokalni nacrt</p>
@@ -404,92 +470,39 @@ export function GuestLanding({ helpfulLinks }: GuestLandingProps) {
                 </div>
               </form>
             </Card>
-
-            <div className="space-y-6">
-              <div className="rounded-3xl border bg-white/80 p-6 shadow-lg backdrop-blur">
-                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">HZZ Zahtjev Creator</p>
-                <h2 className="text-2xl md:text-3xl font-bold mt-3 text-foreground leading-tight">
-                  Izradite potpuni HZZ zahtjev, spremite ga i izvezite u PDF/DOCX uz napredni AI
-                </h2>
-                <p className="text-sm text-muted-foreground mt-4 leading-relaxed">
-                  Registracijom dobivate sigurnu pohranu, detaljniji model i mogućnost uređivanja svih sekcija prije
-                  predaje.
-                </p>
-                <div className="flex flex-col gap-3 mt-6">
-                  <Link href="/auth/signup">
-                    <Button size="lg" className="w-full justify-center text-base">
-                      <Sparkles className="mr-2 h-5 w-5" />
-                      Kreiraj račun i izradi puni zahtjev
-                    </Button>
-                  </Link>
-                  <Link href="/auth/login" className="text-sm font-medium text-foreground hover:underline">
-                    Već imate račun? Prijavite se
-                  </Link>
-                </div>
-              </div>
-
-              <div className="rounded-3xl border bg-white p-6 shadow-sm">
-                <h3 className="text-base font-semibold text-foreground">Što dobivate s računom</h3>
-                <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
-                  <li className="flex items-start gap-2">
-                    <span className="mt-1 h-1.5 w-1.5 rounded-full bg-foreground" />
-                    Spremanje svih verzija zahtjeva i povratak gdje ste stali
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="mt-1 h-1.5 w-1.5 rounded-full bg-foreground" />
-                    Napredni AI za detaljniji poslovni plan i bolje usklađenje s HZZ pravilima
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="mt-1 h-1.5 w-1.5 rounded-full bg-foreground" />
-                    Uređivanje svih sekcija i izvoz u PDF/DOCX
-                  </li>
-                </ul>
-              </div>
-
-              <div className="rounded-3xl border bg-slate-900 text-white p-6 shadow-lg">
-                <h3 className="text-base font-semibold">Lokalni nacrt</h3>
-                <p className="text-sm text-slate-200 mt-3 leading-relaxed">
-                  Bez registracije možete izraditi brzi nacrt. Podaci ostaju samo u ovom pregledniku i brišu se ako
-                  očistite lokalnu pohranu.
-                </p>
-                <div className="mt-4 flex items-center gap-2 text-xs text-slate-300">
-                  <ArrowRight className="h-4 w-4" />
-                  <span>Registracijom ga možete spremiti i dodatno urediti.</span>
-                </div>
-              </div>
             </div>
           </div>
 
-          {generatedData && (
-            <div ref={editorRef} className="mt-14">
-              <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-4">
-                <div>
-                  <h3 className="text-2xl font-bold text-foreground">Uređivanje lokalnog nacrta</h3>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    {formattedGeneratedAt ? `Generirano: ${formattedGeneratedAt}` : 'Nacrt je spreman za uređivanje.'}
-                  </p>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <Button variant="outline" onClick={resetLocalDraft}>
-                    Ukloni lokalni nacrt
-                  </Button>
-                  <Link href="/auth/signup">
-                    <Button>
-                      Spremi i uredi uz račun
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </Link>
-                </div>
+          <div className="mt-10 grid md:grid-cols-2 gap-6">
+            <Card className="p-6 shadow-sm">
+              <h3 className="text-base font-semibold text-foreground">Što dobivate s računom</h3>
+              <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-foreground" />
+                  Spremanje svih verzija zahtjeva i povratak gdje ste stali
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-foreground" />
+                  Napredni AI za detaljniji poslovni plan i bolje usklađenje s HZZ pravilima
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-foreground" />
+                  Uređivanje svih sekcija i izvoz u PDF/DOCX
+                </li>
+              </ul>
+            </Card>
+            <Card className="p-6 shadow-sm bg-slate-900 text-white border-slate-900">
+              <h3 className="text-base font-semibold">Lokalni nacrt</h3>
+              <p className="text-sm text-slate-200 mt-3 leading-relaxed">
+                Bez registracije možete izraditi brzi nacrt. Podaci ostaju samo u ovom pregledniku i brišu se ako
+                očistite lokalnu pohranu.
+              </p>
+              <div className="mt-4 flex items-center gap-2 text-xs text-slate-300">
+                <ArrowRight className="h-4 w-4" />
+                <span>Registracijom ga možete spremiti i dodatno urediti.</span>
               </div>
-              <GuestWizardForm
-                key={generatedAt ?? 'draft'}
-                initialData={generatedData}
-                generatedAt={generatedAt}
-                storageKey={LOCAL_DRAFT_KEY}
-                onClearDraft={resetLocalDraft}
-              />
-            </div>
-          )}
+            </Card>
+          </div>
         </div>
       </section>
 
@@ -498,9 +511,7 @@ export function GuestLanding({ helpfulLinks }: GuestLandingProps) {
           <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,0.7fr)] gap-10 items-start">
             <div>
               <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Kako aplikacija radi</p>
-              <h2 className="text-2xl md:text-3xl font-bold mt-3 text-foreground">
-                Jasno objašnjenje u tri koraka
-              </h2>
+              <h2 className="text-2xl md:text-3xl font-bold mt-3 text-foreground">Kako aplikacija radi</h2>
               <p className="text-sm text-muted-foreground mt-4 leading-relaxed">
                 HZZ Zahtjev Creator vodi vas kroz strukturiranu formu i koristi AI kako bi izradio nacrt poslovnog
                 plana prema HZZ pravilima. Vi dopunjavate osobne podatke i finalno uređujete sve dijelove prije
@@ -560,34 +571,6 @@ export function GuestLanding({ helpfulLinks }: GuestLandingProps) {
                 )}
               </ul>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-muted/30">
-        <div className="container mx-auto px-4 py-12 md:py-16">
-          <div className="grid md:grid-cols-2 gap-6">
-            <Card className="p-6 shadow-sm">
-              <h3 className="text-base font-semibold text-foreground">Bez prijave</h3>
-              <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
-                Brzi nacrt koristi slabiji model za uštedu troška i generira kraći sadržaj. Podaci ostaju samo u vašem
-                pregledniku i ne spremaju se na server.
-              </p>
-            </Card>
-            <Card className="p-6 shadow-sm">
-              <h3 className="text-base font-semibold text-foreground">Uz račun</h3>
-              <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
-                Dobivate jači model, kontinuirano spremanje, uređivanje svih sekcija i izvoz u PDF/DOCX za predaju HZZ-u.
-              </p>
-              <div className="mt-4">
-                <Link href="/auth/signup">
-                  <Button size="sm">
-                    Registriraj se besplatno
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </Link>
-              </div>
-            </Card>
           </div>
         </div>
       </section>
