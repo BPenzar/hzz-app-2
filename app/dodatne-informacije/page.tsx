@@ -1,5 +1,7 @@
+import Link from 'next/link'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
+import { Button } from '@/components/ui/button'
 import { createServerClient } from '@/lib/supabase/server'
 import fs from 'fs/promises'
 import path from 'path'
@@ -43,6 +45,27 @@ export default async function AdditionalInfoPage() {
               Ovdje su kratke informacije o načinu rada, razlikama između lokalnog nacrta i računa,
               te službene poveznice.
             </p>
+
+            <div className="mt-8 rounded-3xl border bg-white p-6 shadow-sm">
+              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">HZZ Zahtjev Creator</p>
+              <h2 className="text-2xl md:text-3xl font-semibold mt-3 text-foreground leading-tight">
+                Izradite potpuni HZZ zahtjev, spremite ga i izvezite u PDF/DOCX uz napredni AI
+              </h2>
+              <p className="text-sm text-muted-foreground mt-4 leading-relaxed">
+                Registracijom dobivate sigurnu pohranu, detaljniji model i mogućnost uređivanja svih sekcija prije
+                predaje.
+              </p>
+              <div className="flex flex-col gap-3 mt-6">
+                <Link href="/auth/signup">
+                  <Button size="lg" className="w-full justify-center text-base">
+                    Kreiraj račun i izradi puni zahtjev
+                  </Button>
+                </Link>
+                <Link href="/auth/login" className="text-sm font-medium text-foreground hover:underline">
+                  Već imate račun? Prijavite se
+                </Link>
+              </div>
+            </div>
 
             <div className="mt-10 grid md:grid-cols-2 gap-6">
               <div className="rounded-2xl border bg-white p-6 shadow-sm">

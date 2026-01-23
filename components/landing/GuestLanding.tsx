@@ -229,34 +229,21 @@ export function GuestLanding() {
         <div className="container mx-auto px-4 py-12 md:py-16 relative">
           <div className="grid lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] gap-10 items-start">
             <div className="order-2 lg:order-1 space-y-6">
-              <div className="rounded-3xl border bg-white/70 p-6 shadow-md backdrop-blur">
-                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">HZZ Zahtjev Creator</p>
-                <h2 className="text-2xl md:text-3xl font-semibold mt-3 text-foreground leading-tight">
-                  Izradite potpuni HZZ zahtjev, spremite ga i izvezite u PDF/DOCX uz napredni AI
-                </h2>
-                <p className="text-sm text-muted-foreground mt-4 leading-relaxed">
-                  Registracijom dobivate sigurnu pohranu, detaljniji model i mogućnost uređivanja svih sekcija prije
-                  predaje.
-                </p>
-                <div className="flex flex-col gap-3 mt-6">
-                  <Link href="/auth/signup">
-                    <Button size="lg" className="w-full justify-center text-base">
-                      <Sparkles className="mr-2 h-5 w-5" />
-                      Kreiraj račun i izradi puni zahtjev
-                    </Button>
-                  </Link>
-                  <Link href="/auth/login" className="text-sm font-medium text-foreground hover:underline">
-                    Već imate račun? Prijavite se
-                  </Link>
+              {generatedData && !showEditor && (
+                <div className="rounded-2xl border bg-white/70 p-4 shadow-sm backdrop-blur">
+                  <p className="text-sm text-muted-foreground">
+                    Lokalni nacrt je spremljen u ovom pregledniku.
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full mt-3"
+                    onClick={() => setShowEditor(true)}
+                  >
+                    Nastavi lokalni nacrt
+                  </Button>
                 </div>
-                {generatedData && !showEditor && (
-                  <div className="mt-4">
-                    <Button variant="outline" size="sm" className="w-full" onClick={() => setShowEditor(true)}>
-                      Nastavi lokalni nacrt
-                    </Button>
-                  </div>
-                )}
-              </div>
+              )}
             </div>
 
             <div className="order-1 lg:order-2 flex justify-center">
@@ -412,35 +399,8 @@ export function GuestLanding() {
             </div>
           </div>
 
-          <div className="mt-10 grid md:grid-cols-2 gap-6">
-            <Card className="p-6 shadow-sm">
-              <h3 className="text-base font-semibold text-foreground">Što dobivate s računom</h3>
-              <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
-                <li className="flex items-start gap-2">
-                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-foreground" />
-                  Spremanje svih verzija zahtjeva i povratak gdje ste stali
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-foreground" />
-                  Napredni AI za detaljniji poslovni plan i bolje usklađenje s HZZ pravilima
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-foreground" />
-                  Uređivanje svih sekcija i izvoz u PDF/DOCX
-                </li>
-              </ul>
-            </Card>
-            <Card className="p-6 shadow-sm bg-slate-900 text-white border-slate-900">
-              <h3 className="text-base font-semibold">Lokalni nacrt</h3>
-              <p className="text-sm text-slate-200 mt-3 leading-relaxed">
-                Bez registracije možete izraditi brzi nacrt. Podaci ostaju samo u ovom pregledniku i brišu se ako
-                očistite lokalnu pohranu.
-              </p>
-              <div className="mt-4 flex items-center gap-2 text-xs text-slate-300">
-                <ArrowRight className="h-4 w-4" />
-                <span>Registracijom ga možete spremiti i dodatno urediti.</span>
-              </div>
-            </Card>
+          <div className="mt-6 text-sm text-muted-foreground">
+            Za više informacija otvorite karticu “Dodatne informacije” u izborniku.
           </div>
         </div>
       </section>
