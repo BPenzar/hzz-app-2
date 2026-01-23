@@ -45,7 +45,6 @@ export function SelectField({
   value,
   onChange,
   options,
-  required = false,
   helpText,
   placeholder,
 }: SelectFieldProps) {

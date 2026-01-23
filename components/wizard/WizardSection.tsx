@@ -103,12 +103,10 @@ export function WizardSection({ section, data, onChange, allData = {} }: WizardS
   const LabelWithTooltip = ({
     htmlFor,
     label,
-    required,
     helpText
   }: {
     htmlFor: string
     label: string
-    required?: boolean
     helpText?: string
   }) => {
     const showTooltip = helpText && isHelpTextUseful(label, helpText)

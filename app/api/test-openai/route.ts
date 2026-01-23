@@ -1,12 +1,10 @@
 import { NextResponse } from 'next/server'
 import { OpenAI } from 'openai'
+import fs from 'fs'
+import path from 'path'
 
 export async function GET() {
   try {
-    // BYPASS shell environment - read directly from .env.local
-    const fs = require('fs')
-    const path = require('path')
-
     const envPath = path.join(process.cwd(), '.env.local')
     const envContent = fs.readFileSync(envPath, 'utf8')
 
@@ -50,15 +48,21 @@ export async function GET() {
       response: response.choices[0].message.content,
       apiKeyPrefix: apiKey.substring(0, 20),
     })
-  } catch (error: any) {
+  } catch (error) {
+    const err = error as {
+      message?: string
+      status?: number
+      type?: string
+      code?: string
+    }
     console.error('OpenAI Test Error:', error)
 
     return NextResponse.json({
       success: false,
-      error: error.message,
-      status: error.status,
-      type: error.type,
-      code: error.code,
+      error: err.message,
+      status: err.status,
+      type: err.type,
+      code: err.code,
     }, { status: 500 })
   }
 }

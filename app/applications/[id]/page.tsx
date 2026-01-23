@@ -35,6 +35,10 @@ export default async function ApplicationPage(props: {
     .select('*')
     .eq('app_id', params.id)
 
+  if (sectionsError) {
+    console.error('Sections fetch error:', sectionsError)
+  }
+
   // Transform sections into formData object
   const initialData: Record<string, any> = {}
   let hasExistingData = false

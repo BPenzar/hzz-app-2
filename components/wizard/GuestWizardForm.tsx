@@ -1,16 +1,13 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { useEffect, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { WizardSection } from './WizardSection'
 import { PreviewPanel } from './PreviewPanel'
 import { useToast } from '@/hooks/use-toast'
 import hzzStructure from '@/data/hzz-structure.json'
-import type { Database, Json } from '@/types/supabase'
-import { ChevronLeft, ChevronRight, FileDown, FileText, PanelRightOpen } from 'lucide-react'
+import { ChevronLeft, ChevronRight, FileDown, FileText, PanelRightOpen, Trash2 } from 'lucide-react'
 import {
   Sheet,
   SheetContent,
@@ -20,10 +17,11 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 
-interface WizardFormProps {
-  applicationId: string
-  applicationTitle?: string
+interface GuestWizardFormProps {
   initialData?: Record<string, any>
+  generatedAt?: string | null
+  storageKey?: string
+  onClearDraft?: () => void
 }
 
 interface Section {
@@ -39,8 +37,23 @@ interface SectionHierarchy {
   subsections: Section[]
 }
 
-export function WizardForm({ applicationId, applicationTitle, initialData = {} }: WizardFormProps) {
-  const router = useRouter()
+const DEFAULT_STORAGE_KEY = 'hzz-guest-draft-v1'
+
+const safeParse = <T,>(value: string | null, fallback: T): T => {
+  if (!value) return fallback
+  try {
+    return JSON.parse(value) as T
+  } catch {
+    return fallback
+  }
+}
+
+export function GuestWizardForm({
+  initialData = {},
+  generatedAt,
+  storageKey = DEFAULT_STORAGE_KEY,
+  onClearDraft,
+}: GuestWizardFormProps) {
   const { toast } = useToast()
   const [currentSection, setCurrentSection] = useState('1')
   const [formData, setFormData] = useState<Record<string, any>>(initialData)
@@ -48,8 +61,18 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false)
   const [isGeneratingDocx, setIsGeneratingDocx] = useState(false)
+  const [isHydrated, setIsHydrated] = useState(false)
 
   const sections = hzzStructure.sections
+
+  const formattedGeneratedAt = useMemo(() => {
+    if (!generatedAt) return null
+    try {
+      return new Date(generatedAt).toLocaleString('hr-HR')
+    } catch {
+      return null
+    }
+  }, [generatedAt])
 
   // Build hierarchical structure
   const sectionHierarchy: (Section | SectionHierarchy)[] = []
@@ -58,20 +81,16 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
   sections.forEach((section) => {
     const sectionId = section.id
 
-    // Check if this is a subsection (contains a dot)
     if (sectionId.includes('.')) {
       const parentId = sectionId.split('.')[0]
 
-      // Skip if parent already processed
       if (processedSections.has(parentId)) return
 
-      // Find all subsections with this parent
       const subsections = sections.filter(s =>
         s.id.startsWith(parentId + '.') && s.id !== parentId
       )
 
       if (subsections.length > 0) {
-        // Find parent section if it exists
         const parentSection = sections.find(s => s.id === parentId)
 
         sectionHierarchy.push({
@@ -84,107 +103,59 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
         subsections.forEach(s => processedSections.add(s.id))
       }
     } else if (!processedSections.has(sectionId)) {
-      // This is a standalone section
       sectionHierarchy.push(section as Section)
       processedSections.add(sectionId)
     }
   })
 
-  // Silent autosave without toast
-  const handleAutoSave = useCallback(async () => {
-    setIsSaving(true)
-    const supabase = createClient()
-
-    try {
-      // Save to sections table
-      for (const section of sections) {
-        const sectionData = (formData[section.key] ?? {}) as Json
-        const payload: Database['public']['Tables']['sections']['Insert'] = {
-          app_id: applicationId,
-          code: section.key,
-          data_json: sectionData,
-          status: 'draft',
-        }
-
-        const { error } = await supabase
-          .from('sections')
-          .upsert(payload, {
-            onConflict: 'app_id,code'
-          })
-
-        if (error) {
-          console.error('Auto-save error for section', section.key, error)
-          throw error
-        }
-      }
-    } catch (error) {
-      console.error('Auto-save error:', error)
-      // No toast for autosave errors to avoid spam
-    } finally {
-      setIsSaving(false)
-    }
-  }, [applicationId, formData, sections])
-
-  // Autosave debounced
+  // Hydrate from localStorage when available
   useEffect(() => {
+    const storedDraft = safeParse<Record<string, any> | null>(
+      localStorage.getItem(storageKey),
+      null
+    )
+
+    if (storedDraft && Object.keys(storedDraft).length > 0) {
+      setFormData(storedDraft)
+    } else {
+      setFormData(initialData)
+    }
+    setIsHydrated(true)
+  }, [storageKey, initialData])
+
+  // Autosave to localStorage
+  useEffect(() => {
+    if (!isHydrated) return
+
+    setIsSaving(true)
     const timer = setTimeout(() => {
-      if (Object.keys(formData).length > 0) {
-        handleAutoSave()
-      }
-    }, 2000)
+      localStorage.setItem(storageKey, JSON.stringify(formData))
+      setIsSaving(false)
+    }, 900)
 
     return () => clearTimeout(timer)
-  }, [formData, handleAutoSave])
+  }, [formData, storageKey, isHydrated])
 
   // Scroll to top when section changes
   useEffect(() => {
-    // Use setTimeout to ensure DOM has updated
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' })
     }, 50)
   }, [currentSection])
 
-  // Manual save with toast feedback
-  const handleSave = async () => {
-    setIsSaving(true)
-    const supabase = createClient()
-
+  const handleSave = () => {
     try {
-      // Save to sections table
-      for (const section of sections) {
-        const sectionData = (formData[section.key] ?? {}) as Json
-        const payload: Database['public']['Tables']['sections']['Insert'] = {
-          app_id: applicationId,
-          code: section.key,
-          data_json: sectionData,
-          status: 'draft',
-        }
-
-        const { error } = await supabase
-          .from('sections')
-          .upsert(payload, {
-            onConflict: 'app_id,code'
-          })
-
-        if (error) {
-          console.error('Manual save error for section', section.key, error)
-          throw error
-        }
-      }
-
+      localStorage.setItem(storageKey, JSON.stringify(formData))
       toast({
-        title: 'Spremljeno!',
-        description: 'Vaše izmjene su uspješno spremljene.',
+        title: 'Spremljeno lokalno',
+        description: 'Vaše izmjene su spremljene u pregledniku.',
       })
-    } catch (error) {
-      console.error('Manual save error:', error)
+    } catch {
       toast({
         title: 'Greška',
-        description: 'Nije moguće spremiti izmjene.',
+        description: 'Nije moguće spremiti nacrt lokalno.',
         variant: 'destructive',
       })
-    } finally {
-      setIsSaving(false)
     }
   }
 
@@ -230,69 +201,12 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
   }
 
   const getFileBaseName = () => {
-    const fallback = 'hzz-zahtjev'
-    if (!applicationTitle) return fallback
-
-    const cleaned = sanitizeFileName(applicationTitle)
-    if (!cleaned) return fallback
-
-    return cleaned
-  }
-
-  const buildStorageFileName = (extension: 'pdf' | 'docx') => {
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
-    return `${timestamp}-${getFileBaseName()}.${extension}`
-  }
-
-  const persistGeneratedDocument = async ({
-    blob,
-    filename,
-    type,
-    contentType,
-  }: {
-    blob: Blob
-    filename: string
-    type: 'pdf' | 'docx'
-    contentType: string
-  }) => {
-    const supabase = createClient()
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser()
-
-    if (userError || !user) {
-      throw new Error('Prijava je istekla. Molimo ponovno se prijavite.')
-    }
-
-    const storagePath = `${user.id}/${applicationId}/${filename}`
-
-    const { error: uploadError } = await supabase.storage
-      .from('generated-documents')
-      .upload(storagePath, blob, {
-        contentType,
-        upsert: false,
-      })
-
-    if (uploadError) {
-      throw new Error(uploadError.message)
-    }
-
-    const fileSizeKb = Math.round(blob.size / 1024)
-    const validationStatus =
-      bothAmountsExist ? (totalsMatch ? 'complete' : 'incomplete') : null
-
-    const { error: insertError } = await supabase.from('generated_documents').insert({
-      app_id: applicationId,
-      type,
-      storage_url: storagePath,
-      file_size_kb: fileSizeKb,
-      validation_status: validationStatus ?? undefined,
-    })
-
-    if (insertError) {
-      throw new Error(insertError.message)
-    }
+    const fallback = 'hzz-zahtjev-lokalno'
+    const section1 = formData['1'] || {}
+    const parts = [section1.ime, section1.prezime].filter(Boolean)
+    const base = parts.length > 0 ? `hzz-zahtjev-${parts.join('-')}` : fallback
+    const cleaned = sanitizeFileName(base)
+    return cleaned || fallback
   }
 
   const ensurePreviewContent = () => {
@@ -342,22 +256,6 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
       const worker = html2pdf().set(options).from(previewElement)
       const pdfBlob = await worker.outputPdf('blob')
       saveAs(pdfBlob, `${getFileBaseName()}.pdf`)
-
-      try {
-        await persistGeneratedDocument({
-          blob: pdfBlob,
-          filename: buildStorageFileName('pdf'),
-          type: 'pdf',
-          contentType: 'application/pdf',
-        })
-      } catch (persistError) {
-        console.error('PDF storage error:', persistError)
-        toast({
-          title: 'Upozorenje',
-          description: 'PDF je preuzet, ali spremanje na server nije uspjelo.',
-          variant: 'destructive',
-        })
-      }
     } catch (error) {
       console.error('PDF generation error:', error)
       toast({
@@ -375,21 +273,18 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
     setIsGeneratingDocx(true)
 
     try {
-      // Import the docx library
       const [{ Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell }, { saveAs }] =
         await Promise.all([import('docx'), import('file-saver')])
 
-      // Create document sections
       const docSections: any[] = []
 
-      // Document title
       docSections.push(
         new Paragraph({
           children: [
             new TextRun({
-              text: applicationTitle || 'HZZ Zahtjev za dodjelu poticaja',
+              text: 'HZZ Zahtjev za dodjelu poticaja',
               bold: true,
-              size: 32, // 16pt in half-points
+              size: 32,
               font: 'Arial'
             })
           ],
@@ -397,19 +292,17 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
         })
       )
 
-      // Process each section with data
       sections.forEach(section => {
         const sectionData = formData[section.key]
         if (!sectionData || Object.keys(sectionData).length === 0) return
 
-        // Section header
         docSections.push(
           new Paragraph({
             children: [
               new TextRun({
                 text: `${section.id}. ${section.title}`,
                 bold: true,
-                size: 24, // 12pt
+                size: 24,
                 font: 'Arial'
               })
             ],
@@ -417,20 +310,15 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
           })
         )
 
-        // Process fields in this section
         section.fields?.forEach((field: any) => {
           const fieldValue = sectionData[field.key]
           if (!fieldValue && fieldValue !== 0 && fieldValue !== false) return
 
-          // Skip helper text and section labels
           if (field.type === 'helper_text' || field.type === 'section_label') return
 
-          // Handle different field types
           if (field.type === 'table') {
-            // Create table
             const tableData = Array.isArray(fieldValue) ? fieldValue : []
             if (tableData.length > 0) {
-              // Add table title
               docSections.push(
                 new Paragraph({
                   children: [
@@ -444,7 +332,6 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
                 })
               )
 
-              // Create table headers
               const headers = Object.keys(tableData[0] || {})
               const tableRows = [
                 new TableRow({
@@ -466,7 +353,6 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
                 })
               ]
 
-              // Add data rows
               tableData.forEach((row: any) => {
                 tableRows.push(
                   new TableRow({
@@ -496,10 +382,8 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
               )
             }
           } else {
-            // Regular field
             let displayValue = fieldValue
             if (field.type === 'radio' || field.type === 'select') {
-              // Get friendly label for radio/select
               const option = field.options?.find((opt: any) => opt.value === fieldValue)
               displayValue = option?.label || fieldValue
             } else if (Array.isArray(fieldValue)) {
@@ -526,14 +410,13 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
         })
       })
 
-      // Create the document
       const doc = new Document({
         sections: [{
           children: docSections,
           properties: {
             page: {
               margin: {
-                top: 1440, // 1 inch in twips
+                top: 1440,
                 right: 1440,
                 bottom: 1440,
                 left: 1440
@@ -543,30 +426,12 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
         }]
       })
 
-      // Generate and download
       const blob = await Packer.toBlob(doc)
       saveAs(blob, `${getFileBaseName()}.docx`)
 
-      try {
-        await persistGeneratedDocument({
-          blob,
-          filename: buildStorageFileName('docx'),
-          type: 'docx',
-          contentType:
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        })
-      } catch (persistError) {
-        console.error('DOCX storage error:', persistError)
-        toast({
-          title: 'Upozorenje',
-          description: 'DOCX je preuzet, ali spremanje na server nije uspjelo.',
-          variant: 'destructive',
-        })
-      }
-
       toast({
         title: 'Uspješno',
-        description: 'DOCX dokument je uspješno stvoren s LibreOffice kompatibilnošću.',
+        description: 'DOCX dokument je uspješno stvoren.',
         variant: 'default',
       })
     } catch (error) {
@@ -585,7 +450,6 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
   const currentSectionData = sections.find(s => s.key === currentSection)
   const currentIndex = sections.findIndex(s => s.key === currentSection)
 
-  // Determine which parent section the current section belongs to
   const getCurrentParentInfo = () => {
     if (!currentSectionData) return null
 
@@ -603,42 +467,23 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
 
   const parentInfo = getCurrentParentInfo()
 
-  // Calculate totals for HZZ compliance validation
-  const calculateTroskovnikTotal = (): number => {
-    const troskovnikData = formData['4']?.troskovnik
-    if (!Array.isArray(troskovnikData)) return 0
-
-    return troskovnikData.reduce((sum, row) => {
-      const iznos = parseFloat(row.iznos) || 0
-      return sum + iznos
-    }, 0)
-  }
-
-  const getIznosTrazenePotrope = (): number => {
-    const section2Data = formData['2']?.iznos_trazene_potpore
-    return parseFloat(section2Data) || 0
-  }
-
-  const troskovnikTotal = calculateTroskovnikTotal()
-  const iznosTrazene = getIznosTrazenePotrope()
-  const totalsMatch = Math.abs(troskovnikTotal - iznosTrazene) < 0.01 // Allow for small rounding differences
-  const bothAmountsExist = troskovnikTotal > 0 && iznosTrazene > 0
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+    <div className="bg-gray-50">
       <div className="bg-white border-b sticky top-0 z-20">
         <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div className="min-w-0 flex-1">
-              <h1 className="text-lg sm:text-xl font-bold truncate">
+              <h2 className="text-lg sm:text-xl font-bold truncate">
                 {currentSectionData?.id}. {currentSectionData?.title}
-              </h1>
+              </h2>
               {parentInfo && (
                 <p className="text-sm text-gray-600">
                   {parentInfo.parentTitle}
                 </p>
               )}
+              <p className="text-xs text-gray-500 mt-1">
+                Lokalni nacrt {formattedGeneratedAt ? `· Generirano: ${formattedGeneratedAt}` : ''}
+              </p>
             </div>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
               {isSaving && <span className="text-sm text-gray-600 order-first">Spremanje...</span>}
@@ -649,7 +494,7 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
                 size="sm"
                 className="w-full sm:w-auto text-sm"
               >
-                {isSaving ? 'Spremanje...' : 'Spremi izmjene'}
+                Spremi lokalno
               </Button>
               <Sheet open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
                 <SheetTrigger asChild>
@@ -662,9 +507,9 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
                   <div className="sticky top-0 bg-white border-b z-10 px-8 py-4">
                     <div className="flex items-center justify-between">
                       <SheetHeader>
-                        <SheetTitle>Pregled zahtjeva</SheetTitle>
+                        <SheetTitle>Pregled lokalnog zahtjeva</SheetTitle>
                         <SheetDescription>
-                          Pregledajte sve unesene podatke prije preuzimanja PDF-a ili DOCX-a
+                          Preuzmite PDF ili DOCX. Podaci se ne spremaju na server.
                         </SheetDescription>
                       </SheetHeader>
                       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
@@ -703,27 +548,32 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
                   </div>
                 </SheetContent>
               </Sheet>
-              <Button onClick={() => router.push('/dashboard')} variant="outline" size="sm" className="w-full sm:w-auto text-sm">
-                Natrag
-              </Button>
+              {onClearDraft && (
+                <Button
+                  onClick={onClearDraft}
+                  variant="outline"
+                  size="sm"
+                  className="w-full sm:w-auto text-sm text-red-600 hover:text-red-600"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Obriši nacrt
+                </Button>
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Sticky Navigation */}
       <div className="bg-white border-b sticky top-[73px] z-10 shadow-sm">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center gap-2 py-3 overflow-x-auto px-2 sm:px-0">
             {sectionHierarchy.map((item, idx) => {
               if ('subsections' in item) {
-                // This is a parent with subsections
                 const isActive = currentSectionData?.id.startsWith(item.parentKey + '.')
 
                 return (
                   <div key={item.parentKey} className="flex items-center gap-2">
                     {isActive ? (
-                      // Show subsections when active
                       <div className="flex gap-1">
                         {item.subsections.map((subsection) => (
                           <Button
@@ -738,12 +588,10 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
                         ))}
                       </div>
                     ) : (
-                      // Show parent button when not active
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => {
-                          // Navigate to first subsection
                           if (item.subsections.length > 0) {
                             setCurrentSection(item.subsections[0].key)
                           }
@@ -759,7 +607,6 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
                   </div>
                 )
               } else {
-                // This is a standalone section
                 const section = item as Section
                 return (
                   <div key={section.key} className="flex items-center gap-2">
@@ -782,7 +629,6 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="container mx-auto px-4 py-6 pb-12">
         <div className="max-w-4xl mx-auto">
           <Card className="p-6">
@@ -795,7 +641,6 @@ export function WizardForm({ applicationId, applicationTitle, initialData = {} }
               />
             )}
 
-            {/* Navigation Buttons */}
             <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0 mt-6 pt-6 border-t">
               <Button
                 onClick={handlePrevious}

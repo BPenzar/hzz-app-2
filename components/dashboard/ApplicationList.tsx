@@ -14,7 +14,7 @@ export function ApplicationList({ applications }: ApplicationListProps) {
     return (
       <div className="text-center py-12">
         <p className="text-gray-600">Nemate još nijednu prijavu.</p>
-        <p className="text-sm text-gray-500 mt-2">Kliknite "Nova prijava" za početak.</p>
+        <p className="text-sm text-gray-500 mt-2">Kliknite &quot;Nova prijava&quot; za početak.</p>
       </div>
     )
   }

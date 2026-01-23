@@ -128,7 +128,7 @@ const sanitizeTable = (value: unknown): { value: Json[]; issue?: string } => {
   const sanitizedRows: Json[] = []
   let hadInvalidRow = false
 
-  value.forEach((row, index) => {
+  value.forEach((row) => {
     if (!row || typeof row !== 'object' || Array.isArray(row)) {
       hadInvalidRow = true
       return

@@ -38,7 +38,6 @@ export function RadioField({
   value,
   onChange,
   options,
-  required = false,
   helpText,
 }: RadioFieldProps) {
   const showTooltip = helpText && isHelpTextUseful(label, helpText)

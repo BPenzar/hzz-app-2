@@ -22,7 +22,6 @@ export function ProfitSummaryField({
   id,
   label,
   data,
-  required = false,
   helpText,
 }: ProfitSummaryFieldProps) {
   // Calculate totals from income tables (3.5)

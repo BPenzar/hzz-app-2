@@ -1,10 +1,9 @@
 'use client'
 
-import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Plus, Trash2, Info } from 'lucide-react'
+import { Trash2, Info } from 'lucide-react'
 import {
   Tooltip,
   TooltipContent,
@@ -45,7 +44,6 @@ export function DynamicTable({
   columns,
   value = [],
   onChange,
-  required = false,
   helpText,
   showTotal = false,
   addButtonText = 'Dodaj novi red',
@@ -138,7 +136,7 @@ export function DynamicTable({
                   colSpan={columns.length + 1}
                   className="text-center text-gray-500 py-8"
                 >
-                  Nema unesenih redova. Kliknite "Dodaj novi red" za početak.
+                  Nema unesenih redova. Kliknite &quot;Dodaj novi red&quot; za početak.
                 </TableCell>
               </TableRow>
             ) : (

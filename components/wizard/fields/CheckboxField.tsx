@@ -38,7 +38,6 @@ export function CheckboxField({
   value = [],
   onChange,
   options,
-  required = false,
   helpText,
 }: CheckboxFieldProps) {
   const handleCheckboxChange = (optionValue: string, checked: boolean) => {
