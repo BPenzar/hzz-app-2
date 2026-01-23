@@ -19,12 +19,12 @@ export default async function AdditionalInfoPage() {
           <div className="max-w-2xl mx-auto text-center">
             <p className="text-xs uppercase tracking-[0.35em] text-muted-foreground">HZZ potpora</p>
             <h1 className="mt-4 text-3xl md:text-5xl font-semibold text-foreground">
-              Zahtjev za sredstva za samozapošljavanje (HZZ) uz AI
+              Pripremite HZZ zahtjev uz AI
             </h1>
             <p className="mt-4 text-base md:text-lg text-muted-foreground leading-relaxed">
               Odgovorite na nekoliko pitanja, a AI priprema nacrt poslovnog plana i troškovnika za HZZ potporu.
               <br />
-              Kliknite i odmah krenite s izradom primjera zahtjeva.
+              Isprobajte odmah – primjer zahtjeva bez registracije.
             </p>
 
             <div className="mt-8 flex flex-col items-center gap-3">
@@ -37,12 +37,12 @@ export default async function AdditionalInfoPage() {
                 </Button>
               </Link>
               <p className="text-sm text-muted-foreground">
-                Izrada primjera upitnika i gotovog zahtjeva u 3 minute, bez registracije.
+                Primjer za 3 minute, bez registracije.
               </p>
             </div>
 
             <p className="mt-4 text-sm text-muted-foreground">
-              Preuzimanje PDF/DOCX, trajno spremanje te napredniji AI model i rezultati dostupni su samo uz registraciju.
+              Izvoz PDF/DOCX, trajno spremanje i napredni AI uz registraciju.
             </p>
           </div>
 
