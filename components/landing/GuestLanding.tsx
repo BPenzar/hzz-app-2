@@ -209,7 +209,7 @@ export function GuestLanding() {
         </div>
       )}
 
-      <section className="bg-white">
+      <section className="bg-slate-50">
         <div className="container mx-auto px-4 py-10 md:py-14">
           <div className="max-w-5xl mx-auto">
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
@@ -228,17 +228,18 @@ export function GuestLanding() {
               </div>
             </div>
 
-            <form
-              className="mt-8 flex flex-col min-h-[70vh] w-full"
-              onSubmit={(event) => {
-                event.preventDefault()
-                handleSubmit()
-              }}
-            >
-              <div className="space-y-6 flex-1">
-                <div className="border-b pb-6">
-                  <h2 className="text-base font-semibold mb-4">1. Vaša poslovna ideja *</h2>
-                  <div className="space-y-4">
+            <div className="mt-8 rounded-2xl border bg-white shadow-sm px-6 md:px-8 py-8">
+              <form
+                className="flex flex-col min-h-[70vh] w-full"
+                onSubmit={(event) => {
+                  event.preventDefault()
+                  handleSubmit()
+                }}
+              >
+                <div className="space-y-6 flex-1">
+                  <div className="border-b pb-6">
+                    <h2 className="text-base font-semibold mb-4">1. Vaša poslovna ideja *</h2>
+                    <div className="space-y-4">
                     <div>
                       <Label htmlFor="poslovna_ideja">Opišite vašu poslovnu ideju</Label>
                       <Textarea
@@ -334,29 +335,30 @@ export function GuestLanding() {
                       rows={4}
                     />
                   </div>
+                  </div>
                 </div>
-              </div>
 
-              <div className="sticky bottom-0 pt-4 pb-2 bg-white">
-                <Button type="submit" disabled={isGenerating} size="lg" className="w-full">
-                  {isGenerating ? (
-                    <>
-                      <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                      Generiram lokalni zahtjev...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="h-5 w-5 mr-2" />
-                      Generiraj lokalni Zahtjev
-                    </>
-                  )}
-                </Button>
-                <p className="text-xs text-muted-foreground mt-3">
-                  Brzi model daje kraći nacrt i sprema ga lokalno u pregledniku. Za napredni AI i spremanje koristi
-                  registraciju.
-                </p>
-              </div>
-            </form>
+                <div className="sticky bottom-0 pt-4 pb-2 bg-white">
+                  <Button type="submit" disabled={isGenerating} size="lg" className="w-full">
+                    {isGenerating ? (
+                      <>
+                        <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                        Generiram lokalni zahtjev...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-5 w-5 mr-2" />
+                        Generiraj lokalni Zahtjev
+                      </>
+                    )}
+                  </Button>
+                  <p className="text-xs text-muted-foreground mt-3">
+                    Brzi model daje kraći nacrt i sprema ga lokalno u pregledniku. Za napredni AI i spremanje koristi
+                    registraciju.
+                  </p>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </section>
