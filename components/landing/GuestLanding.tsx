@@ -1,14 +1,13 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/hooks/use-toast'
-import { ArrowRight, Loader2, Sparkles } from 'lucide-react'
+import { Loader2, Sparkles } from 'lucide-react'
 import { GuestWizardForm } from '@/components/wizard/GuestWizardForm'
 
 interface IntakeData {
@@ -190,20 +189,7 @@ export function GuestLanding() {
                 <div className="container mx-auto px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div>
                     <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Lokalni nacrt</p>
-                    <h3 className="text-lg font-semibold text-foreground">
-                      Uređivanje lokalnog zahtjeva
-                    </h3>
-                  </div>
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <Link href="/auth/signup">
-                      <Button size="sm">
-                        Spremi uz račun
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </Link>
-                    <Button variant="outline" size="sm" onClick={() => setShowEditor(false)}>
-                      Natrag na landing
-                    </Button>
+                    <h3 className="text-lg font-semibold text-foreground">Primjer: Lokalni zahtjev</h3>
                   </div>
                 </div>
               </div>
@@ -213,7 +199,10 @@ export function GuestLanding() {
                   initialData={generatedData}
                   generatedAt={generatedAt}
                   storageKey={LOCAL_DRAFT_KEY}
-                  onClearDraft={resetLocalDraft}
+                  onExit={() => {
+                    resetLocalDraft()
+                    setShowEditor(false)
+                  }}
                 />
               </div>
             </div>
@@ -251,14 +240,14 @@ export function GuestLanding() {
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                 <div>
                   <p className="text-xs uppercase tracking-widest text-muted-foreground">
-                    Objašnjenje: HZZ Zahtjev Creator
+                    HZZ Zahtjev Creator
                   </p>
                   <h1 className="text-2xl md:text-3xl font-bold text-foreground mt-2">
-                    Izradite potpuni HZZ zahtjev, spremite ga i izvezite u PDF/DOCX uz napredni AI
+                    Izradite HZZ zahtjev i preuzmite ga u PDF/DOCX uz AI
                   </h1>
                   <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
-                    Ovaj nacrt se sprema samo u vašem pregledniku. Za trajno spremanje, uređivanje i jači model
-                    potrebna je registracija.
+                    Nacrt se sprema samo u vašem pregledniku. Za trajno spremanje i napredni model potrebna je
+                    registracija.
                   </p>
                 </div>
                 <div className="inline-flex items-center rounded-full bg-foreground text-background px-3 py-1 text-xs font-semibold">

@@ -7,7 +7,7 @@ import { WizardSection } from './WizardSection'
 import { PreviewPanel } from './PreviewPanel'
 import { useToast } from '@/hooks/use-toast'
 import hzzStructure from '@/data/hzz-structure.json'
-import { ChevronLeft, ChevronRight, FileDown, FileText, PanelRightOpen, Trash2 } from 'lucide-react'
+import { ArrowLeft, ChevronLeft, ChevronRight, FileDown, FileText, PanelRightOpen, Trash2 } from 'lucide-react'
 import {
   Sheet,
   SheetContent,
@@ -21,7 +21,7 @@ interface GuestWizardFormProps {
   initialData?: Record<string, any>
   generatedAt?: string | null
   storageKey?: string
-  onClearDraft?: () => void
+  onExit?: () => void
 }
 
 interface Section {
@@ -52,12 +52,11 @@ export function GuestWizardForm({
   initialData = {},
   generatedAt,
   storageKey = DEFAULT_STORAGE_KEY,
-  onClearDraft,
+  onExit,
 }: GuestWizardFormProps) {
   const { toast } = useToast()
   const [currentSection, setCurrentSection] = useState('2')
   const [formData, setFormData] = useState<Record<string, any>>(initialData)
-  const [isSaving, setIsSaving] = useState(false)
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false)
   const [isGeneratingDocx, setIsGeneratingDocx] = useState(false)
@@ -128,10 +127,8 @@ export function GuestWizardForm({
   useEffect(() => {
     if (!isHydrated) return
 
-    setIsSaving(true)
     const timer = setTimeout(() => {
       localStorage.setItem(storageKey, JSON.stringify(formData))
-      setIsSaving(false)
     }, 900)
 
     return () => clearTimeout(timer)
@@ -143,22 +140,6 @@ export function GuestWizardForm({
       window.scrollTo({ top: 0, behavior: 'smooth' })
     }, 50)
   }, [currentSection])
-
-  const handleSave = () => {
-    try {
-      localStorage.setItem(storageKey, JSON.stringify(formData))
-      toast({
-        title: 'Spremljeno lokalno',
-        description: 'Vaše izmjene su spremljene u pregledniku.',
-      })
-    } catch {
-      toast({
-        title: 'Greška',
-        description: 'Nije moguće spremiti nacrt lokalno.',
-        variant: 'destructive',
-      })
-    }
-  }
 
   const handleFieldChange = (sectionKey: string, fieldKey: string, value: any) => {
     setFormData((prev) => ({
@@ -487,16 +468,6 @@ export function GuestWizardForm({
               </p>
             </div>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
-              {isSaving && <span className="text-sm text-gray-600 order-first">Spremanje...</span>}
-              <Button
-                onClick={handleSave}
-                disabled={isSaving}
-                variant="outline"
-                size="sm"
-                className="w-full sm:w-auto text-sm"
-              >
-                Spremi lokalno
-              </Button>
               <Sheet open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
                 <SheetTrigger asChild>
                   <Button variant="default" size="sm" className="w-full sm:w-auto text-sm">
@@ -549,15 +520,16 @@ export function GuestWizardForm({
                   </div>
                 </SheetContent>
               </Sheet>
-              {onClearDraft && (
+              {onExit && (
                 <Button
-                  onClick={onClearDraft}
-                  variant="outline"
+                  onClick={onExit}
+                  variant="destructive"
                   size="sm"
-                  className="w-full sm:w-auto text-sm text-red-600 hover:text-red-600"
+                  className="w-full sm:w-auto text-sm"
                 >
+                  <ArrowLeft className="h-4 w-4 mr-1" />
                   <Trash2 className="h-4 w-4 mr-2" />
-                  Obriši nacrt
+                  Izbriši i Natrag
                 </Button>
               )}
             </div>
