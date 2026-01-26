@@ -6,7 +6,7 @@ export function Footer() {
     { icon: () => <span className="text-lg font-bold">X</span>, href: "https://x.com/Brunopenzar", label: "Twitter" },
     { icon: Github, href: "https://github.com/BPenzar", label: "GitHub" },
     { icon: Linkedin, href: "https://www.linkedin.com/in/bruno-penzar", label: "LinkedIn" },
-    { icon: Mail, href: "mailto:penzar.bruno@gmail.com", label: "Email" },
+    { icon: Mail, href: "mailto:bruno.penzar@bsp-lab.dev", label: "Email" },
   ]
 
   return (
