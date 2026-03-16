@@ -7,10 +7,10 @@ import { Footer } from '@/components/layout/Footer'
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-slate-100/70 via-white to-slate-50 flex flex-col">
       <Header showAuth={true} showAuthButtons={false} />
 
-      <div className="flex-1 flex items-center justify-center px-4">
+      <div className="relative z-10 flex flex-1 items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <Link href="/" className="text-3xl font-bold text-primary">
@@ -18,7 +18,7 @@ export default function LoginPage() {
             </Link>
           </div>
 
-          <Card>
+          <Card className="border-white/80 bg-white/95 shadow-xl shadow-slate-200/70 backdrop-blur">
             <CardHeader>
               <CardTitle>Prijava</CardTitle>
               <CardDescription>
